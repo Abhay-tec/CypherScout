@@ -1,0 +1,92 @@
+:root {
+    --bg-dark: #020617;
+    --card-bg: rgba(15, 23, 42, 0.6);
+    --accent: #22d3ee;
+    --border: rgba(34, 211, 238, 0.2);
+    --text-dim: #94a3b8;
+}
+
+body {
+    background-color: var(--bg-dark);
+    background-image: radial-gradient(circle at 50% 50%, #1e293b 0%, #020617 100%);
+    color: #f8fafc;
+    font-family: 'Inter', sans-serif;
+    margin: 0;
+    min-height: 100vh;
+}
+
+/* Glass Card Style */
+.glass-card {
+    background: var(--card-bg);
+    backdrop-filter: blur(12px);
+    border: 1px solid var(--border);
+    border-radius: 20px;
+    padding: 24px;
+    transition: transform 0.3s ease;
+}
+
+.glass-card:hover {
+    border-color: var(--accent);
+}
+
+/* Bento Grid Layout */
+.dashboard-container {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    grid-template-rows: auto;
+    gap: 20px;
+    padding: 40px;
+    max-width: 1200px;
+    margin: 0 auto;
+}
+
+.col-span-2 { grid-column: span 2; }
+
+/* Input Styling */
+textarea {
+    width: 100%;
+    background: rgba(2, 6, 23, 0.8);
+    border: 1px solid var(--border);
+    border-radius: 12px;
+    color: var(--accent);
+    padding: 15px;
+    font-family: 'JetBrains Mono', monospace;
+    resize: none;
+    outline: none;
+}
+
+button.cyber-btn {
+    background: var(--accent);
+    color: #020617;
+    border: none;
+    padding: 12px 24px;
+    border-radius: 10px;
+    font-weight: 700;
+    cursor: pointer;
+    text-transform: uppercase;
+    letter-spacing: 1px;
+}
+
+button.cyber-btn:hover {
+    box-shadow: 0 0 20px rgba(34, 211, 238, 0.4);
+}
+/* Fade Animation for Tips */
+.fade-tip {
+    font-size: 0.75rem;
+    margin-top: 8px;
+    padding: 8px 12px;
+    background: rgba(34, 211, 238, 0.05);
+    border-radius: 8px;
+    color: var(--accent);
+    border: 1px border var(--border);
+    display: none; /* Default hidden */
+    animation: fadeIn 0.4s ease-out forwards;
+}
+
+@keyframes fadeIn {
+    from { opacity: 0; transform: translateY(-5px); }
+    to { opacity: 1; transform: translateY(0); }
+}
+
+.tip-item { display: flex; align-items: center; gap: 6px; margin-bottom: 2px; }
+.tip-done { color: #4ade80; text-decoration: line-through; opacity: 0.6; }

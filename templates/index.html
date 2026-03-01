@@ -1,0 +1,151 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>CypherScout | Secure Portal</title>
+    <script src="https://unpkg.com/lucide@latest"></script>
+    <style>
+        /* CSS KO DIRECT YAHAN DAAL DIYA HAI TAAKI 404 ERROR NA AAYE */
+        :root { 
+            --primary: #22d3ee; 
+            --bg: #020617; 
+            --card-bg: rgba(15, 23, 42, 0.9); 
+            --border: rgba(34, 211, 238, 0.2); 
+        }
+
+        * { margin: 0; padding: 0; box-sizing: border-box; font-family: 'Inter', system-ui, sans-serif; }
+
+        body { 
+            background: var(--bg); 
+            height: 100vh; 
+            display: flex; 
+            align-items: center; 
+            justify-content: center; 
+            overflow: hidden;
+            background-image: radial-gradient(circle at 50% 50%, #111827 0%, #020617 100%);
+        }
+
+        /* Ambient Glow Background */
+        body::after {
+            content: "";
+            position: absolute;
+            width: 400px;
+            height: 400px;
+            background: radial-gradient(circle, rgba(34, 211, 238, 0.1) 0%, transparent 70%);
+            z-index: -1;
+        }
+
+        /* The Glass Card */
+        .login-card { 
+            width: 400px; 
+            background: var(--card-bg); 
+            backdrop-filter: blur(20px); 
+            -webkit-backdrop-filter: blur(20px);
+            padding: 40px; 
+            border-radius: 24px; 
+            border: 1px solid var(--border); 
+            text-align: center; 
+            box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.7);
+            animation: fadeIn 0.8s ease-out;
+        }
+
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(20px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+
+        .logo-box {
+            width: 60px; height: 60px;
+            background: var(--primary);
+            border-radius: 12px;
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            margin-bottom: 20px;
+            box-shadow: 0 0 20px rgba(34, 211, 238, 0.4);
+        }
+
+        h1 { color: white; font-size: 1.8rem; letter-spacing: -1px; margin-bottom: 8px; }
+        p { color: #94a3b8; font-size: 0.9rem; margin-bottom: 30px; }
+
+        /* GOOGLE BUTTON - Better UX */
+        .google-btn { 
+            display: flex; 
+            align-items: center; 
+            justify-content: center; 
+            gap: 12px; 
+            width: 100%; 
+            padding: 14px; 
+            background: white; 
+            color: #0f172a; 
+            border-radius: 12px; 
+            font-weight: 600; 
+            border: none;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            margin-bottom: 20px;
+        }
+
+        .google-btn:hover { 
+            transform: translateY(-2px); 
+            box-shadow: 0 10px 15px -3px rgba(34, 211, 238, 0.2); 
+        }
+
+        .divider { 
+            display: flex; align-items: center; color: #475569; 
+            font-size: 0.7rem; margin: 20px 0; text-transform: uppercase; letter-spacing: 1px;
+        }
+        .divider::before, .divider::after { content: ""; flex: 1; border-bottom: 1px solid var(--border); margin: 0 10px; }
+
+        input { 
+            width: 100%; padding: 14px; 
+            background: rgba(2, 6, 23, 0.5); 
+            border: 1px solid var(--border); 
+            border-radius: 10px; color: white; 
+            margin-bottom: 12px; outline: none;
+        }
+
+        input:focus { border-color: var(--primary); }
+
+        .login-btn { 
+            width: 100%; padding: 16px; background: var(--primary); 
+            color: #020617; border: none; border-radius: 12px; 
+            font-weight: 800; cursor: pointer; transition: 0.3s;
+        }
+
+        .login-btn:hover { box-shadow: 0 0 20px rgba(34, 211, 238, 0.5); transform: scale(1.01); }
+    </style>
+</head>
+<body>
+
+    <div class="login-card">
+        <div class="logo-box"><i data-lucide="shield-check" color="#020617"></i></div>
+        <h1>CypherScout</h1>
+        <p>Advanced Security Handshake</p>
+
+        <button class="google-btn" onclick="handleRedirection()">
+            <img src="https://fonts.gstatic.com/s/i/productlogos/googleg/v6/24px.svg" width="18">
+            Continue with Google
+        </button>
+
+        <div class="divider">Agent Verification</div>
+
+        <form onsubmit="event.preventDefault(); handleRedirection();">
+            <input type="email" placeholder="Agent ID" required>
+            <input type="password" placeholder="Passcode" required>
+            <button type="submit" class="login-btn" id="lBtn">Access Terminal</button>
+        </form>
+    </div>
+
+    <script>
+        lucide.createIcons();
+        function handleRedirection() {
+            const btn = document.getElementById('lBtn');
+            btn.innerText = "AUTHENTICATING...";
+            // Redirect to Flask route /dashboard
+            setTimeout(() => { window.location.href = "/dashboard"; }, 800);
+        }
+    </script>
+</body>
+</html>

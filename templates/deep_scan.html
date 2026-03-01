@@ -1,0 +1,325 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>CypherScout | Deep Scan Lab</title>
+    <script src="https://unpkg.com/lucide@latest"></script>
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;600;800&family=JetBrains+Mono:wght@400;700&display=swap');
+        :root{
+            --bg:#020617; --surface:rgba(15,23,42,.62); --border:rgba(186,230,253,.2);
+            --accent:#22d3ee; --soft:#bae6fd; --text:#f8fafc; --muted:#94a3b8;
+            --danger:#f43f5e; --ok:#10b981;
+        }
+        *{box-sizing:border-box;margin:0;padding:0}
+        body{
+            font-family:'Plus Jakarta Sans',sans-serif;color:var(--text);
+            background:
+                radial-gradient(circle at 15% 10%, rgba(56,189,248,.18), transparent 36%),
+                radial-gradient(circle at 90% 90%, rgba(34,211,238,.12), transparent 42%),
+                radial-gradient(circle at 50% 50%, #1e293b 0%, #020617 100%);
+            min-height:100vh;display:flex;overflow:hidden;
+        }
+        .sidebar{
+            width:82px;border-right:1px solid var(--border);
+            background:linear-gradient(180deg,rgba(10,15,30,.92),rgba(8,12,24,.72));
+            display:flex;flex-direction:column;align-items:center;padding:24px 0;gap:14px;
+        }
+        .nav-item{
+            width:40px;height:40px;border-radius:12px;border:1px solid transparent;
+            color:var(--muted);display:grid;place-items:center;cursor:pointer;transition:.25s;
+            position:relative;
+        }
+        .nav-item:hover,.nav-item.active{color:var(--accent);border-color:var(--border);background:rgba(186,230,253,.08)}
+        .nav-item:hover::after{
+            content:attr(data-tip);position:absolute;left:100%;top:50%;transform:translateY(-50%);
+            margin-left:10px;padding:4px 8px;border-radius:6px;font-size:10px;white-space:nowrap;
+            border:1px solid var(--border);background:var(--surface);color:#fff;
+        }
+        .main{flex:1;max-width:1320px;margin:0 auto;padding:24px;display:grid;gap:16px;overflow:auto}
+        .header{display:flex;justify-content:space-between;align-items:center}
+        .header h1{font-size:1.35rem;font-weight:800}
+        .header p{font-size:11px;color:var(--muted);font-family:'JetBrains Mono',monospace}
+        .kpi-grid{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:12px}
+        .kpi{
+            background:linear-gradient(180deg,rgba(15,23,42,.8),rgba(9,16,33,.78));
+            border:1px solid var(--border);border-radius:14px;padding:12px 14px;
+            box-shadow:inset 0 1px 0 rgba(186,230,253,.08);
+        }
+        .kpi-label{font-size:10px;color:var(--muted);letter-spacing:.9px;text-transform:uppercase;font-family:'JetBrains Mono',monospace}
+        .kpi-value{margin-top:4px;font-weight:800;font-size:1.05rem}
+        .kpi-note{margin-top:3px;font-size:11px;color:#c7d2fe}
+        .grid{display:grid;grid-template-columns:1fr 1fr;gap:14px}
+        .panel{
+            background:var(--surface);border:1px solid var(--border);border-radius:18px;padding:16px;
+            box-shadow:inset 0 1px 0 rgba(186,230,253,.08),0 16px 36px rgba(2,6,23,.35);
+        }
+        .panel h3{font-size:.95rem;letter-spacing:.8px;text-transform:uppercase;margin-bottom:8px}
+        .sub{font-size:12px;color:var(--muted);margin-bottom:12px;line-height:1.5}
+        .input-row{display:flex;gap:8px}
+        .input-row input{
+            flex:1;background:rgba(2,6,23,.45);border:1px solid var(--border);color:#fff;border-radius:10px;
+            padding:10px 12px;font-family:'JetBrains Mono',monospace;outline:none;
+        }
+        .btn{
+            border:none;border-radius:10px;padding:10px 14px;cursor:pointer;font-weight:800;
+            color:#04111f;background:linear-gradient(120deg,var(--soft),var(--accent));transition:.25s;
+        }
+        .btn:hover{transform:translateY(-1px);box-shadow:0 8px 20px rgba(34,211,238,.28)}
+        .drop{
+            border:1px dashed var(--border);border-radius:12px;padding:16px;text-align:center;cursor:pointer;
+            background:rgba(255,255,255,.02);transition:.25s;
+        }
+        .drop:hover{border-color:var(--accent);background:rgba(34,211,238,.06)}
+        #fileInput{display:none}
+        .result{
+            margin-top:12px;background:rgba(2,6,23,.48);border:1px solid var(--border);border-radius:12px;
+            padding:12px;min-height:160px;font-size:12px;color:#dbeafe;overflow:auto;
+            font-family:'JetBrains Mono',monospace;line-height:1.5;
+        }
+        .status-ok{color:var(--ok)} .status-bad{color:var(--danger)}
+        .intel-list{display:grid;gap:8px}
+        .intel-item{display:flex;justify-content:space-between;gap:10px;border-bottom:1px solid rgba(186,230,253,.12);padding-bottom:6px}
+        .intel-item strong{color:#e2f3ff}
+        .intel-item span{color:#c7d2fe;text-align:right;word-break:break-all}
+        .info-grid{display:grid;grid-template-columns:1.15fr .85fr;gap:14px}
+        .steps{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:10px}
+        .step{
+            border:1px solid var(--border);border-radius:12px;padding:10px;background:rgba(2,6,23,.34);
+            transition:.25s;
+        }
+        .step:hover{transform:translateY(-2px);border-color:rgba(34,211,238,.45)}
+        .step b{display:block;font-size:10px;color:var(--soft);letter-spacing:.8px;text-transform:uppercase;margin-bottom:5px}
+        .step p{font-size:12px;line-height:1.45;color:#dbeafe}
+        .legend{display:grid;gap:8px}
+        .legend-item{
+            display:flex;justify-content:space-between;gap:10px;align-items:center;
+            border:1px solid var(--border);border-radius:10px;padding:8px 10px;background:rgba(2,6,23,.28);
+        }
+        .chip{
+            font-size:10px;font-family:'JetBrains Mono',monospace;padding:4px 7px;border-radius:999px;
+            border:1px solid transparent;
+        }
+        .chip.ok{color:#6ee7b7;border-color:rgba(16,185,129,.45);background:rgba(16,185,129,.12)}
+        .chip.warn{color:#fcd34d;border-color:rgba(245,158,11,.45);background:rgba(245,158,11,.12)}
+        .chip.bad{color:#fb7185;border-color:rgba(244,63,94,.45);background:rgba(244,63,94,.12)}
+        .ticker{
+            position:relative;overflow:hidden;border:1px solid var(--border);border-radius:12px;
+            background:rgba(2,6,23,.4);padding:10px 0;
+        }
+        .ticker-track{
+            display:inline-flex;gap:32px;white-space:nowrap;padding-left:14px;
+            animation:ticker 18s linear infinite;
+            font-size:11px;color:#cbd5e1;font-family:'JetBrains Mono',monospace;
+        }
+        .ticker-track span b{color:var(--accent)}
+        @keyframes ticker{from{transform:translateX(0)}to{transform:translateX(-50%)}}
+        @media (max-width:1100px){
+            .kpi-grid{grid-template-columns:repeat(2,minmax(0,1fr))}
+            .info-grid{grid-template-columns:1fr}
+        }
+        @media (max-width:1000px){
+            .grid,.steps{grid-template-columns:1fr}
+        }
+    </style>
+</head>
+<body>
+    <aside class="sidebar">
+        <div class="nav-item" data-tip="Dashboard" onclick="location.href='/dashboard'"><i data-lucide="layout-grid"></i></div>
+        <div class="nav-item" data-tip="Premium" onclick="location.href='/subscription'"><i data-lucide="zap"></i></div>
+        <div class="nav-item active" data-tip="Deep Scan"><i data-lucide="scan-search"></i></div>
+        <div class="nav-item" data-tip="Logout" style="margin-top:auto" onclick="location.href='/logout'"><i data-lucide="log-out"></i></div>
+    </aside>
+
+    <main class="main">
+        <div class="header">
+            <div>
+                <h1>Deep Scan Lab</h1>
+                <p>AGENT: {{ user.name }} | FILE + URL INTEL MODE</p>
+            </div>
+            <button class="btn" onclick="location.href='/dashboard'">Back to Dashboard</button>
+        </div>
+
+        <section class="kpi-grid">
+            <article class="kpi">
+                <div class="kpi-label">Live Mode</div>
+                <div class="kpi-value">Hybrid Intel</div>
+                <div class="kpi-note">File + URL + DNS + SSL</div>
+            </article>
+            <article class="kpi">
+                <div class="kpi-label">Signal Layers</div>
+                <div class="kpi-value">8 Active</div>
+                <div class="kpi-note">Entropy, hash, network, geo</div>
+            </article>
+            <article class="kpi">
+                <div class="kpi-label">Response Window</div>
+                <div class="kpi-value">~1.2s</div>
+                <div class="kpi-note">Average local parse latency</div>
+            </article>
+            <article class="kpi">
+                <div class="kpi-label">Analyst State</div>
+                <div class="kpi-value">Ready</div>
+                <div class="kpi-note">Awaiting scan input</div>
+            </article>
+        </section>
+
+        <section class="grid">
+            <article class="panel">
+                <h3>File Deep Scan</h3>
+                <p class="sub">Upload a file to run heuristic deep scan and get risk score, entropy, hash, and key findings.</p>
+                <div class="drop" onclick="document.getElementById('fileInput').click()">
+                    <input type="file" id="fileInput" onchange="handleFileUpload(this)">
+                    <i data-lucide="upload-cloud" size="16" style="vertical-align:middle;margin-right:6px;"></i>
+                    <span>Select file for deep scan</span>
+                </div>
+                <div id="fileResult" class="result">Waiting for file...</div>
+            </article>
+
+            <article class="panel">
+                <h3>URL Intel</h3>
+                <p class="sub">Paste any URL to fetch host/IP, reverse DNS, SSL metadata, and geolocation details where available.</p>
+                <div class="input-row">
+                    <input id="intelUrl" placeholder="https://example.com/login">
+                    <button class="btn" id="intelBtn" onclick="runUrlIntel()">Fetch Intel</button>
+                </div>
+                <div id="urlResult" class="result">Waiting for URL intel request...</div>
+            </article>
+        </section>
+
+        <section class="info-grid">
+            <article class="panel">
+                <h3>Scan Workflow</h3>
+                <p class="sub">Use this sequence for faster and cleaner triage when handling unknown links or files.</p>
+                <div class="steps">
+                    <div class="step">
+                        <b>Step 1</b>
+                        <p>Submit URL or file and capture baseline host, hash, and entropy signals.</p>
+                    </div>
+                    <div class="step">
+                        <b>Step 2</b>
+                        <p>Review SSL, reverse DNS, and geo consistency before escalation call.</p>
+                    </div>
+                    <div class="step">
+                        <b>Step 3</b>
+                        <p>Mark result clean/suspicious/malicious and attach analyst notes.</p>
+                    </div>
+                </div>
+            </article>
+            <article class="panel">
+                <h3>Risk Legend</h3>
+                <p class="sub">Quick interpretation guide for status and risk score.</p>
+                <div class="legend">
+                    <div class="legend-item"><span>Score 0-29 | Trusted traits</span><span class="chip ok">LOW</span></div>
+                    <div class="legend-item"><span>Score 30-64 | Needs validation</span><span class="chip warn">MEDIUM</span></div>
+                    <div class="legend-item"><span>Score 65-100 | High threat match</span><span class="chip bad">HIGH</span></div>
+                </div>
+            </article>
+        </section>
+
+        <section class="ticker">
+            <div class="ticker-track">
+                <span><b>STATUS</b> FILE HEURISTIC ENGINE READY</span>
+                <span><b>STATUS</b> URL INTEL CONNECTOR READY</span>
+                <span><b>STATUS</b> DNS + SSL PARSER READY</span>
+                <span><b>STATUS</b> GEO RESOLUTION AVAILABLE</span>
+                <span><b>STATUS</b> FILE HEURISTIC ENGINE READY</span>
+                <span><b>STATUS</b> URL INTEL CONNECTOR READY</span>
+                <span><b>STATUS</b> DNS + SSL PARSER READY</span>
+                <span><b>STATUS</b> GEO RESOLUTION AVAILABLE</span>
+            </div>
+        </section>
+    </main>
+
+    <script>
+        lucide.createIcons();
+
+        function formatBytes(bytes) {
+            if (!bytes && bytes !== 0) return "-";
+            const units = ["B", "KB", "MB", "GB"];
+            let size = bytes, idx = 0;
+            while (size >= 1024 && idx < units.length - 1) { size /= 1024; idx++; }
+            return `${size.toFixed(size >= 100 ? 0 : 2)} ${units[idx]}`;
+        }
+
+        async function handleFileUpload(input) {
+            if (!input.files.length) return;
+            const file = input.files[0];
+            const resultEl = document.getElementById("fileResult");
+            resultEl.textContent = `Scanning ${file.name} ...`;
+
+            const formData = new FormData();
+            formData.append("file", file);
+            try {
+                const res = await fetch("/api/deep-scan", { method: "POST", body: formData });
+                const data = await res.json();
+                if (!res.ok) throw new Error(data.message || "Deep scan failed");
+
+                const statusClass = data.status.startsWith("MALICIOUS") ? "status-bad" : "status-ok";
+                resultEl.innerHTML = `
+                    <div><strong class="${statusClass}">${data.status}</strong></div>
+                    <div>Risk Score: ${data.risk_score}</div>
+                    <div>File: ${data.filename}</div>
+                    <div>Size: ${formatBytes(data.size_bytes)}</div>
+                    <div>Entropy: ${data.entropy}</div>
+                    <div>SHA-256: ${data.sha256}</div>
+                    <br>
+                    <div>Findings:</div>
+                    <div>${(data.reasons || []).map((r, i) => `${i + 1}. ${r}`).join("<br>")}</div>
+                `;
+            } catch (e) {
+                resultEl.innerHTML = `<span class="status-bad">Error: ${e.message}</span>`;
+            } finally {
+                input.value = "";
+            }
+        }
+
+        async function runUrlIntel() {
+            const input = document.getElementById("intelUrl");
+            const btn = document.getElementById("intelBtn");
+            const resultEl = document.getElementById("urlResult");
+            const url = input.value.trim();
+            if (!url) return;
+
+            btn.disabled = true;
+            btn.textContent = "Loading...";
+            resultEl.textContent = "Fetching URL intel...";
+            try {
+                const res = await fetch("/api/url-intel", {
+                    method: "POST",
+                    headers: { "Content-Type": "application/json" },
+                    body: JSON.stringify({ url })
+                });
+                const data = await res.json();
+                if (!res.ok) throw new Error(data.message || "URL intel failed");
+
+                const geo = data.geo || {};
+                const ssl = data.ssl || {};
+                const ipAll = (data.ip_all || []).join(", ") || "-";
+                resultEl.innerHTML = `
+                    <div class="intel-list">
+                        <div class="intel-item"><strong>Normalized URL</strong><span>${data.url || "-"}</span></div>
+                        <div class="intel-item"><strong>Host</strong><span>${data.host || "-"}</span></div>
+                        <div class="intel-item"><strong>Scheme / Port</strong><span>${data.scheme || "-"} / ${data.port || "-"}</span></div>
+                        <div class="intel-item"><strong>Primary IP</strong><span>${data.ip_primary || "-"}</span></div>
+                        <div class="intel-item"><strong>All Resolved IPs</strong><span>${ipAll}</span></div>
+                        <div class="intel-item"><strong>Reverse DNS</strong><span>${data.reverse_dns || "-"}</span></div>
+                        <div class="intel-item"><strong>Host Entropy</strong><span>${data.host_entropy ?? "-"}</span></div>
+                        <div class="intel-item"><strong>SSL Enabled</strong><span>${ssl.enabled ? "Yes" : "No"}</span></div>
+                        <div class="intel-item"><strong>TLS Version</strong><span>${ssl.version || "-"}</span></div>
+                        <div class="intel-item"><strong>SSL Validity</strong><span>${ssl.not_before || "-"} -> ${ssl.not_after || "-"}</span></div>
+                        <div class="intel-item"><strong>Geo</strong><span>${[geo.city, geo.region, geo.country].filter(Boolean).join(", ") || "-"}</span></div>
+                        <div class="intel-item"><strong>ISP / Org</strong><span>${[geo.isp, geo.org].filter(Boolean).join(" | ") || "-"}</span></div>
+                        <div class="intel-item"><strong>Timezone / ASN</strong><span>${[geo.timezone, geo.asn].filter(Boolean).join(" | ") || "-"}</span></div>
+                    </div>
+                `;
+            } catch (e) {
+                resultEl.innerHTML = `<span class="status-bad">Error: ${e.message}</span>`;
+            } finally {
+                btn.disabled = false;
+                btn.textContent = "Fetch Intel";
+            }
+        }
+    </script>
+</body>
+</html>

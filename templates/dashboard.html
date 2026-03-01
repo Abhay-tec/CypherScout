@@ -1,0 +1,560 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>CypherScout | Command Center</title>
+    <script src="https://unpkg.com/lucide@latest"></script>
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@300;400;600;800&family=JetBrains+Mono:wght@400;700&family=Inter:wght@400;700&display=swap');
+        
+        :root {
+            --bg: #030712;
+            --surface: rgba(15, 23, 42, 0.58);
+            --surface-strong: rgba(15, 23, 42, 0.82);
+            --accent: #22d3ee;
+            --accent-soft: #bae6fd;
+            --border: rgba(186, 230, 253, 0.18);
+            --text-main: #f8fafc;
+            --text-dim: #94a3b8;
+            --danger: #f43f5e;
+            --success: #10b981;
+            --bg-dark: #020617;
+            --glow: rgba(34, 211, 238, 0.3);
+            --frost-line: rgba(186, 230, 253, 0.22);
+        }
+
+        * { margin: 0; padding: 0; box-sizing: border-box; -webkit-tap-highlight-color: transparent; }
+
+        body { 
+            background-color: var(--bg-dark);
+            background-image:
+                radial-gradient(circle at 18% 12%, rgba(56, 189, 248, 0.18), transparent 34%),
+                radial-gradient(circle at 82% 80%, rgba(34, 211, 238, 0.12), transparent 42%),
+                radial-gradient(circle at 50% 50%, #1e293b 0%, #020617 100%);
+            color: var(--text-main);
+            font-family: 'Inter', sans-serif;
+            display: flex; height: 100vh; width: 100vw; overflow: hidden;
+            position: relative;
+        }
+
+        body::before {
+            content: "";
+            position: absolute;
+            inset: 0;
+            pointer-events: none;
+            background-image: repeating-linear-gradient(
+                to bottom,
+                rgba(255, 255, 255, 0.018) 0,
+                rgba(255, 255, 255, 0.018) 1px,
+                transparent 1px,
+                transparent 4px
+            );
+            mix-blend-mode: soft-light;
+            opacity: 0.35;
+        }
+
+        /* --- SIDEBAR --- */
+        .sidebar { 
+            width: 80px;
+            background: linear-gradient(180deg, rgba(10, 15, 30, 0.9), rgba(8, 12, 24, 0.72));
+            border-right: 1px solid var(--border);
+            backdrop-filter: blur(10px);
+            display: flex; flex-direction: column; align-items: center; padding: 30px 0; flex-shrink: 0; 
+            z-index: 100;
+            box-shadow: 8px 0 30px rgba(2, 6, 23, 0.35);
+        }
+
+        .nav-item {
+            color: var(--text-dim);
+            margin-bottom: 25px;
+            cursor: pointer;
+            transition: 0.28s;
+            position: relative;
+            width: 40px;
+            height: 40px;
+            border-radius: 12px;
+            display: grid;
+            place-items: center;
+            border: 1px solid transparent;
+        }
+        .nav-item.active { color: var(--accent); }
+        .nav-item:hover {
+            color: var(--accent);
+            transform: translateY(-2px);
+            border-color: var(--frost-line);
+            background: rgba(186, 230, 253, 0.06);
+        }
+        .nav-item:hover::after {
+            content: attr(data-tip); position: absolute; left: 100%; top: 50%; transform: translateY(-50%);
+            background: var(--surface); color: white; padding: 5px 10px; border-radius: 5px; font-size: 10px;
+            white-space: nowrap; border: 1px solid var(--border); margin-left: 10px; z-index: 100;
+        }
+
+        /* --- MAIN CONTAINER --- */
+        .main-container { 
+            flex: 1; padding: 25px; display: flex; flex-direction: column; 
+            max-width: 1400px; margin: 0 auto; overflow: hidden; position: relative;
+        }
+
+        .header { margin-bottom: 25px; display: flex; justify-content: space-between; align-items: center; flex-shrink: 0; }
+
+        .frost-panel {
+            background: linear-gradient(160deg, rgba(15, 23, 42, 0.66), rgba(15, 23, 42, 0.46));
+            border: 1px solid var(--border);
+            box-shadow: inset 0 1px 0 rgba(186, 230, 253, 0.1), 0 16px 40px rgba(2, 6, 23, 0.35);
+            backdrop-filter: blur(12px);
+            position: relative;
+            overflow: hidden;
+        }
+
+        /* --- BANNER --- */
+        .upgrade-banner {
+            background: linear-gradient(90deg, rgba(34, 211, 238, 0.12), rgba(59, 130, 246, 0.11));
+            border: 1px solid var(--accent); padding: 15px 25px; border-radius: 20px;
+            display: none; /* Initially hidden, JS will show it */
+            justify-content: space-between; align-items: center; margin-bottom: 25px;
+            position: relative; transition: 0.4s ease; flex-shrink: 0;
+        }
+        .close-banner {
+            background: none; border: none; color: var(--text-dim); cursor: pointer;
+            padding: 5px; display: flex; align-items: center; transition: 0.2s;
+        }
+        .close-banner:hover { color: var(--danger); transform: rotate(90deg); }
+
+        .upgrade-btn {
+            background: linear-gradient(120deg, var(--accent-soft), var(--accent));
+            color: #000;
+            text-decoration: none;
+            padding: 10px 20px;
+            border-radius: 12px;
+            font-weight: 800;
+            font-size: 12px;
+            transition: 0.2s;
+        }
+        .upgrade-btn:hover { transform: translateY(-1px); }
+
+        /* --- BENTO STATS --- */
+        .stats-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 15px; margin-bottom: 25px; flex-shrink: 0; }
+        .stat-card {
+            background: var(--surface);
+            padding: 20px;
+            border-radius: 20px;
+            border: 1px solid var(--border);
+            transition: transform 0.25s ease, border-color 0.25s ease, box-shadow 0.25s ease;
+        }
+        .stat-card:hover {
+            transform: translateY(-3px);
+            border-color: var(--frost-line);
+            box-shadow: 0 15px 35px rgba(2, 6, 23, 0.35);
+        }
+        .stat-card h2 { font-size: 1.5rem; font-weight: 800; margin-top: 5px; }
+
+        /* --- INPUTS --- */
+        .analyze-box { 
+            background: var(--surface); padding: 6px; border-radius: 15px; display: flex; 
+            border: 1px solid var(--border); margin-bottom: 15px; transition: 0.3s; flex-shrink: 0;
+        }
+        .analyze-box:focus-within { border-color: var(--accent); box-shadow: 0 0 0 2px rgba(34, 211, 238, 0.2); }
+        .analyze-box input { flex: 1; background: none; border: none; color: white; padding: 12px; outline: none; font-family: 'JetBrains Mono'; font-size: 14px; }
+        .scan-btn { 
+            background: linear-gradient(120deg, var(--accent-soft), var(--accent));
+            color: #000;
+            border: none;
+            padding: 0 25px; 
+            border-radius: 12px;
+            font-weight: 800;
+            cursor: pointer;
+            transition: 0.25s;
+            position: relative;
+            overflow: hidden;
+        }
+        .scan-btn::after {
+            content: "";
+            position: absolute;
+            top: 0;
+            left: -100%;
+            width: 60%;
+            height: 100%;
+            background: linear-gradient(to right, transparent, rgba(255,255,255,0.45), transparent);
+            transform: skewX(-20deg);
+        }
+        .scan-btn:hover { transform: translateY(-1px); box-shadow: 0 8px 24px rgba(34, 211, 238, 0.35); }
+        .scan-btn:hover::after { left: 160%; transition: left 0.5s ease; }
+        .header-actions { display: flex; gap: 10px; align-items: center; }
+
+        /* --- FILE UPLOAD --- */
+        .file-scout-zone {
+            border: 1px dashed var(--border); border-radius: 15px; padding: 15px;
+            text-align: center; margin-bottom: 25px; cursor: pointer; transition: 0.3s;
+            background: rgba(255,255,255,0.02); flex-shrink: 0;
+        }
+        .file-scout-zone:hover { border-color: var(--accent); background: rgba(34, 211, 238, 0.06); transform: translateY(-2px); }
+        .file-scout-zone.scan-focus {
+            border-color: var(--accent);
+            box-shadow: 0 0 0 2px rgba(34, 211, 238, 0.22), 0 0 24px rgba(34, 211, 238, 0.18);
+            background: rgba(34, 211, 238, 0.08);
+            animation: deepPulse 1.05s ease-in-out 2;
+        }
+        #fileInput { display: none; }
+
+        @keyframes deepPulse {
+            0%, 100% { transform: translateY(0); }
+            50% { transform: translateY(-2px); }
+        }
+
+        /* --- TABLE --- */
+        .table-wrapper { 
+            background: var(--surface); border-radius: 20px; border: 1px solid var(--border); 
+            display: flex; flex-direction: column; overflow: hidden; flex: 1; min-height: 260px;
+        }
+        .table-scroll { overflow-y: auto; flex: 1; min-height: 180px; }
+        .table-scroll::-webkit-scrollbar { width: 8px; }
+        .table-scroll::-webkit-scrollbar-thumb { background: rgba(148, 163, 184, 0.35); border-radius: 8px; }
+        
+        table { width: 100%; border-collapse: collapse; }
+        th { 
+            position: sticky; top: 0; background: rgba(22, 30, 49, 0.9); z-index: 10;
+            padding: 15px; text-align: left; color: var(--text-dim); 
+            font-size: 11px; text-transform: uppercase; letter-spacing: 1px;
+            border-bottom: 1px solid var(--border);
+            backdrop-filter: blur(8px);
+        }
+        td { padding: 15px; border-bottom: 1px solid var(--border); font-size: 13px; }
+        .history-row { transition: background 0.2s ease; }
+        .history-row:hover { background: rgba(186, 230, 253, 0.04); }
+
+        .badge { padding: 4px 10px; border-radius: 6px; font-size: 10px; font-weight: 800; display: inline-flex; align-items: center; gap: 5px; }
+        .MALICIOUS { background: rgba(244, 63, 94, 0.1); color: var(--danger); border: 1px solid rgba(244,63,94,0.2); }
+        .CLEAN { background: rgba(16, 185, 129, 0.1); color: var(--success); border: 1px solid rgba(16,185,129,0.2); }
+
+        .report-btn { 
+            background: rgba(15, 23, 42, 0.28); border: 1px solid var(--border); color: var(--text-dim); 
+            padding: 6px 12px; border-radius: 8px; cursor: pointer; font-size: 11px;
+            display: flex; align-items: center; gap: 5px; transition: 0.2s;
+        }
+        .report-btn:hover { border-color: var(--accent); color: var(--accent-soft); }
+
+        /* --- MODALS --- */
+        .cyber-modal { display: none; position: fixed; inset: 0; background: rgba(2, 6, 23, 0.9); z-index: 10000; align-items: center; justify-content: center; backdrop-filter: blur(10px); }
+        .modal-card { background: var(--surface-strong); border: 1px solid var(--border); padding: 30px; border-radius: 24px; text-align: center; max-width: 400px; width: 90%; }
+        .show-modal { display: flex !important; }
+        .m-btn { width: 100%; padding: 12px; border-radius: 12px; font-weight: 800; cursor: pointer; border: none; margin-top: 10px; }
+
+        /* --- TOUR --- */
+        .tour-tooltip { position: fixed; z-index: 10002; background: #1e293b; border: 1px solid var(--accent); padding: 20px; border-radius: 16px; width: 280px; display: none; }
+        .tour-highlight { position: relative; z-index: 10001 !important; box-shadow: 0 0 0 9999px rgba(0, 0, 0, 0.8), 0 0 30px var(--accent) !important; }
+        #tour-history.tour-highlight .table-scroll { pointer-events: auto !important; }
+
+        .reveal-item { opacity: 1; transform: none; }
+    </style>
+</head>
+<body onload="initSystem()">
+
+    <div id="tourChoiceModal" class="cyber-modal">
+        <div class="modal-card">
+            <i data-lucide="map" size="48" style="color:var(--accent); margin-bottom:15px;"></i>
+            <h2>Quick System Tour?</h2>
+            <p style="color:var(--text-dim); margin-bottom:20px;">Agent, want a briefing of the new Neural Interface?</p>
+            <div style="display:flex; gap:10px;">
+                <button class="m-btn" style="background:#1e293b; color:white;" onclick="closeTourForever()">SKIP</button>
+                <button class="m-btn" style="background:var(--accent); color:black;" onclick="startTour()">START</button>
+            </div>
+        </div>
+    </div>
+
+    <div id="correctionModal" class="cyber-modal">
+        <div class="modal-card">
+            <h2 id="modalTitle">Is this info wrong?</h2>
+            <p style="color:var(--text-dim); margin: 15px 0;">System will learn from this correction for future neural scans.</p>
+            <div style="display:flex; gap:10px;">
+                <button class="m-btn" style="background:#1e293b; color:white;" onclick="closeModal('correctionModal')">CANCEL</button>
+                <button id="confirmBtn" class="m-btn">CONFIRM & TRAIN</button>
+            </div>
+        </div>
+    </div>
+
+    <div class="sidebar" id="tour-sidebar">
+        <div class="nav-item active" data-tip="Dashboard"><i data-lucide="layout-grid"></i></div>
+        <div class="nav-item" data-tip="Premium" onclick="location.href='/subscription'"><i data-lucide="zap"></i></div>
+        <div class="nav-item" data-tip="Deep Scan" onclick="location.href='/deep-scan'"><i data-lucide="scan-search"></i></div>
+        <div class="nav-item" data-tip="Help" onclick="triggerHelpTour()"><i data-lucide="help-circle"></i></div>
+        <div class="nav-item" style="margin-top:auto" data-tip="Logout" onclick="location.href='/logout'"><i data-lucide="log-out"></i></div>
+    </div>
+
+    <div class="main-container">
+        <div class="header">
+            <div>
+                <h1 style="font-weight: 800; font-size: 1.4rem;">Command Center</h1>
+                <p style="color:var(--text-dim); font-size: 10px; font-family:'JetBrains Mono';">AGENT: {{ user.name }} | SYSTEM ONLINE</p>
+            </div>
+            <div class="header-actions">
+                <button onclick="resetSystem()" class="report-btn"><i data-lucide="refresh-ccw" size="12"></i> RESET STATS</button>
+            </div>
+        </div>
+
+        <div class="upgrade-banner frost-panel reveal-item" id="premiumBanner">
+            <div style="display:flex; align-items:center; gap:15px;">
+                <div style="background:rgba(34,211,238,0.2); padding:8px; border-radius:10px; color:var(--accent);">
+                    <i data-lucide="shield-check"></i>
+                </div>
+                <div>
+                    <p style="font-weight:800; font-size:14px;">Elite Neural Protection</p>
+                    <p style="color:var(--text-dim); font-size:11px;">Unlock 0-day threat detection and deep file scan.</p>
+                </div>
+            </div>
+            <div style="display:flex; align-items:center; gap:15px;">
+                <a href="/subscription" class="upgrade-btn">UPGRADE NOW</a>
+                <button class="close-banner" onclick="dismissBanner()"><i data-lucide="x" size="20"></i></button>
+            </div>
+        </div>
+
+        <div class="stats-grid reveal-item" id="tour-stats">
+            <div class="stat-card frost-panel"><p style="color:var(--text-dim); font-size:10px; font-weight:800;">TOTAL SCANS</p><h2>{{ user.scans }}</h2></div>
+            <div class="stat-card frost-panel"><p style="color:var(--text-dim); font-size:10px; font-weight:800;">THREATS BLOCKED</p><h2 style="color:var(--danger)">{{ user.threats }}</h2></div>
+            <div class="stat-card frost-panel"><p style="color:var(--text-dim); font-size:10px; font-weight:800;">AI LEARNING</p><h2 style="color:var(--success); font-size:1.1rem;"><i data-lucide="brain"></i> ACTIVE</h2></div>
+        </div>
+
+        <div class="analyze-box frost-panel reveal-item" id="tour-scan">
+            <input type="text" id="scanUrl" placeholder="Paste suspicious link here...">
+            <button class="scan-btn" id="scanBtn" onclick="startScan()">ANALYZE</button>
+        </div>
+
+        <div class="file-scout-zone frost-panel reveal-item" id="tour-file" onclick="document.getElementById('fileInput').click()">
+            <input type="file" id="fileInput" onchange="handleFileUpload(this)">
+            <p style="font-size: 12px; color: var(--text-dim);">
+                <i data-lucide="upload-cloud" size="16" style="vertical-align:middle; margin-right:5px;"></i>
+                Or <span style="color:var(--accent); font-weight:700;">Drop a File</span> to scan for embedded malware
+            </p>
+        </div>
+
+        <div class="table-wrapper frost-panel reveal-item" id="tour-history">
+            <div style="padding:15px; border-bottom:1px solid var(--border); display:flex; justify-content:space-between; align-items:center; flex-shrink:0;">
+                <h3 style="font-size:12px; font-weight:800;">INTELLIGENCE LOGS</h3>
+                <input type="text" id="tableSearch" onkeyup="filterLogs()" placeholder="Filter URLs..." style="background:rgba(0,0,0,0.2); border:1px solid var(--border); color:white; padding:5px 10px; border-radius:8px; font-size:11px; outline:none;">
+            </div>
+            <div class="table-scroll">
+                <table>
+                    <thead>
+                        <tr>
+                            <th>Source URL</th>
+                            <th>Status</th>
+                            <th>Feedback</th>
+                        </tr>
+                    </thead>
+                    <tbody id="historyTable">
+                        {% for log in history %}
+                        <tr class="history-row">
+                            <td style="font-family:'JetBrains Mono'; color:var(--accent); max-width:200px; overflow:hidden; text-overflow:ellipsis;">{{ log.url }}</td>
+                            <td>
+                                <span class="badge {{ log.status }}">
+                                    <i data-lucide="{% if log.status == 'CLEAN' %}check{% else %}alert-triangle{% endif %}" size="10"></i>
+                                    {{ log.status }}
+                                </span>
+                            </td>
+                            <td>
+                                <button class="report-btn" onclick="openCorrectionModal('{{ log.url }}', '{{ log.status }}')">
+                                    <i data-lucide="thumbs-down" size="12"></i> Incorrect?
+                                </button>
+                            </td>
+                        </tr>
+                        {% endfor %}
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    </div>
+
+    <div id="tourTooltip" class="tour-tooltip">
+        <h3 id="tourTitle" style="color:var(--accent); margin-bottom:5px;">Step</h3>
+        <p id="tourDesc" style="color:var(--text-dim); font-size:12px; line-height:1.4;">...</p>
+        <div style="display:flex; justify-content:space-between; margin-top:15px;">
+            <button onclick="endTour()" style="background:none; border:none; color:var(--text-dim); cursor:pointer;">Skip</button>
+            <button onclick="nextStep()" id="tourNextBtn" style="background:var(--accent); border:none; padding:5px 15px; border-radius:5px; font-weight:800; cursor:pointer;">Next</button>
+        </div>
+    </div>
+
+    <script>
+        lucide.createIcons();
+
+        // --- BANNER DISMISS LOGIC (Saves to Browser Memory) ---
+        function dismissBanner() {
+            const banner = document.getElementById('premiumBanner');
+            banner.style.opacity = '0';
+            banner.style.transform = 'translateY(-20px)';
+            
+            // Nishani chhod do ki banner band ho gaya hai
+            localStorage.setItem('premium_banner_dismissed', 'true');
+            
+            setTimeout(() => banner.style.display = 'none', 400);
+        }
+
+        async function handleFileUpload(input) {
+            if (input.files.length === 0) return;
+            const file = input.files[0];
+            const formData = new FormData();
+            formData.append('file', file);
+
+            const zone = document.getElementById('tour-file');
+            const original = zone ? zone.innerHTML : "";
+            if (zone) {
+                zone.innerHTML = `<p style="font-size:12px;color:var(--accent);font-weight:700;">Deep scanning: ${file.name}</p>`;
+            }
+
+            try {
+                const response = await fetch('/api/deep-scan', {
+                    method: 'POST',
+                    body: formData
+                });
+                const data = await response.json();
+                if (!response.ok) {
+                    throw new Error(data.message || "Deep scan failed");
+                }
+
+                const summary = [
+                    `Status: ${data.status}`,
+                    `Risk Score: ${data.risk_score}`,
+                    `SHA-256: ${data.sha256.slice(0, 16)}...`,
+                    `Entropy: ${data.entropy}`,
+                    "",
+                    "Key Findings:",
+                    ...data.reasons.slice(0, 3).map((r, i) => `${i + 1}. ${r}`)
+                ].join('\n');
+                alert(summary);
+                location.reload();
+            } catch (err) {
+                alert(`Deep scan error: ${err.message}`);
+                if (zone) zone.innerHTML = original;
+                input.value = "";
+            }
+        }
+
+        async function startScan() {
+            const url = document.getElementById('scanUrl').value.trim();
+            if(!url) return;
+            const btn = document.getElementById('scanBtn');
+            btn.disabled = true; btn.innerText = "SCANNING...";
+            
+            await fetch('/api/analyze', { 
+                method: 'POST', 
+                headers: {'Content-Type': 'application/json'},
+                body: JSON.stringify({url: url})
+            });
+            location.reload();
+        }
+
+
+        function openCorrectionModal(url, status) {
+            document.getElementById('modalTitle').innerHTML = `Is <span style="color:var(--accent)">${status}</span> wrong?`;
+            const confirmBtn = document.getElementById('confirmBtn');
+            confirmBtn.style.background = (status === 'CLEAN') ? "var(--danger)" : "var(--success)";
+            confirmBtn.onclick = async () => {
+                await fetch('/api/report-scam', { 
+                    method: 'POST', 
+                    headers: {'Content-Type': 'application/json'},
+                    body: JSON.stringify({url: url, current_status: status})
+                });
+                location.reload();
+            };
+            showModal('correctionModal');
+        }
+
+        function filterLogs() {
+            const val = document.getElementById('tableSearch').value.toLowerCase();
+            document.querySelectorAll('.history-row').forEach(row => {
+                row.style.display = row.innerText.toLowerCase().includes(val) ? "" : "none";
+            });
+        }
+
+        function showModal(id) { document.getElementById(id).classList.add('show-modal'); }
+        function closeModal(id) { document.getElementById(id).classList.remove('show-modal'); }
+
+        async function resetSystem() {
+            if(confirm("Wipe all logs and training data?")) {
+                await fetch('/api/reset-all', { method: 'POST' });
+                localStorage.removeItem('cypher_tour_done');
+                localStorage.removeItem('premium_banner_dismissed'); // Reset banner flag too
+                location.href = "/dashboard?tour=true";
+            }
+        }
+
+        // --- TOUR ENGINE ---
+        let currentStep = 0;
+        const tourSteps = [
+            { id: 'tour-sidebar', title: 'Nav System', desc: 'Access your core modules here.' },
+            { id: 'tour-stats', title: 'Intelligence Metrics', desc: 'Track threat neutralized in real-time.' },
+            { id: 'tour-scan', title: 'Neural Scan', desc: 'Input URLs or drop files for deep analysis.' },
+            { id: 'tour-history', title: 'Learning Hub', desc: 'Report errors to train the AI bot.' }
+        ];
+
+        function triggerHelpTour() {
+            currentStep = 0;
+            showModal('tourChoiceModal');
+        }
+
+        // --- SYSTEM INITIALIZATION ---
+        function initSystem() {
+            // 1. Check if Banner was previously dismissed
+            const isBannerDismissed = localStorage.getItem('premium_banner_dismissed');
+            if (isBannerDismissed !== 'true') {
+                document.getElementById('premiumBanner').style.display = 'flex';
+            }
+
+            // 2. Handle Tour logic
+            const urlParams = new URLSearchParams(window.location.search);
+            if (!localStorage.getItem('cypher_tour_done') || urlParams.get('tour') === 'true') {
+                currentStep = 0;
+                showModal('tourChoiceModal');
+            }
+        }
+
+        function startTour() { closeModal('tourChoiceModal'); showStep(); }
+        function showStep() {
+            document.querySelectorAll('.tour-highlight').forEach(el => el.classList.remove('tour-highlight'));
+            const step = tourSteps[currentStep];
+            const target = document.getElementById(step.id);
+            const tooltip = document.getElementById('tourTooltip');
+            if(!target) return nextStep();
+            target.classList.add('tour-highlight');
+            document.getElementById('tourTitle').innerText = step.title;
+            document.getElementById('tourDesc').innerText = step.desc;
+            tooltip.style.display = 'block';
+
+            const rect = target.getBoundingClientRect();
+            const tipRect = tooltip.getBoundingClientRect();
+            const gap = 14;
+            let top = rect.bottom + gap;
+            let left = rect.left;
+
+            // Sidebar (full height) ke liye tooltip right side me rakho
+            if (step.id === 'tour-sidebar') {
+                top = rect.top + 24;
+                left = rect.right + gap;
+            }
+
+            // Viewport ke andar clamp
+            top = Math.max(gap, Math.min(top, window.innerHeight - tipRect.height - gap));
+            left = Math.max(gap, Math.min(left, window.innerWidth - tipRect.width - gap));
+
+            tooltip.style.top = `${top}px`;
+            tooltip.style.left = `${left}px`;
+        }
+        function nextStep() { 
+            if(currentStep < tourSteps.length - 1) { currentStep++; showStep(); } 
+            else { endTour(); }
+        }
+        function endTour() {
+            document.querySelectorAll('.tour-highlight').forEach(el => el.classList.remove('tour-highlight'));
+            document.getElementById('tourTooltip').style.display = 'none';
+            localStorage.setItem('cypher_tour_done', 'true');
+        }
+        function closeTourForever() { localStorage.setItem('cypher_tour_done', 'true'); closeModal('tourChoiceModal'); }
+
+        window.addEventListener('resize', () => {
+            if (document.getElementById('tourTooltip').style.display === 'block') {
+                showStep();
+            }
+        });
+    </script>
+</body>
+</html>
