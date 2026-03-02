@@ -133,6 +133,21 @@
             transition: 0.2s;
         }
         .upgrade-btn:hover { transform: translateY(-1px); }
+        .shield-alert-banner {
+            display: none;
+            margin-bottom: 12px;
+            padding: 12px 14px;
+            border-radius: 12px;
+            border: 1px solid rgba(244, 63, 94, 0.55);
+            background: linear-gradient(90deg, rgba(127, 29, 29, 0.5), rgba(153, 27, 27, 0.28));
+            color: #ffe4e6;
+            font-size: 12px;
+            font-weight: 700;
+            animation: shieldBlink 1s steps(2, start) 3;
+        }
+        @keyframes shieldBlink {
+            50% { opacity: 0.35; }
+        }
 
         /* --- BENTO STATS --- */
         .stats-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 15px; margin-bottom: 25px; flex-shrink: 0; }
@@ -303,6 +318,73 @@
             border-color: rgba(244, 63, 94, 0.5);
             color: #fecdd3;
         }
+        .notif-badge {
+            min-width: 18px;
+            height: 18px;
+            padding: 0 5px;
+            border-radius: 999px;
+            background: var(--danger);
+            color: #fff;
+            font-size: 10px;
+            font-weight: 800;
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            margin-left: 5px;
+        }
+        .governance-panel {
+            background: var(--surface);
+            border: 1px solid var(--border);
+            border-radius: 18px;
+            padding: 16px;
+            margin-bottom: 15px;
+        }
+        .gov-controls {
+            display: grid;
+            grid-template-columns: 1fr 180px;
+            gap: 10px;
+            margin-top: 10px;
+        }
+        .gov-grid {
+            margin-top: 12px;
+            max-height: 280px;
+            overflow-y: auto;
+            border: 1px solid var(--border);
+            border-radius: 12px;
+        }
+        .gov-item {
+            display: grid;
+            grid-template-columns: 1fr 100px;
+            gap: 10px;
+            align-items: center;
+            padding: 10px 12px;
+            border-bottom: 1px solid rgba(186, 230, 253, 0.08);
+        }
+        .gov-item:last-child { border-bottom: none; }
+        .toggle-chip {
+            border: 1px solid var(--border);
+            border-radius: 999px;
+            padding: 6px 10px;
+            font-size: 10px;
+            font-weight: 700;
+            cursor: pointer;
+            text-align: center;
+        }
+        .toggle-chip.allow { color: #6ee7b7; border-color: rgba(16,185,129,.4); }
+        .toggle-chip.block { color: #fecdd3; border-color: rgba(244,63,94,.45); }
+        .notif-list {
+            text-align: left;
+            max-height: 300px;
+            overflow-y: auto;
+            margin-top: 8px;
+            border: 1px solid var(--border);
+            border-radius: 12px;
+        }
+        .notif-item {
+            padding: 10px 12px;
+            border-bottom: 1px solid rgba(186, 230, 253, 0.08);
+        }
+        .notif-item:last-child { border-bottom: none; }
 
         /* --- MODALS --- */
         .cyber-modal { display: none; position: fixed; inset: 0; background: rgba(2, 6, 23, 0.9); z-index: 10000; align-items: center; justify-content: center; backdrop-filter: blur(10px); }
@@ -578,6 +660,12 @@
         body.mobile-ui .vault-grid {
             grid-template-columns: 1fr !important;
         }
+        body.mobile-ui .gov-controls {
+            grid-template-columns: 1fr !important;
+        }
+        body.mobile-ui .gov-item {
+            grid-template-columns: 1fr !important;
+        }
 
         body.mobile-ui .scan-btn {
             width: 100% !important;
@@ -660,8 +748,18 @@
         </div>
     </div>
 
+    <div id="notificationModal" class="cyber-modal">
+        <div class="modal-card" style="max-width:520px;">
+            <h2>Notification Center</h2>
+            <div id="notifList" class="notif-list"></div>
+            <button class="m-btn" style="background:var(--accent); color:#020617;" onclick="markNotificationsRead()">Mark All Read</button>
+            <button class="m-btn" style="background:#1e293b; color:white;" onclick="closeModal('notificationModal')">Close</button>
+        </div>
+    </div>
+
     <div class="sidebar" id="tour-sidebar">
         <div class="nav-item active" data-tip="Dashboard"><i data-lucide="layout-grid"></i></div>
+        <div class="nav-item" data-tip="Alerts" onclick="openNotifications()"><i data-lucide="bell"></i><span id="notifBadge" class="notif-badge">{{ unread_notifications or 0 }}</span></div>
         <div class="nav-item" data-tip="Premium" onclick="location.href='/subscription'"><i data-lucide="zap"></i></div>
         <div class="nav-item" data-tip="Deep Scan" onclick="location.href='/deep-scan'"><i data-lucide="scan-search"></i></div>
         <div class="nav-item" data-tip="Help" onclick="triggerHelpTour()"><i data-lucide="help-circle"></i></div>
@@ -678,6 +776,8 @@
                 <button onclick="resetSystem()" class="report-btn"><i data-lucide="refresh-ccw" size="12"></i> RESET STATS</button>
             </div>
         </div>
+
+        <div id="shadowShieldBanner" class="shield-alert-banner">Privacy Shield Active</div>
 
         <div class="upgrade-banner frost-panel reveal-item" id="premiumBanner">
             <div style="display:flex; align-items:center; gap:15px;">
@@ -727,6 +827,18 @@
             <div id="vaultResult" class="vault-result"></div>
         </div>
 
+        <div class="governance-panel frost-panel reveal-item" id="app-governance-panel">
+            <div style="display:flex; justify-content:space-between; align-items:center; gap:10px;">
+                <h3 style="font-size:12px; font-weight:800;">300+ APP GOVERNANCE VAULT</h3>
+                <span id="catalogCount" style="font-size:10px; color:var(--text-dim); font-family:'JetBrains Mono';">Loading...</span>
+            </div>
+            <div class="gov-controls">
+                <input id="govSearch" class="vault-input" type="text" placeholder="Search apps..." oninput="loadGovernanceApps()">
+                <select id="govCategory" class="vault-select" onchange="loadGovernanceApps()"></select>
+            </div>
+            <div id="govGrid" class="gov-grid"></div>
+        </div>
+
         <div class="file-scout-zone frost-panel reveal-item" id="tour-file" onclick="document.getElementById('fileInput').click()">
             <input type="file" id="fileInput" onchange="handleFileUpload(this)">
             <p style="font-size: 12px; color: var(--text-dim);">
@@ -760,9 +872,14 @@
                                 </span>
                             </td>
                             <td>
-                                <button class="report-btn" onclick="openCorrectionModal('{{ log.url }}', '{{ log.status }}')">
-                                    <i data-lucide="thumbs-down" size="12"></i> Incorrect?
-                                </button>
+                                <div style="display:flex; gap:6px; flex-wrap:wrap;">
+                                    <button class="report-btn" onclick="submitHistoryFeedback('{{ log.url }}', '{{ log.status }}', 'right')">
+                                        <i data-lucide="badge-check" size="12"></i> Info Right
+                                    </button>
+                                    <button class="report-btn" onclick="submitHistoryFeedback('{{ log.url }}', '{{ log.status }}', 'wrong')">
+                                        <i data-lucide="x-circle" size="12"></i> Info Wrong
+                                    </button>
+                                </div>
                             </td>
                         </tr>
                         {% endfor %}
@@ -784,6 +901,7 @@
     <script>
         lucide.createIcons();
         let vaultLastContext = null;
+        let governanceCategoriesLoaded = false;
 
         function applyMobileClass() {
             const isMobileViewport = window.matchMedia("(max-width: 900px)").matches;
@@ -851,11 +969,15 @@
             const btn = document.getElementById('scanBtn');
             btn.disabled = true; btn.innerText = "SCANNING...";
             
-            await fetch('/api/analyze', { 
+            const response = await fetch('/api/analyze', { 
                 method: 'POST', 
                 headers: {'Content-Type': 'application/json'},
                 body: JSON.stringify({url: url})
             });
+            const data = await response.json();
+            if (data.shadow_mode && data.alert) {
+                localStorage.setItem("shadow_mode_alert", data.alert);
+            }
             location.reload();
         }
 
@@ -955,26 +1077,112 @@
                 return;
             }
             if (verdict === 'wrong') {
-                alert("Marked malicious and pushed to neural learning for all users.");
+                alert("Marked wrong and learning pipeline updated.");
             } else {
                 alert("Feedback recorded as trusted/correct.");
             }
         }
 
 
-        function openCorrectionModal(url, status) {
-            document.getElementById('modalTitle').innerHTML = `Is <span style="color:var(--accent)">${status}</span> wrong?`;
-            const confirmBtn = document.getElementById('confirmBtn');
-            confirmBtn.style.background = (status === 'CLEAN') ? "var(--danger)" : "var(--success)";
-            confirmBtn.onclick = async () => {
-                await fetch('/api/report-scam', { 
-                    method: 'POST', 
-                    headers: {'Content-Type': 'application/json'},
-                    body: JSON.stringify({url: url, current_status: status})
-                });
-                location.reload();
-            };
-            showModal('correctionModal');
+        async function submitHistoryFeedback(url, status, verdict) {
+            if (verdict === 'wrong') {
+                const msg = `Mark "${status}" as wrong?\n\nIf it was false-positive, link will be whitelisted permanently.`;
+                if (!confirm(msg)) return;
+            }
+            const response = await fetch('/api/history-feedback', {
+                method: 'POST',
+                headers: {'Content-Type': 'application/json'},
+                body: JSON.stringify({ url, current_status: status, verdict })
+            });
+            const data = await response.json();
+            if (!response.ok) {
+                alert(data.message || "Feedback update failed");
+                return;
+            }
+            if (data.status === "whitelisted") {
+                alert(`Verified Secure: ${data.trusted_key}`);
+            }
+            location.reload();
+        }
+
+        async function loadGovernanceApps() {
+            const q = document.getElementById('govSearch').value.trim();
+            const category = document.getElementById('govCategory').value || 'All';
+            const res = await fetch(`/api/app-governance/apps?q=${encodeURIComponent(q)}&category=${encodeURIComponent(category)}&limit=420`);
+            const data = await res.json();
+            if (!res.ok) return;
+            if (!governanceCategoriesLoaded) {
+                const cat = document.getElementById('govCategory');
+                cat.innerHTML = data.categories.map(c => `<option value="${c}">${c}</option>`).join('');
+                governanceCategoriesLoaded = true;
+            }
+            document.getElementById('catalogCount').innerText = `${data.total_catalog}+ apps`;
+            const grid = document.getElementById('govGrid');
+            grid.innerHTML = data.apps.map(app => `
+                <div class="gov-item">
+                    <div>
+                        <div style="font-size:12px; font-weight:700;">${app.display_name}</div>
+                        <div style="font-size:10px; color:var(--text-dim);">${app.category}</div>
+                    </div>
+                    <button class="toggle-chip ${app.trust_level === 'BLOCK' ? 'block' : 'allow'}" onclick="toggleAppTrust('${app.app_key}', '${app.trust_level === 'BLOCK' ? 'ALLOW' : 'BLOCK'}')">
+                        ${app.trust_level === 'BLOCK' ? 'BLOCKED' : 'ALLOWED'}
+                    </button>
+                </div>
+            `).join('');
+            lucide.createIcons();
+        }
+
+        async function toggleAppTrust(appKey, newLevel) {
+            const res = await fetch('/api/app-governance/toggle', {
+                method: 'POST',
+                headers: {'Content-Type': 'application/json'},
+                body: JSON.stringify({ app_key: appKey, trust_level: newLevel })
+            });
+            if (!res.ok) {
+                const data = await res.json();
+                alert(data.message || "Unable to update app policy");
+                return;
+            }
+            await loadGovernanceApps();
+            await refreshNotificationCount();
+        }
+
+        async function openNotifications() {
+            const res = await fetch('/api/notifications');
+            const data = await res.json();
+            const list = document.getElementById('notifList');
+            if (!res.ok) {
+                list.innerHTML = `<div class="notif-item">Unable to load notifications.</div>`;
+                showModal('notificationModal');
+                return;
+            }
+            if (!data.notifications.length) {
+                list.innerHTML = `<div class="notif-item">No notifications yet.</div>`;
+            } else {
+                list.innerHTML = data.notifications.map(n => `
+                    <div class="notif-item">
+                        <div style="font-size:12px;font-weight:700;">${n.title}</div>
+                        <div style="font-size:11px;color:var(--text-dim);margin-top:2px;">${n.message}</div>
+                        <div style="font-size:10px;color:var(--text-dim);margin-top:4px;">${n.created_at || ''}</div>
+                    </div>
+                `).join('');
+            }
+            document.getElementById('notifBadge').innerText = data.unread_count || 0;
+            showModal('notificationModal');
+        }
+
+        async function markNotificationsRead() {
+            await fetch('/api/notifications/read', { method: 'POST' });
+            closeModal('notificationModal');
+            await refreshNotificationCount();
+        }
+
+        async function refreshNotificationCount() {
+            const res = await fetch('/api/notifications');
+            const data = await res.json();
+            if (res.ok) {
+                document.getElementById('notifBadge').innerText = data.unread_count || 0;
+            }
         }
 
         function filterLogs() {
@@ -1013,6 +1221,16 @@
         // --- SYSTEM INITIALIZATION ---
         function initSystem() {
             applyMobileClass();
+            loadGovernanceApps();
+            refreshNotificationCount();
+            const shadowAlert = localStorage.getItem("shadow_mode_alert");
+            if (shadowAlert) {
+                const shieldBanner = document.getElementById("shadowShieldBanner");
+                shieldBanner.innerText = shadowAlert;
+                shieldBanner.style.display = "block";
+                alert(shadowAlert);
+                localStorage.removeItem("shadow_mode_alert");
+            }
             // 1. Check if Banner was previously dismissed
             const isBannerDismissed = localStorage.getItem('premium_banner_dismissed');
             if (isBannerDismissed !== 'true') {

@@ -8,6 +8,7 @@ from werkzeug.security import check_password_hash, generate_password_hash
 
 from app import oauth
 from app.db import get_db
+from app.services.notifications import push_notification
 from app.services.notify import send_login_notification, send_password_reset_code, send_security_alert
 
 web_bp = Blueprint("web", __name__)
@@ -16,6 +17,14 @@ web_bp = Blueprint("web", __name__)
 @web_bp.route("/healthz")
 def healthz():
     return {"status": "ok"}, 200
+
+
+def _best_effort_location(request_obj) -> str:
+    city = request_obj.headers.get("X-AppEngine-City") or request_obj.headers.get("CF-IPCity") or ""
+    region = request_obj.headers.get("X-AppEngine-Region") or request_obj.headers.get("CF-IPRegion") or ""
+    country = request_obj.headers.get("X-AppEngine-Country") or request_obj.headers.get("CF-IPCountry") or ""
+    parts = [part for part in [city, region, country] if part]
+    return ", ".join(parts) if parts else "Unknown"
 
 
 @web_bp.route("/")
@@ -39,7 +48,18 @@ def dashboard():
         (email,),
     ).fetchall()
     patterns = conn.execute("SELECT COUNT(*) FROM feedback").fetchone()[0]
-    return render_template("dashboard.html", user=user, history=history, show_tour=show_tour, ai_stats={"patterns_learned": patterns})
+    unread_notifications = conn.execute(
+        "SELECT COUNT(*) FROM notifications WHERE email = ? AND is_read = 0",
+        (email,),
+    ).fetchone()[0]
+    return render_template(
+        "dashboard.html",
+        user=user,
+        history=history,
+        show_tour=show_tour,
+        ai_stats={"patterns_learned": patterns},
+        unread_notifications=unread_notifications,
+    )
 
 
 @web_bp.route("/deep-scan")
@@ -91,7 +111,16 @@ def login():
         method="Email/Password",
         ip_address=request.headers.get("X-Forwarded-For", request.remote_addr),
         user_agent=request.user_agent.string,
+        location=_best_effort_location(request),
     )
+    push_notification(
+        conn,
+        email,
+        "New Login",
+        f"Email/Password login from {request.headers.get('X-Forwarded-For', request.remote_addr) or 'Unknown IP'}",
+        "info",
+    )
+    conn.commit()
     return redirect(url_for("web.dashboard"))
 
 
@@ -127,7 +156,16 @@ def auth():
         method="Google OAuth",
         ip_address=request.headers.get("X-Forwarded-For", request.remote_addr),
         user_agent=request.user_agent.string,
+        location=_best_effort_location(request),
     )
+    push_notification(
+        conn,
+        email,
+        "New Login",
+        f"Google OAuth login from {request.headers.get('X-Forwarded-For', request.remote_addr) or 'Unknown IP'}",
+        "info",
+    )
+    conn.commit()
     return redirect(url_for("web.dashboard", tour="true"))
 
 

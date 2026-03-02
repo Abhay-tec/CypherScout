@@ -4,6 +4,8 @@ from datetime import datetime, timezone
 
 from flask import Flask, g
 
+from app.services.governance_catalog import build_app_catalog
+
 DEFAULT_TRUSTED_APPS = [
     ("APP", "whatsapp", "WhatsApp", "Messaging"),
     ("APP", "instagram", "Instagram", "Social"),
@@ -101,8 +103,48 @@ def init_database(app: Flask) -> None:
             )
             """
         )
+        conn.execute(
+            """
+            CREATE TABLE IF NOT EXISTS governance_apps (
+                app_key TEXT PRIMARY KEY,
+                display_name TEXT NOT NULL,
+                category TEXT NOT NULL,
+                homepage TEXT,
+                host_key TEXT
+            )
+            """
+        )
+        conn.execute(
+            """
+            CREATE TABLE IF NOT EXISTS user_app_policies (
+                email TEXT NOT NULL,
+                app_key TEXT NOT NULL,
+                trust_level TEXT NOT NULL,
+                updated_at TEXT,
+                PRIMARY KEY (email, app_key)
+            )
+            """
+        )
+        conn.execute(
+            """
+            CREATE TABLE IF NOT EXISTS notifications (
+                id INTEGER PRIMARY KEY AUTOINCREMENT,
+                email TEXT NOT NULL,
+                title TEXT NOT NULL,
+                message TEXT NOT NULL,
+                level TEXT DEFAULT 'info',
+                is_read INTEGER DEFAULT 0,
+                created_at TEXT
+            )
+            """
+        )
+        conn.execute("CREATE INDEX IF NOT EXISTS idx_governance_apps_name ON governance_apps(display_name)")
+        conn.execute("CREATE INDEX IF NOT EXISTS idx_governance_apps_category ON governance_apps(category)")
+        conn.execute("CREATE INDEX IF NOT EXISTS idx_governance_apps_host ON governance_apps(host_key)")
+        conn.execute("CREATE INDEX IF NOT EXISTS idx_notifications_email ON notifications(email, is_read, created_at)")
         _ensure_column_exists(conn, "users", "password_hash", "TEXT")
         _seed_trusted_apps(conn)
+        _seed_governance_apps(conn)
         conn.commit()
 
     @app.before_request
@@ -131,4 +173,15 @@ def _seed_trusted_apps(conn: sqlite3.Connection) -> None:
         VALUES (?, ?, ?, ?, 1, 0, 'system', ?)
         """,
         [(source_type, app_key, display_name, category, now) for source_type, app_key, display_name, category in DEFAULT_TRUSTED_APPS],
+    )
+
+
+def _seed_governance_apps(conn: sqlite3.Connection) -> None:
+    apps = build_app_catalog()
+    conn.executemany(
+        """
+        INSERT OR IGNORE INTO governance_apps (app_key, display_name, category, homepage, host_key)
+        VALUES (?, ?, ?, ?, ?)
+        """,
+        [(app["app_key"], app["display_name"], app["category"], app["homepage"], app["host_key"]) for app in apps],
     )

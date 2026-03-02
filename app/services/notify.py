@@ -61,7 +61,7 @@ def send_password_reset_code(app, email: str, code: str, expiry_minutes: int) ->
     send_email_async(app, email, subject, html, f"Your CypherScout reset code is {code}. It expires in {expiry_minutes} minutes.")
 
 
-def send_login_notification(app, email: str, method: str, ip_address: str, user_agent: str) -> None:
+def send_login_notification(app, email: str, method: str, ip_address: str, user_agent: str, location: str = "Unknown") -> None:
     subject = "CypherScout Login Notification"
     html = f"""
     <div style="font-family:Arial,sans-serif;background:#081627;color:#eaf5ff;padding:24px;border-radius:12px">
@@ -70,11 +70,12 @@ def send_login_notification(app, email: str, method: str, ip_address: str, user_
       <ul style="margin:0;padding-left:18px;line-height:1.7">
         <li>Method: {method}</li>
         <li>IP: {ip_address or "Unknown"}</li>
-        <li>Client: {user_agent or "Unknown"}</li>
+        <li>Device: {user_agent or "Unknown"}</li>
+        <li>Location: {location or "Unknown"}</li>
       </ul>
     </div>
     """
-    send_email_async(app, email, subject, html, f"New CypherScout login via {method}. IP: {ip_address}.")
+    send_email_async(app, email, subject, html, f"New CypherScout login via {method}. IP: {ip_address}. Location: {location}.")
 
 
 def send_security_alert(app, email: str, title: str, details: str) -> None:
