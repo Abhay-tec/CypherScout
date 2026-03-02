@@ -338,6 +338,7 @@
             border-radius: 18px;
             padding: 16px;
             margin-bottom: 15px;
+            display: none;
         }
         .gov-controls {
             display: grid;
@@ -1106,26 +1107,26 @@
         }
 
         async function loadGovernanceApps() {
-            const q = document.getElementById('govSearch').value.trim();
-            const category = document.getElementById('govCategory').value || 'All';
-            const res = await fetch(`/api/app-governance/apps?q=${encodeURIComponent(q)}&category=${encodeURIComponent(category)}&limit=420`);
+            const q = document.getElementById('appVaultSearch')?.value?.trim() || '';
+            const category = document.getElementById('appVaultCategory')?.value || 'All';
+            const res = await fetch(`/api/app-vault/apps?q=${encodeURIComponent(q)}&category=${encodeURIComponent(category)}`);
             const data = await res.json();
             if (!res.ok) return;
             if (!governanceCategoriesLoaded) {
-                const cat = document.getElementById('govCategory');
+                const cat = document.getElementById('appVaultCategory');
                 cat.innerHTML = data.categories.map(c => `<option value="${c}">${c}</option>`).join('');
                 governanceCategoriesLoaded = true;
             }
-            document.getElementById('catalogCount').innerText = `${data.total_catalog}+ apps`;
-            const grid = document.getElementById('govGrid');
-            grid.innerHTML = data.apps.map(app => `
-                <div class="gov-item">
+            const list = document.getElementById('appVaultList');
+            list.innerHTML = data.apps.map(app => `
+                <div class="app-vault-item">
+                    <img class="app-logo" src="${app.logo_url}" onerror="this.src='https://www.google.com/s2/favicons?domain=${app.app_key}.com&sz=64';" alt="${app.display_name}">
                     <div>
                         <div style="font-size:12px; font-weight:700;">${app.display_name}</div>
                         <div style="font-size:10px; color:var(--text-dim);">${app.category}</div>
                     </div>
-                    <button class="toggle-chip ${app.trust_level === 'BLOCK' ? 'block' : 'allow'}" onclick="toggleAppTrust('${app.app_key}', '${app.trust_level === 'BLOCK' ? 'ALLOW' : 'BLOCK'}')">
-                        ${app.trust_level === 'BLOCK' ? 'BLOCKED' : 'ALLOWED'}
+                    <button class="app-select-btn ${app.selected ? 'selected' : ''}" onclick="toggleAppSelection('${app.app_key}', ${app.selected ? 0 : 1})">
+                        ${app.selected ? 'Selected' : 'Not Selected'}
                     </button>
                 </div>
             `).join('');
@@ -1133,10 +1134,10 @@
         }
 
         async function toggleAppTrust(appKey, newLevel) {
-            const res = await fetch('/api/app-governance/toggle', {
+            const res = await fetch('/api/app-vault/select', {
                 method: 'POST',
                 headers: {'Content-Type': 'application/json'},
-                body: JSON.stringify({ app_key: appKey, trust_level: newLevel })
+                body: JSON.stringify({ app_key: appKey, selected: newLevel === 'ALLOW' })
             });
             if (!res.ok) {
                 const data = await res.json();
@@ -1145,6 +1146,36 @@
             }
             await loadGovernanceApps();
             await refreshNotificationCount();
+        }
+
+        async function toggleAppSelection(appKey, selected) {
+            const res = await fetch('/api/app-vault/select', {
+                method: 'POST',
+                headers: {'Content-Type': 'application/json'},
+                body: JSON.stringify({ app_key: appKey, selected: !!selected })
+            });
+            if (!res.ok) {
+                const data = await res.json();
+                alert(data.message || "Unable to update app selection");
+                return;
+            }
+            await loadGovernanceApps();
+            await refreshNotificationCount();
+        }
+
+        async function openAppVault() {
+            await loadGovernanceApps();
+            document.querySelector('.main-container')?.classList.add('hidden');
+            document.getElementById('appVaultPage')?.classList.add('show');
+            document.getElementById('navDashboard')?.classList.remove('active');
+            document.getElementById('navAppVault')?.classList.add('active');
+        }
+
+        function openMainDashboard() {
+            document.getElementById('appVaultPage')?.classList.remove('show');
+            document.querySelector('.main-container')?.classList.remove('hidden');
+            document.getElementById('navAppVault')?.classList.remove('active');
+            document.getElementById('navDashboard')?.classList.add('active');
         }
 
         async function openNotifications() {
@@ -1172,7 +1203,7 @@
         }
 
         async function markNotificationsRead() {
-            await fetch('/api/notifications/read', { method: 'POST' });
+            await fetch('/api/notifications/read-all', { method: 'POST' });
             closeModal('notificationModal');
             await refreshNotificationCount();
         }
