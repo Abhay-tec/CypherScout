@@ -833,8 +833,8 @@
     </div>
 
     <div class="sidebar" id="tour-sidebar">
-        <div id="navDashboard" class="nav-item active" data-tip="Dashboard" onclick="openMainDashboard()"><i data-lucide="layout-grid"></i></div>
-        <div id="navAppVault" class="nav-item" data-tip="App Vault" onclick="openAppVault()"><i data-lucide="app-window"></i></div>
+        <div id="navDashboard" class="nav-item active" data-tip="Dashboard" onclick="location.href='/dashboard'"><i data-lucide="layout-grid"></i></div>
+        <div id="navAppVault" class="nav-item" data-tip="App Vault" onclick="location.href='/app-vault'"><i data-lucide="app-window"></i></div>
         <div class="nav-item" data-tip="Alerts" onclick="openNotifications()"><i data-lucide="bell"></i><span id="notifBadge" class="notif-badge">{{ unread_notifications or 0 }}</span></div>
         <div class="nav-item" data-tip="Premium" onclick="location.href='/subscription'"><i data-lucide="zap"></i></div>
         <div class="nav-item" data-tip="Deep Scan" onclick="location.href='/deep-scan'"><i data-lucide="scan-search"></i></div>
@@ -882,38 +882,6 @@
             <button class="scan-btn" id="scanBtn" onclick="startScan()">ANALYZE</button>
         </div>
 
-        <div class="vault-panel frost-panel reveal-item" id="permissions-vault">
-            <div style="display:flex; justify-content:space-between; align-items:center; gap:10px; margin-bottom:10px;">
-                <h3 style="font-size:12px; font-weight:800;">VIRTUAL PERMISSIONS VAULT</h3>
-                <span style="font-size:10px; color:var(--text-dim); font-family:'JetBrains Mono';">AUTO TRUST + SHADOW MODE</span>
-            </div>
-            <div class="vault-grid">
-                <select id="vaultSourceType" class="vault-select">
-                    <option value="app">App</option>
-                    <option value="link">Link</option>
-                </select>
-                <input id="vaultSource" class="vault-input" type="text" placeholder="Enter app name or URL">
-                <select id="vaultPermission" class="vault-select">
-                    <option value="contacts">Contacts</option>
-                    <option value="gallery">Gallery</option>
-                    <option value="location">Location</option>
-                </select>
-                <button id="vaultCheckBtn" class="vault-action-btn" onclick="evaluateVaultRequest()">VERIFY</button>
-            </div>
-            <div id="vaultResult" class="vault-result"></div>
-        </div>
-
-        <div class="governance-panel frost-panel reveal-item" id="app-governance-panel">
-            <div style="display:flex; justify-content:space-between; align-items:center; gap:10px;">
-                <h3 style="font-size:12px; font-weight:800;">300+ APP GOVERNANCE VAULT</h3>
-                <span id="catalogCount" style="font-size:10px; color:var(--text-dim); font-family:'JetBrains Mono';">Loading...</span>
-            </div>
-            <div class="gov-controls">
-                <input id="govSearch" class="vault-input" type="text" placeholder="Search apps..." oninput="loadGovernanceApps()">
-                <select id="govCategory" class="vault-select" onchange="loadGovernanceApps()"></select>
-            </div>
-            <div id="govGrid" class="gov-grid"></div>
-        </div>
 
         <div class="file-scout-zone frost-panel reveal-item" id="tour-file" onclick="document.getElementById('fileInput').click()">
             <input type="file" id="fileInput" onchange="handleFileUpload(this)">
@@ -965,22 +933,6 @@
         </div>
     </div>
 
-    <section id="appVaultPage" class="app-vault-page">
-        <div class="frost-panel" style="padding:16px; border-radius:18px; border:1px solid var(--border);">
-            <div style="display:flex; justify-content:space-between; align-items:center; gap:10px;">
-                <div>
-                    <h2 style="font-size:1.1rem; font-weight:800;">App Governance Vault (300+)</h2>
-                    <p style="color:var(--text-dim); font-size:12px; margin-top:4px;">Select trusted apps. Unselected apps will get fake Contacts/Gallery data.</p>
-                </div>
-                <button class="report-btn" onclick="openMainDashboard()"><i data-lucide="arrow-left" size="12"></i> Back</button>
-            </div>
-            <div class="app-vault-top">
-                <input id="appVaultSearch" class="vault-input" placeholder="Search app name..." oninput="loadGovernanceApps()">
-                <select id="appVaultCategory" class="vault-select" onchange="loadGovernanceApps()"></select>
-            </div>
-            <div id="appVaultList" class="app-vault-list"></div>
-        </div>
-    </section>
 
     <div id="tourTooltip" class="tour-tooltip">
         <h3 id="tourTitle" style="color:var(--accent); margin-bottom:5px;">Step</h3>
@@ -1295,7 +1247,7 @@
         }
 
         async function markNotificationsRead() {
-            await fetch('/api/notifications/read-all', { method: 'POST' });
+            await fetch('/api/notifications/read', { method: 'POST' });
             closeModal('notificationModal');
             await refreshNotificationCount();
         }
@@ -1344,7 +1296,6 @@
         // --- SYSTEM INITIALIZATION ---
         function initSystem() {
             applyMobileClass();
-            loadGovernanceApps();
             refreshNotificationCount();
             const shadowAlert = localStorage.getItem("shadow_mode_alert");
             if (shadowAlert) {
