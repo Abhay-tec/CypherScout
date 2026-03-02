@@ -60,6 +60,7 @@ def init_database(app: Flask) -> None:
                 email TEXT,
                 url TEXT,
                 status TEXT,
+                user_feedback TEXT,
                 timestamp TEXT,
                 UNIQUE(email, url)
             )
@@ -143,6 +144,7 @@ def init_database(app: Flask) -> None:
         conn.execute("CREATE INDEX IF NOT EXISTS idx_governance_apps_host ON governance_apps(host_key)")
         conn.execute("CREATE INDEX IF NOT EXISTS idx_notifications_email ON notifications(email, is_read, created_at)")
         _ensure_column_exists(conn, "users", "password_hash", "TEXT")
+        _ensure_column_exists(conn, "history", "user_feedback", "TEXT")
         _seed_trusted_apps(conn)
         _seed_governance_apps(conn)
         conn.commit()
