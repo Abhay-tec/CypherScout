@@ -62,6 +62,20 @@ def dashboard():
     )
 
 
+@web_bp.route("/app-vault")
+def app_vault_page():
+    email = session.get("user_email")
+    if not email:
+        return redirect(url_for("web.home"))
+    conn = get_db()
+    user = conn.execute("SELECT * FROM users WHERE email = ?", (email,)).fetchone()
+    unread_notifications = conn.execute(
+        "SELECT COUNT(*) FROM notifications WHERE email = ? AND is_read = 0",
+        (email,),
+    ).fetchone()[0]
+    return render_template("app_vault.html", user=user, unread_notifications=unread_notifications)
+
+
 @web_bp.route("/deep-scan")
 def deep_scan_page():
     email = session.get("user_email")
