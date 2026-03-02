@@ -1,20 +1,30 @@
 import threading
 
-from sklearn.ensemble import RandomForestClassifier
-from sklearn.feature_extraction.text import TfidfVectorizer
-
 
 class NeuralEngine:
     def __init__(self) -> None:
-        self.vectorizer = TfidfVectorizer(analyzer="char", ngram_range=(3, 5))
-        self.model = RandomForestClassifier(n_estimators=120, random_state=42)
+        self.vectorizer = None
+        self.model = None
+        self._ml_ready = False
         self.is_trained = False
         self._lock = threading.Lock()
+        try:
+            from sklearn.ensemble import RandomForestClassifier
+            from sklearn.feature_extraction.text import TfidfVectorizer
+
+            self.vectorizer = TfidfVectorizer(analyzer="char", ngram_range=(3, 5))
+            self.model = RandomForestClassifier(n_estimators=120, random_state=42)
+            self._ml_ready = True
+        except Exception:
+            self._ml_ready = False
 
     def train_from_db(self, db_path: str) -> None:
         import sqlite3
 
         with self._lock:
+            if not self._ml_ready:
+                self.is_trained = False
+                return
             try:
                 conn = sqlite3.connect(db_path)
                 rows = conn.execute("SELECT url, manual_status FROM feedback").fetchall()
@@ -30,7 +40,7 @@ class NeuralEngine:
                 self.is_trained = False
 
     def predict_malicious_prob(self, url: str) -> float:
-        if not self.is_trained:
+        if not self._ml_ready or not self.is_trained:
             return 0.5
         try:
             return float(self.model.predict_proba(self.vectorizer.transform([url]))[0][1])
