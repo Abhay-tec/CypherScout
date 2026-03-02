@@ -235,6 +235,75 @@
         }
         .report-btn:hover { border-color: var(--accent); color: var(--accent-soft); }
 
+        .vault-panel {
+            background: var(--surface);
+            border: 1px solid var(--border);
+            border-radius: 18px;
+            padding: 16px;
+            margin-bottom: 15px;
+            flex-shrink: 0;
+        }
+        .vault-grid {
+            display: grid;
+            grid-template-columns: 140px 1fr 160px 140px;
+            gap: 10px;
+            align-items: center;
+        }
+        .vault-input, .vault-select {
+            width: 100%;
+            background: rgba(2, 6, 23, 0.5);
+            border: 1px solid var(--border);
+            color: var(--text-main);
+            border-radius: 10px;
+            padding: 10px 12px;
+            font-size: 12px;
+            outline: none;
+        }
+        .vault-action-btn {
+            background: linear-gradient(120deg, var(--accent-soft), var(--accent));
+            color: #020617;
+            border: none;
+            border-radius: 10px;
+            padding: 10px 12px;
+            font-weight: 800;
+            font-size: 11px;
+            cursor: pointer;
+        }
+        .vault-action-btn[disabled] {
+            opacity: 0.6;
+            cursor: not-allowed;
+        }
+        .vault-result {
+            margin-top: 12px;
+            border: 1px solid var(--border);
+            border-radius: 12px;
+            padding: 10px 12px;
+            display: none;
+            background: rgba(15, 23, 42, 0.55);
+        }
+        .vault-result.show {
+            display: block;
+        }
+        .vault-feedback-row {
+            margin-top: 8px;
+            display: flex;
+            gap: 8px;
+            flex-wrap: wrap;
+        }
+        .vault-mini-btn {
+            background: rgba(2, 6, 23, 0.45);
+            border: 1px solid var(--border);
+            color: var(--text-main);
+            border-radius: 8px;
+            padding: 7px 10px;
+            font-size: 11px;
+            cursor: pointer;
+        }
+        .vault-mini-btn.warn {
+            border-color: rgba(244, 63, 94, 0.5);
+            color: #fecdd3;
+        }
+
         /* --- MODALS --- */
         .cyber-modal { display: none; position: fixed; inset: 0; background: rgba(2, 6, 23, 0.9); z-index: 10000; align-items: center; justify-content: center; backdrop-filter: blur(10px); }
         .modal-card { background: var(--surface-strong); border: 1px solid var(--border); padding: 30px; border-radius: 24px; text-align: center; max-width: 400px; width: 90%; }
@@ -247,6 +316,314 @@
         #tour-history.tour-highlight .table-scroll { pointer-events: auto !important; }
 
         .reveal-item { opacity: 1; transform: none; }
+
+        @media screen and (max-width: 900px), screen and (max-device-width: 900px) {
+            html, body {
+                overflow-y: auto !important;
+                overflow-x: hidden !important;
+                height: auto !important;
+                min-height: 100% !important;
+            }
+
+            body {
+                display: block !important;
+                overflow-y: auto !important;
+                height: auto !important;
+                min-height: 100vh !important;
+                width: 100% !important;
+            }
+
+            .sidebar {
+                position: fixed !important;
+                left: 0 !important;
+                right: 0 !important;
+                bottom: 0 !important;
+                top: auto !important;
+                width: 100% !important;
+                height: 64px !important;
+                border-right: none !important;
+                border-top: 1px solid var(--border) !important;
+                box-shadow: 0 -8px 24px rgba(2, 6, 23, 0.38) !important;
+                flex-direction: row !important;
+                justify-content: space-around !important;
+                align-items: center !important;
+                padding: 0 8px !important;
+                z-index: 1000 !important;
+            }
+
+            .sidebar .nav-item {
+                margin: 0 !important;
+                width: 40px !important;
+                height: 40px !important;
+            }
+
+            .sidebar .nav-item:hover::after { display: none !important; }
+            .sidebar .nav-item[data-tip="Logout"] { margin-top: 0 !important; }
+
+            .main-container {
+                max-width: none !important;
+                width: 100% !important;
+                margin: 0 !important;
+                padding: 12px 10px 96px !important;
+                overflow: visible !important;
+                display: block !important;
+            }
+
+            .header {
+                margin-bottom: 12px !important;
+                align-items: flex-start !important;
+                gap: 8px !important;
+                flex-direction: column !important;
+            }
+            .header h1 { font-size: 1.05rem !important; line-height: 1.12 !important; }
+            .header p {
+                font-size: 9px !important;
+                white-space: normal !important;
+                word-break: break-word !important;
+                line-height: 1.4 !important;
+            }
+            .header-actions .report-btn {
+                font-size: 9px !important;
+                padding: 6px 8px !important;
+                border-radius: 8px !important;
+            }
+
+            .upgrade-banner {
+                margin-bottom: 12px !important;
+                padding: 10px !important;
+                border-radius: 12px !important;
+                gap: 8px !important;
+                flex-direction: column !important;
+                align-items: flex-start !important;
+            }
+            .upgrade-banner p {
+                white-space: normal !important;
+                word-break: break-word !important;
+                line-height: 1.35 !important;
+            }
+            .upgrade-banner > div {
+                width: 100% !important;
+            }
+            .upgrade-banner > div:last-child {
+                justify-content: space-between !important;
+            }
+
+            .stats-grid {
+                grid-template-columns: 1fr !important;
+                gap: 8px !important;
+                margin-bottom: 12px !important;
+            }
+            .stat-card {
+                padding: 12px !important;
+                border-radius: 12px !important;
+            }
+            .stat-card h2 { font-size: 1.15rem !important; }
+
+            .analyze-box {
+                margin-bottom: 10px !important;
+                border-radius: 12px !important;
+                display: grid !important;
+                grid-template-columns: 1fr !important;
+                gap: 8px !important;
+                padding: 8px !important;
+            }
+            .analyze-box input {
+                font-size: 12px !important;
+                padding: 10px 10px !important;
+            }
+            .scan-btn {
+                width: 100% !important;
+                min-height: 38px !important;
+                padding: 0 12px !important;
+                font-size: 10px !important;
+                border-radius: 10px !important;
+            }
+
+            .file-scout-zone {
+                margin-bottom: 12px !important;
+                border-radius: 12px !important;
+                padding: 11px !important;
+            }
+            .file-scout-zone p { font-size: 11px !important; }
+
+            .table-wrapper {
+                border-radius: 12px !important;
+                min-height: 200px !important;
+                overflow: hidden !important;
+            }
+            .table-wrapper > div:first-child {
+                display: grid !important;
+                grid-template-columns: 1fr !important;
+                gap: 8px !important;
+                align-items: start !important;
+            }
+            th, td { padding: 8px !important; }
+            th { font-size: 9px !important; }
+            td { font-size: 10px !important; }
+
+            #tableSearch {
+                width: 100% !important;
+                font-size: 10px !important;
+            }
+
+            .tour-tooltip { display: none !important; }
+            .tour-highlight { box-shadow: none !important; }
+        }
+
+        /* Hard mobile overrides via JS-applied class for devices where media query behaves inconsistently */
+        body.mobile-ui {
+            display: block !important;
+            width: 100% !important;
+            height: auto !important;
+            min-height: 100vh !important;
+            overflow-x: hidden !important;
+            overflow-y: auto !important;
+        }
+
+        body.mobile-ui .sidebar {
+            position: fixed !important;
+            left: 0 !important;
+            right: 0 !important;
+            bottom: 0 !important;
+            top: auto !important;
+            width: 100% !important;
+            height: 64px !important;
+            border-right: none !important;
+            border-top: 1px solid var(--border) !important;
+            display: flex !important;
+            flex-direction: row !important;
+            justify-content: space-around !important;
+            align-items: center !important;
+            padding: 0 8px !important;
+            z-index: 1200 !important;
+        }
+
+        body.mobile-ui .sidebar .nav-item {
+            margin: 0 !important;
+            width: 40px !important;
+            height: 40px !important;
+        }
+
+        body.mobile-ui .sidebar .nav-item:hover::after { display: none !important; }
+        body.mobile-ui .sidebar .nav-item[data-tip="Logout"] { margin-top: 0 !important; }
+
+        body.mobile-ui .main-container {
+            width: 100% !important;
+            max-width: none !important;
+            margin: 0 !important;
+            padding: 12px 10px 96px !important;
+            overflow: visible !important;
+            display: block !important;
+        }
+
+        body.mobile-ui .header {
+            display: flex !important;
+            flex-direction: column !important;
+            align-items: flex-start !important;
+            gap: 8px !important;
+            margin-bottom: 12px !important;
+        }
+
+        body.mobile-ui .header h1 {
+            font-size: 1.05rem !important;
+            line-height: 1.12 !important;
+        }
+
+        body.mobile-ui .header p {
+            font-size: 9px !important;
+            line-height: 1.4 !important;
+            white-space: normal !important;
+            word-break: break-word !important;
+        }
+
+        body.mobile-ui .upgrade-banner {
+            display: flex !important;
+            flex-direction: column !important;
+            align-items: stretch !important;
+            gap: 8px !important;
+            padding: 10px !important;
+            border-radius: 12px !important;
+            margin-bottom: 12px !important;
+        }
+
+        body.mobile-ui .upgrade-banner > div {
+            width: 100% !important;
+        }
+
+        body.mobile-ui .stats-grid {
+            grid-template-columns: 1fr !important;
+            gap: 8px !important;
+            margin-bottom: 12px !important;
+        }
+
+        body.mobile-ui .stat-card {
+            padding: 12px !important;
+            border-radius: 12px !important;
+        }
+
+            body.mobile-ui .analyze-box {
+            display: grid !important;
+            grid-template-columns: 1fr !important;
+            gap: 8px !important;
+            padding: 8px !important;
+            border-radius: 12px !important;
+            margin-bottom: 10px !important;
+        }
+
+        body.mobile-ui .analyze-box input {
+            font-size: 12px !important;
+            padding: 10px !important;
+        }
+
+        body.mobile-ui .vault-grid {
+            grid-template-columns: 1fr !important;
+        }
+
+        body.mobile-ui .scan-btn {
+            width: 100% !important;
+            min-height: 38px !important;
+            border-radius: 10px !important;
+            font-size: 10px !important;
+        }
+
+        body.mobile-ui .file-scout-zone {
+            margin-bottom: 12px !important;
+            border-radius: 12px !important;
+            padding: 11px !important;
+        }
+
+        body.mobile-ui .table-wrapper {
+            display: block !important;
+            height: auto !important;
+            min-height: 0 !important;
+            border-radius: 12px !important;
+        }
+
+        body.mobile-ui .table-wrapper > div:first-child {
+            display: grid !important;
+            grid-template-columns: 1fr !important;
+            gap: 8px !important;
+            align-items: start !important;
+        }
+
+        body.mobile-ui #tableSearch {
+            width: 100% !important;
+        }
+
+        body.mobile-ui .table-scroll {
+            max-height: 48vh !important;
+            min-height: 0 !important;
+            overflow-y: auto !important;
+            -webkit-overflow-scrolling: touch !important;
+        }
+
+        body.mobile-ui th, body.mobile-ui td {
+            padding: 8px !important;
+            font-size: 10px !important;
+        }
+
+        body.mobile-ui .tour-tooltip { display: none !important; }
+        body.mobile-ui .tour-highlight { box-shadow: none !important; }
     </style>
 </head>
 <body onload="initSystem()">
@@ -271,6 +648,15 @@
                 <button class="m-btn" style="background:#1e293b; color:white;" onclick="closeModal('correctionModal')">CANCEL</button>
                 <button id="confirmBtn" class="m-btn">CONFIRM & TRAIN</button>
             </div>
+        </div>
+    </div>
+
+    <div id="vaultWarningModal" class="cyber-modal">
+        <div class="modal-card">
+            <i data-lucide="shield-alert" size="48" style="color:var(--danger); margin-bottom:12px;"></i>
+            <h2>Warning: Unknown Source</h2>
+            <p style="color:var(--text-dim); margin: 15px 0;">This app/link is not pre-verified as secure. Shadow Data Injection is active for sensitive permissions.</p>
+            <button class="m-btn" style="background:var(--danger); color:white;" onclick="closeModal('vaultWarningModal')">ACKNOWLEDGE</button>
         </div>
     </div>
 
@@ -318,6 +704,27 @@
         <div class="analyze-box frost-panel reveal-item" id="tour-scan">
             <input type="text" id="scanUrl" placeholder="Paste suspicious link here...">
             <button class="scan-btn" id="scanBtn" onclick="startScan()">ANALYZE</button>
+        </div>
+
+        <div class="vault-panel frost-panel reveal-item" id="permissions-vault">
+            <div style="display:flex; justify-content:space-between; align-items:center; gap:10px; margin-bottom:10px;">
+                <h3 style="font-size:12px; font-weight:800;">VIRTUAL PERMISSIONS VAULT</h3>
+                <span style="font-size:10px; color:var(--text-dim); font-family:'JetBrains Mono';">AUTO TRUST + SHADOW MODE</span>
+            </div>
+            <div class="vault-grid">
+                <select id="vaultSourceType" class="vault-select">
+                    <option value="app">App</option>
+                    <option value="link">Link</option>
+                </select>
+                <input id="vaultSource" class="vault-input" type="text" placeholder="Enter app name or URL">
+                <select id="vaultPermission" class="vault-select">
+                    <option value="contacts">Contacts</option>
+                    <option value="gallery">Gallery</option>
+                    <option value="location">Location</option>
+                </select>
+                <button id="vaultCheckBtn" class="vault-action-btn" onclick="evaluateVaultRequest()">VERIFY</button>
+            </div>
+            <div id="vaultResult" class="vault-result"></div>
         </div>
 
         <div class="file-scout-zone frost-panel reveal-item" id="tour-file" onclick="document.getElementById('fileInput').click()">
@@ -376,6 +783,15 @@
 
     <script>
         lucide.createIcons();
+        let vaultLastContext = null;
+
+        function applyMobileClass() {
+            const isMobileViewport = window.matchMedia("(max-width: 900px)").matches;
+            const isCoarsePointer = window.matchMedia("(pointer: coarse)").matches;
+            document.body.classList.toggle("mobile-ui", isMobileViewport || isCoarsePointer);
+        }
+        applyMobileClass();
+        window.addEventListener("resize", applyMobileClass);
 
         // --- BANNER DISMISS LOGIC (Saves to Browser Memory) ---
         function dismissBanner() {
@@ -443,6 +859,108 @@
             location.reload();
         }
 
+        async function evaluateVaultRequest() {
+            const sourceType = document.getElementById('vaultSourceType').value;
+            const source = document.getElementById('vaultSource').value.trim();
+            const permission = document.getElementById('vaultPermission').value;
+            if (!source) {
+                alert("Enter an app name or link first.");
+                return;
+            }
+
+            const btn = document.getElementById('vaultCheckBtn');
+            btn.disabled = true;
+            btn.innerText = "VERIFYING...";
+            try {
+                const response = await fetch('/api/permissions-vault/check', {
+                    method: 'POST',
+                    headers: {'Content-Type': 'application/json'},
+                    body: JSON.stringify({ source_type: sourceType, source: source, permission: permission })
+                });
+                const data = await response.json();
+                if (!response.ok) {
+                    throw new Error(data.message || "Vault check failed");
+                }
+                vaultLastContext = { sourceType, source, permission, decision: data.status };
+                renderVaultDecision(data, source);
+                if (data.warning) {
+                    showModal('vaultWarningModal');
+                }
+            } catch (err) {
+                alert(`Vault error: ${err.message}`);
+            } finally {
+                btn.disabled = false;
+                btn.innerText = "VERIFY";
+            }
+        }
+
+        function renderVaultDecision(data, sourceLabel) {
+            const box = document.getElementById('vaultResult');
+            const allowColor = data.allow_real_data ? "var(--success)" : "var(--danger)";
+            const shadow = data.shadow_injection ? "ON (Fake contacts/gallery injected)" : "OFF";
+            const warningText = data.warning ? `<div style="color:#fecdd3; margin-top:4px;">Warning: This app/link is not pre-verified as secure.</div>` : "";
+            const manualTrustBtn = data.manual_trust_available
+                ? `<button class="vault-mini-btn" onclick="manualTrustUnknownSource()">Manually Trust</button>`
+                : "";
+
+            box.innerHTML = `
+                <div style="font-size:12px; font-weight:700;">${(data.display_name || sourceLabel)} · ${data.source_type}</div>
+                <div style="font-size:11px; color:var(--text-dim); margin-top:4px;">Permission: ${data.permission || "-"} | Decision: ${data.decision || data.status}</div>
+                <div style="font-size:11px; margin-top:4px; color:${allowColor};">Real Data Access: ${data.allow_real_data ? "ALLOWED" : "BLOCKED"}</div>
+                <div style="font-size:11px; margin-top:4px;">Shadow Data Injection: ${shadow}</div>
+                ${warningText}
+                <div class="vault-feedback-row">
+                    ${manualTrustBtn}
+                    <button class="vault-mini-btn" onclick="submitVaultFeedback('right')">✅ Info Right</button>
+                    <button class="vault-mini-btn warn" onclick="submitVaultFeedback('wrong')">❌ Info Wrong</button>
+                </div>
+            `;
+            box.classList.add('show');
+            lucide.createIcons();
+        }
+
+        async function manualTrustUnknownSource() {
+            if (!vaultLastContext) return;
+            const response = await fetch('/api/permissions-vault/manual-trust', {
+                method: 'POST',
+                headers: {'Content-Type': 'application/json'},
+                body: JSON.stringify({ source_type: vaultLastContext.sourceType, source: vaultLastContext.source })
+            });
+            const data = await response.json();
+            if (!response.ok) {
+                alert(data.message || "Unable to trust source");
+                return;
+            }
+            alert(`Trusted: ${data.display_name}`);
+            await evaluateVaultRequest();
+        }
+
+        async function submitVaultFeedback(verdict) {
+            if (!vaultLastContext) {
+                alert("Run a vault check first.");
+                return;
+            }
+            const response = await fetch('/api/permissions-vault/feedback', {
+                method: 'POST',
+                headers: {'Content-Type': 'application/json'},
+                body: JSON.stringify({
+                    source_type: vaultLastContext.sourceType,
+                    source: vaultLastContext.source,
+                    verdict: verdict
+                })
+            });
+            const data = await response.json();
+            if (!response.ok) {
+                alert(data.message || "Feedback failed");
+                return;
+            }
+            if (verdict === 'wrong') {
+                alert("Marked malicious and pushed to neural learning for all users.");
+            } else {
+                alert("Feedback recorded as trusted/correct.");
+            }
+        }
+
 
         function openCorrectionModal(url, status) {
             document.getElementById('modalTitle').innerHTML = `Is <span style="color:var(--accent)">${status}</span> wrong?`;
@@ -470,7 +988,7 @@
         function closeModal(id) { document.getElementById(id).classList.remove('show-modal'); }
 
         async function resetSystem() {
-            if(confirm("Wipe all logs and training data?")) {
+            if(confirm("Reset only your personal scan logs and stats?")) {
                 await fetch('/api/reset-all', { method: 'POST' });
                 localStorage.removeItem('cypher_tour_done');
                 localStorage.removeItem('premium_banner_dismissed'); // Reset banner flag too
@@ -494,6 +1012,7 @@
 
         // --- SYSTEM INITIALIZATION ---
         function initSystem() {
+            applyMobileClass();
             // 1. Check if Banner was previously dismissed
             const isBannerDismissed = localStorage.getItem('premium_banner_dismissed');
             if (isBannerDismissed !== 'true') {

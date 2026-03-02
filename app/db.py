@@ -1,7 +1,28 @@
 import sqlite3
 from contextlib import closing
+from datetime import datetime, timezone
 
 from flask import Flask, g
+
+DEFAULT_TRUSTED_APPS = [
+    ("APP", "whatsapp", "WhatsApp", "Messaging"),
+    ("APP", "instagram", "Instagram", "Social"),
+    ("APP", "gmail", "Gmail", "Email"),
+    ("APP", "google-messages", "Google Messages", "Messaging"),
+    ("APP", "google-photos", "Google Photos", "Gallery"),
+    ("APP", "google-drive", "Google Drive", "Cloud Storage"),
+    ("APP", "phonepe", "PhonePe", "Banking"),
+    ("APP", "google-pay", "Google Pay", "Banking"),
+    ("APP", "paytm", "Paytm", "Banking"),
+    ("APP", "sbi-yono", "SBI YONO", "Banking"),
+    ("APP", "hdfc-bank", "HDFC Bank", "Banking"),
+    ("APP", "icici-imobile", "ICICI iMobile", "Banking"),
+    ("LINK", "whatsapp.com", "WhatsApp", "Messaging"),
+    ("LINK", "instagram.com", "Instagram", "Social"),
+    ("LINK", "mail.google.com", "Gmail", "Email"),
+    ("LINK", "accounts.google.com", "Google Accounts", "Identity"),
+    ("LINK", "drive.google.com", "Google Drive", "Cloud Storage"),
+]
 
 
 def get_db() -> sqlite3.Connection:
@@ -64,7 +85,24 @@ def init_database(app: Flask) -> None:
             )
             """
         )
+        conn.execute(
+            """
+            CREATE TABLE IF NOT EXISTS trusted_apps (
+                id INTEGER PRIMARY KEY AUTOINCREMENT,
+                source_type TEXT NOT NULL,
+                app_key TEXT NOT NULL,
+                display_name TEXT NOT NULL,
+                category TEXT,
+                is_preverified INTEGER DEFAULT 1,
+                trusted_by_user INTEGER DEFAULT 0,
+                created_by TEXT DEFAULT 'system',
+                created_at TEXT,
+                UNIQUE(source_type, app_key)
+            )
+            """
+        )
         _ensure_column_exists(conn, "users", "password_hash", "TEXT")
+        _seed_trusted_apps(conn)
         conn.commit()
 
     @app.before_request
@@ -82,3 +120,15 @@ def _ensure_column_exists(conn: sqlite3.Connection, table: str, column: str, col
     columns = [row[1] for row in conn.execute(f"PRAGMA table_info({table})").fetchall()]
     if column not in columns:
         conn.execute(f"ALTER TABLE {table} ADD COLUMN {column} {col_type}")
+
+
+def _seed_trusted_apps(conn: sqlite3.Connection) -> None:
+    now = datetime.now(timezone.utc).strftime("%Y-%m-%d %H:%M:%S")
+    conn.executemany(
+        """
+        INSERT OR IGNORE INTO trusted_apps
+            (source_type, app_key, display_name, category, is_preverified, trusted_by_user, created_by, created_at)
+        VALUES (?, ?, ?, ?, 1, 0, 'system', ?)
+        """,
+        [(source_type, app_key, display_name, category, now) for source_type, app_key, display_name, category in DEFAULT_TRUSTED_APPS],
+    )

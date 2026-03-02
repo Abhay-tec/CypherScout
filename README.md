@@ -83,6 +83,7 @@ Use a WSGI server (Gunicorn) with `wsgi:app`.
 | `VT_API_KEY` | Recommended | VirusTotal API key |
 | `GOOGLE_CLIENT_ID` | Yes (for Google login) | OAuth client ID |
 | `GOOGLE_CLIENT_SECRET` | Yes (for Google login) | OAuth client secret |
+| `OAUTH_REDIRECT_URI` | Recommended | Explicit OAuth callback URL (e.g. `https://your-domain.com/auth`) |
 | `MAX_UPLOAD_BYTES` | No | Max file upload size (default 20MB) |
 | `MAIL_ENABLED` | No | Enable email notifications (default `true`) |
 | `SMTP_HOST` | Yes (for mail) | SMTP server host (Gmail: `smtp.gmail.com`) |

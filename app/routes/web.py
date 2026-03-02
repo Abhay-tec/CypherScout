@@ -98,7 +98,8 @@ def login():
 @web_bp.route("/google-login")
 def google_login():
     google = oauth.create_client("google")
-    return google.authorize_redirect(url_for("web.auth", _external=True))
+    redirect_uri = current_app.config.get("OAUTH_REDIRECT_URI") or url_for("web.auth", _external=True)
+    return google.authorize_redirect(redirect_uri)
 
 
 @web_bp.route("/auth")

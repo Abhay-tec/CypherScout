@@ -7,6 +7,7 @@ from app.db import get_db
 from app.ml import neural_engine
 from app.services.intel import NeuralAnalyzer, deep_scan_file, get_url_intel, normalize_url
 from app.services.notify import send_security_alert
+from app.services.trusted_apps import is_sensitive_permission, normalize_source_key, normalize_source_type
 
 api_bp = Blueprint("api", __name__, url_prefix="/api")
 
@@ -25,6 +26,23 @@ def _refresh_user_metrics(conn, email: str):
         (email,),
     ).fetchone()[0]
     conn.execute("UPDATE users SET scans = ?, threats = ? WHERE email = ?", (total_scans, total_threats, email))
+
+
+def _feedback_source_key(source_type: str, source_key: str) -> str:
+    return f"{source_type}::{source_key}"
+
+
+def _is_source_feedback_malicious(conn, source_type: str, source_key: str, source_raw: str = "") -> bool:
+    marker = _feedback_source_key(source_type, source_key)
+    row = conn.execute("SELECT manual_status FROM feedback WHERE url = ?", (marker,)).fetchone()
+    if row and "MALICIOUS" in (row["manual_status"] or ""):
+        return True
+    if source_type == "LINK" and source_raw:
+        normalized = normalize_url(source_raw)
+        row = conn.execute("SELECT manual_status FROM feedback WHERE url = ?", (normalized,)).fetchone()
+        if row and "MALICIOUS" in (row["manual_status"] or ""):
+            return True
+    return False
 
 
 @api_bp.route("/analyze", methods=["POST"])
@@ -109,10 +127,8 @@ def reset_all():
 
     conn = get_db()
     conn.execute("DELETE FROM history WHERE email = ?", (email,))
-    conn.execute("DELETE FROM feedback")
     conn.execute("UPDATE users SET scans = 0, threats = 0 WHERE email = ?", (email,))
     conn.commit()
-    neural_engine.train_from_db(current_app.config["DATABASE_PATH"])
     return jsonify({"success": True})
 
 
@@ -144,3 +160,173 @@ def report_scam():
         details=f"A reported URL has been marked as malicious and used for model retraining.<br>URL: {url}",
     )
     return jsonify({"status": "Learned"})
+
+
+@api_bp.route("/permissions-vault/check", methods=["POST"])
+def permissions_vault_check():
+    email, err = _require_email()
+    if err:
+        return err
+
+    data = request.get_json(silent=True) or {}
+    source = (data.get("source") or "").strip()
+    permission = (data.get("permission") or "").strip().lower()
+    source_type = normalize_source_type(data.get("source_type", "app"))
+    source_key = normalize_source_key(source, source_type)
+
+    if not source_key:
+        return jsonify({"status": "error", "message": "Invalid app/link provided"}), 400
+
+    conn = get_db()
+    if _is_source_feedback_malicious(conn, source_type, source_key, source):
+        return jsonify(
+            {
+                "status": "blocked_malicious",
+                "message": "This app/link is globally flagged as malicious.",
+                "source_key": source_key,
+                "source_type": source_type,
+                "permission": permission,
+                "allow_real_data": False,
+                "shadow_injection": True,
+                "warning": True,
+                "manual_trust_available": False,
+                "decision": "deny_real_data",
+            }
+        )
+
+    trusted_row = conn.execute(
+        """
+        SELECT display_name, is_preverified, trusted_by_user
+        FROM trusted_apps
+        WHERE source_type = ? AND app_key = ?
+        """,
+        (source_type, source_key),
+    ).fetchone()
+
+    if trusted_row and is_sensitive_permission(permission):
+        trust_mode = "pre_verified" if trusted_row["is_preverified"] else "manual_user_trusted"
+        return jsonify(
+            {
+                "status": "trusted_allow",
+                "message": "Trusted source detected. Sensitive permission is auto-allowed.",
+                "source_key": source_key,
+                "source_type": source_type,
+                "permission": permission,
+                "allow_real_data": True,
+                "shadow_injection": False,
+                "warning": False,
+                "manual_trust_available": False,
+                "decision": trust_mode,
+                "display_name": trusted_row["display_name"],
+            }
+        )
+
+    if trusted_row:
+        return jsonify(
+            {
+                "status": "trusted_allow",
+                "message": "Trusted source detected.",
+                "source_key": source_key,
+                "source_type": source_type,
+                "permission": permission,
+                "allow_real_data": True,
+                "shadow_injection": False,
+                "warning": False,
+                "manual_trust_available": False,
+                "decision": "trusted_non_sensitive",
+                "display_name": trusted_row["display_name"],
+            }
+        )
+
+    return jsonify(
+        {
+            "status": "unknown_shadow",
+            "message": "Warning: This app/link is not pre-verified as secure.",
+            "source_key": source_key,
+            "source_type": source_type,
+            "permission": permission,
+            "allow_real_data": False if is_sensitive_permission(permission) else True,
+            "shadow_injection": True,
+            "warning": True,
+            "manual_trust_available": True,
+            "decision": "unknown_source_shadow_mode" if is_sensitive_permission(permission) else "unknown_non_sensitive_warn",
+            "evaluated_by": email,
+        }
+    )
+
+
+@api_bp.route("/permissions-vault/manual-trust", methods=["POST"])
+def permissions_vault_manual_trust():
+    email, err = _require_email()
+    if err:
+        return err
+
+    data = request.get_json(silent=True) or {}
+    source = (data.get("source") or "").strip()
+    source_type = normalize_source_type(data.get("source_type", "app"))
+    source_key = normalize_source_key(source, source_type)
+    if not source_key:
+        return jsonify({"status": "error", "message": "Invalid app/link provided"}), 400
+
+    display_name = source.strip() or source_key
+    conn = get_db()
+    conn.execute(
+        """
+        INSERT INTO trusted_apps (source_type, app_key, display_name, category, is_preverified, trusted_by_user, created_by, created_at)
+        VALUES (?, ?, ?, 'User Verified', 0, 1, ?, ?)
+        ON CONFLICT(source_type, app_key) DO UPDATE SET
+            trusted_by_user = 1,
+            is_preverified = CASE WHEN trusted_apps.is_preverified = 1 THEN 1 ELSE 0 END,
+            display_name = excluded.display_name,
+            category = 'User Verified',
+            created_by = excluded.created_by
+        """,
+        (
+            source_type,
+            source_key,
+            display_name,
+            email,
+            datetime.utcnow().strftime("%Y-%m-%d %H:%M:%S"),
+        ),
+    )
+    conn.commit()
+    return jsonify({"status": "trusted", "source_key": source_key, "source_type": source_type, "display_name": display_name})
+
+
+@api_bp.route("/permissions-vault/feedback", methods=["POST"])
+def permissions_vault_feedback():
+    email, err = _require_email()
+    if err:
+        return err
+
+    data = request.get_json(silent=True) or {}
+    source = (data.get("source") or "").strip()
+    verdict = (data.get("verdict") or "").strip().lower()
+    source_type = normalize_source_type(data.get("source_type", "app"))
+    source_key = normalize_source_key(source, source_type)
+    if not source_key:
+        return jsonify({"status": "error", "message": "Invalid app/link provided"}), 400
+    if verdict not in {"right", "wrong"}:
+        return jsonify({"status": "error", "message": "verdict must be right or wrong"}), 400
+
+    feedback_key = _feedback_source_key(source_type, source_key)
+    manual_status = "MALICIOUS (User Trained)" if verdict == "wrong" else "CLEAN (User Verified)"
+    conn = get_db()
+    conn.execute("INSERT OR REPLACE INTO feedback (url, manual_status) VALUES (?, ?)", (feedback_key, manual_status))
+    conn.commit()
+
+    if verdict == "wrong":
+        threading.Thread(
+            target=neural_engine.train_from_db,
+            args=(current_app.config["DATABASE_PATH"],),
+            daemon=True,
+        ).start()
+        send_security_alert(
+            current_app._get_current_object(),
+            email=email,
+            title="Permissions Vault Malicious Report",
+            details=f"Source marked malicious and propagated to model learning.<br>Source: {feedback_key}",
+        )
+        return jsonify({"status": "learned_malicious", "source": feedback_key})
+
+    return jsonify({"status": "recorded_clean", "source": feedback_key})
