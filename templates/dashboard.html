@@ -907,21 +907,21 @@
                     </thead>
                     <tbody id="historyTable">
                         {% for log in history %}
-                        <tr class="history-row">
+                        <tr class="history-row" data-log-url="{{ log.url|e }}">
                             <td style="font-family:'JetBrains Mono'; color:var(--accent); max-width:200px; overflow:hidden; text-overflow:ellipsis;">{{ log.url }}</td>
                             <td>
-                                <span class="badge {{ log.status }}">
+                                <span class="badge {% if 'CLEAN' in log.status %}CLEAN{% else %}MALICIOUS{% endif %}" data-status-badge>
                                     <i data-lucide="{% if log.status == 'CLEAN' %}check{% else %}alert-triangle{% endif %}" size="10"></i>
                                     {{ log.status }}
                                 </span>
                             </td>
                             <td>
                                 <div style="display:flex; gap:6px; flex-wrap:wrap;">
-                                    <button class="report-btn" onclick="submitHistoryFeedback('{{ log.url }}', '{{ log.status }}', 'right')">
-                                        <i data-lucide="badge-check" size="12"></i> Info Right
+                                    <button class="report-btn" data-url="{{ log.url|e }}" onclick="submitHistoryFeedback(this.dataset.url, 'right', this)">
+                                        <i data-lucide="badge-check" size="12"></i> ✅ Info Right
                                     </button>
-                                    <button class="report-btn" onclick="submitHistoryFeedback('{{ log.url }}', '{{ log.status }}', 'wrong')">
-                                        <i data-lucide="x-circle" size="12"></i> Info Wrong
+                                    <button class="report-btn" data-url="{{ log.url|e }}" onclick="submitHistoryFeedback(this.dataset.url, 'wrong', this)">
+                                        <i data-lucide="x-circle" size="12"></i> ❌ Info Wrong
                                     </button>
                                 </div>
                             </td>
@@ -1129,25 +1129,38 @@
         }
 
 
-        async function submitHistoryFeedback(url, status, verdict) {
-            if (verdict === 'wrong') {
-                const msg = `Mark "${status}" as wrong?\n\nIf it was false-positive, link will be whitelisted permanently.`;
-                if (!confirm(msg)) return;
+        async function submitHistoryFeedback(url, verdict, btnEl) {
+            if (verdict === 'wrong' && !confirm("Mark this URL as Permanent Scam?")) {
+                return;
             }
-            const response = await fetch('/api/history-feedback', {
+            const response = await fetch('/api/teach-ai', {
                 method: 'POST',
                 headers: {'Content-Type': 'application/json'},
-                body: JSON.stringify({ url, current_status: status, verdict })
+                body: JSON.stringify({ url, feedback: verdict })
             });
             const data = await response.json();
             if (!response.ok) {
                 alert(data.message || "Feedback update failed");
                 return;
             }
-            if (data.status === "whitelisted") {
-                alert(`Verified Secure: ${data.trusted_key}`);
+
+            const row = btnEl ? btnEl.closest('.history-row') : null;
+            const badge = row ? row.querySelector('[data-status-badge]') : null;
+            if (badge && verdict === 'wrong') {
+                badge.classList.remove('CLEAN');
+                badge.classList.add('MALICIOUS');
+                badge.innerHTML = '<i data-lucide="alert-triangle" size="10"></i> MALICIOUS (User-Marked Scam)';
+                lucide.createIcons();
+                localStorage.setItem("shadow_mode_alert", data.alert || "User-Marked Scam: Software learned from your previous interaction.");
             }
-            location.reload();
+            if (row) {
+                const buttons = row.querySelectorAll('button.report-btn');
+                buttons.forEach((b) => {
+                    b.disabled = true;
+                    b.style.opacity = '0.65';
+                });
+            }
+            await refreshNotificationCount();
         }
 
         async function loadGovernanceApps() {
