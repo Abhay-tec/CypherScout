@@ -9,7 +9,7 @@ def get_effective_trust_level(conn, email: str, app_key: str) -> str:
         (email, app_key),
     ).fetchone()
     if not row:
-        return "ALLOW"
+        return "BLOCK"
     value = (row["trust_level"] or "").upper()
     return "BLOCK" if value == "BLOCK" else "ALLOW"
 
