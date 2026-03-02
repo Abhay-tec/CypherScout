@@ -307,7 +307,7 @@ def app_governance_apps():
             g.display_name,
             g.category,
             g.homepage,
-            COALESCE(p.trust_level, 'ALLOW') AS trust_level
+            COALESCE(p.trust_level, 'BLOCK') AS trust_level
         FROM governance_apps g
         LEFT JOIN user_app_policies p ON p.app_key = g.app_key AND p.email = ?
         {where_sql}
@@ -505,7 +505,25 @@ def permissions_vault_manual_trust():
         return jsonify({"status": "error", "message": "Invalid app/link provided"}), 400
 
     conn = get_db()
+    governed_row = None
+    if source_type == "LINK":
+        governed_row = find_governed_app_from_url(conn, source)
+    else:
+        governed_row = conn.execute(
+            "SELECT app_key, display_name FROM governance_apps WHERE app_key = ? OR LOWER(display_name) = ? LIMIT 1",
+            (source_key, source.lower()),
+        ).fetchone()
     display_name = source or source_key
+    if governed_row:
+        display_name = governed_row["display_name"]
+        conn.execute(
+            """
+            INSERT INTO user_app_policies (email, app_key, trust_level, updated_at)
+            VALUES (?, ?, 'ALLOW', ?)
+            ON CONFLICT(email, app_key) DO UPDATE SET trust_level = 'ALLOW', updated_at = excluded.updated_at
+            """,
+            (email, governed_row["app_key"], datetime.utcnow().strftime("%Y-%m-%d %H:%M:%S")),
+        )
     conn.execute(
         """
         INSERT INTO trusted_apps (source_type, app_key, display_name, category, is_preverified, trusted_by_user, created_by, created_at)
