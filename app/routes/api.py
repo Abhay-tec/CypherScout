@@ -70,6 +70,11 @@ def _is_source_feedback_malicious(conn, source_type: str, source_key: str, sourc
     return False
 
 
+def _is_permanent_scam_status(status: str) -> bool:
+    text = (status or "").upper()
+    return "SCAM" in text or "MALICIOUS" in text
+
+
 @api_bp.route("/analyze", methods=["POST"])
 def analyze_api():
     email, err = _require_email()
@@ -82,6 +87,33 @@ def analyze_api():
         return jsonify({"status": "error", "message": "URL is required"}), 400
 
     conn = get_db()
+    feedback_row = conn.execute("SELECT manual_status FROM feedback WHERE url = ?", (url,)).fetchone()
+    if feedback_row and _is_permanent_scam_status(feedback_row["manual_status"]):
+        status = "MALICIOUS (User-Marked Scam)"
+        conn.execute(
+            "INSERT OR REPLACE INTO history (email, url, status, user_feedback, timestamp) VALUES (?, ?, ?, ?, ?)",
+            (email, url, status, "wrong", datetime.utcnow().strftime("%Y-%m-%d %H:%M:%S")),
+        )
+        push_notification(
+            conn,
+            email,
+            "User-Marked Scam",
+            f"Immediate block triggered for {url}",
+            "danger",
+        )
+        _refresh_user_metrics(conn, email)
+        conn.commit()
+        return jsonify(
+            {
+                "status": status,
+                "is_threat": True,
+                "shadow_mode": True,
+                "alert": "User-Marked Scam: Software learned from your previous interaction.",
+                "vendors": [],
+                "stats": {},
+            }
+        )
+
     governed_app = find_governed_app_from_url(conn, url)
     if governed_app and get_effective_trust_level(conn, email, governed_app["app_key"]) == "BLOCK":
         status = "BLOCKED (Shadow Mode)"
@@ -277,6 +309,56 @@ def history_feedback():
     push_notification(conn, email, "Feedback Saved", f"Marked as correct: {url}", "info")
     conn.commit()
     return jsonify({"status": "recorded_right"})
+
+
+@api_bp.route("/teach-ai", methods=["POST"])
+def teach_ai():
+    email, err = _require_email()
+    if err:
+        return err
+
+    data = request.get_json(silent=True) or {}
+    url = normalize_url(data.get("url", ""))
+    verdict = (data.get("feedback") or data.get("verdict") or "").strip().lower()
+    if verdict not in {"right", "wrong"} or not url:
+        return jsonify({"status": "error", "message": "Valid url and feedback are required"}), 400
+
+    conn = get_db()
+    now = datetime.utcnow().strftime("%Y-%m-%d %H:%M:%S")
+    if verdict == "wrong":
+        learned_status = "MALICIOUS (User-Marked Scam)"
+        conn.execute("INSERT OR REPLACE INTO feedback (url, manual_status) VALUES (?, ?)", (url, "PERMANENT SCAM (User Marked)"))
+        conn.execute(
+            "INSERT OR REPLACE INTO history (email, url, status, user_feedback, timestamp) VALUES (?, ?, ?, ?, ?)",
+            (email, url, learned_status, "wrong", now),
+        )
+        push_notification(conn, email, "Threat Learning Updated", f"Marked permanent scam: {url}", "danger")
+        _refresh_user_metrics(conn, email)
+        conn.commit()
+        threading.Thread(
+            target=neural_engine.train_from_db,
+            args=(current_app.config["DATABASE_PATH"],),
+            daemon=True,
+        ).start()
+        return jsonify(
+            {
+                "status": "learned_scam",
+                "url": url,
+                "updated_status": learned_status,
+                "alert": "User-Marked Scam: Software learned from your previous interaction.",
+            }
+        )
+
+    conn.execute(
+        """
+        INSERT OR REPLACE INTO history (email, url, status, user_feedback, timestamp)
+        VALUES (?, ?, COALESCE((SELECT status FROM history WHERE email = ? AND url = ?), 'CLEAN (User Confirmed)'), ?, ?)
+        """,
+        (email, url, email, url, "right", now),
+    )
+    push_notification(conn, email, "Feedback Saved", f"Marked as correct: {url}", "info")
+    conn.commit()
+    return jsonify({"status": "recorded_right", "url": url})
 
 
 @api_bp.route("/app-governance/apps", methods=["GET"])
