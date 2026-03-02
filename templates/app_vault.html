@@ -1,0 +1,335 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>CypherScout | App Vault</title>
+    <script src="https://unpkg.com/lucide@latest"></script>
+    <style>
+        :root {
+            --bg: #020617;
+            --surface: rgba(15, 23, 42, 0.65);
+            --border: rgba(186, 230, 253, 0.18);
+            --text: #f8fafc;
+            --dim: #94a3b8;
+            --accent: #22d3ee;
+            --danger: #f43f5e;
+            --success: #10b981;
+        }
+        * { box-sizing: border-box; margin: 0; padding: 0; }
+        body {
+            font-family: Inter, system-ui, sans-serif;
+            color: var(--text);
+            background:
+                radial-gradient(circle at 20% 10%, rgba(56, 189, 248, 0.18), transparent 35%),
+                radial-gradient(circle at 80% 85%, rgba(34, 211, 238, 0.12), transparent 40%),
+                var(--bg);
+            min-height: 100vh;
+            display: flex;
+        }
+        .sidebar {
+            width: 80px;
+            border-right: 1px solid var(--border);
+            background: rgba(10, 15, 30, 0.85);
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            padding: 24px 0;
+        }
+        .nav-item {
+            width: 40px;
+            height: 40px;
+            border-radius: 12px;
+            display: grid;
+            place-items: center;
+            color: var(--dim);
+            margin-bottom: 18px;
+            cursor: pointer;
+            border: 1px solid transparent;
+        }
+        .nav-item.active, .nav-item:hover {
+            color: var(--accent);
+            border-color: var(--border);
+            background: rgba(186,230,253,.06);
+        }
+        .badge {
+            position: absolute;
+            top: -3px;
+            right: -4px;
+            min-width: 16px;
+            height: 16px;
+            border-radius: 50%;
+            display: grid;
+            place-items: center;
+            font-size: 9px;
+            font-weight: 700;
+            background: var(--danger);
+            color: #fff;
+        }
+        .main {
+            flex: 1;
+            padding: 20px;
+            max-width: 1400px;
+            margin: 0 auto;
+            width: 100%;
+        }
+        .panel {
+            background: var(--surface);
+            border: 1px solid var(--border);
+            border-radius: 18px;
+            padding: 16px;
+            margin-bottom: 14px;
+        }
+        .row { display: grid; grid-template-columns: 1fr 180px; gap: 10px; margin-top: 12px; }
+        .input, .select {
+            background: rgba(2, 6, 23, 0.55);
+            border: 1px solid var(--border);
+            color: var(--text);
+            border-radius: 10px;
+            padding: 10px 12px;
+            outline: none;
+            width: 100%;
+        }
+        .list {
+            margin-top: 12px;
+            max-height: 62vh;
+            overflow-y: auto;
+            border: 1px solid var(--border);
+            border-radius: 12px;
+            background: rgba(2, 6, 23, 0.4);
+        }
+        .item {
+            display: grid;
+            grid-template-columns: 42px 1fr 120px;
+            align-items: center;
+            gap: 10px;
+            padding: 10px 12px;
+            border-bottom: 1px solid rgba(186, 230, 253, 0.08);
+        }
+        .item:last-child { border-bottom: none; }
+        .logo {
+            width: 34px;
+            height: 34px;
+            border-radius: 8px;
+            object-fit: cover;
+            border: 1px solid var(--border);
+            background: rgba(2, 6, 23, 0.6);
+        }
+        .btn {
+            border: 1px solid var(--border);
+            background: rgba(2,6,23,.6);
+            color: var(--text);
+            border-radius: 999px;
+            padding: 6px 10px;
+            font-size: 10px;
+            font-weight: 700;
+            cursor: pointer;
+        }
+        .btn.selected { border-color: rgba(16,185,129,.5); color: #6ee7b7; }
+        .action-btn {
+            border: none;
+            border-radius: 10px;
+            padding: 10px 12px;
+            font-weight: 800;
+            cursor: pointer;
+            background: linear-gradient(120deg, #bae6fd, #22d3ee);
+            color: #000;
+        }
+        .result {
+            margin-top: 10px;
+            border: 1px solid var(--border);
+            border-radius: 10px;
+            padding: 10px;
+            display: none;
+        }
+        .result.show { display: block; }
+    </style>
+</head>
+<body onload="initVaultPage()">
+    <div class="sidebar">
+        <div class="nav-item" onclick="location.href='/dashboard'"><i data-lucide="layout-grid"></i></div>
+        <div class="nav-item active"><i data-lucide="app-window"></i></div>
+        <div class="nav-item" onclick="openNotifications()" style="position:relative;"><i data-lucide="bell"></i><span class="badge" id="notifBadge">{{ unread_notifications or 0 }}</span></div>
+        <div class="nav-item" onclick="location.href='/deep-scan'"><i data-lucide="scan-search"></i></div>
+        <div class="nav-item" style="margin-top:auto;" onclick="location.href='/logout'"><i data-lucide="log-out"></i></div>
+    </div>
+    <main class="main">
+        <section class="panel">
+            <h2 style="font-size:1.15rem; font-weight:800;">App Governance Vault</h2>
+            <p style="color:var(--dim); font-size:12px; margin-top:4px;">Select trusted apps/websites. Unselected sources receive fake Contacts/Gallery data.</p>
+            <div class="row">
+                <input id="search" class="input" placeholder="Search app..." oninput="loadApps()">
+                <select id="category" class="select" onchange="loadApps()"></select>
+            </div>
+            <div id="appsList" class="list"></div>
+        </section>
+
+        <section class="panel">
+            <h3 style="font-size:12px; font-weight:800;">Permission Simulator</h3>
+            <div style="display:grid; grid-template-columns: 120px 1fr 140px 120px; gap:10px; margin-top:10px;">
+                <select id="sourceType" class="select"><option value="app">App</option><option value="link">Link</option></select>
+                <input id="source" class="input" placeholder="App name or URL">
+                <select id="permission" class="select"><option value="contacts">Contacts</option><option value="gallery">Gallery</option></select>
+                <button class="action-btn" onclick="checkPermission()">VERIFY</button>
+            </div>
+            <div id="result" class="result"></div>
+        </section>
+    </main>
+
+    <script>
+        lucide.createIcons();
+        let categoriesLoaded = false;
+        let lastCheck = null;
+
+        function safeText(value) {
+            return String(value || "")
+                .replace(/&/g, "&amp;")
+                .replace(/</g, "&lt;")
+                .replace(/>/g, "&gt;")
+                .replace(/\"/g, "&quot;")
+                .replace(/'/g, "&#39;");
+        }
+
+        function hostFromHomepage(homepage) {
+            const raw = String(homepage || "https://example.com")
+                .replace(/^https?:\/\//i, "")
+                .replace(/\/.*$/, "");
+            return raw || "example.com";
+        }
+
+        function logoForApp(app) {
+            const host = hostFromHomepage(app.homepage);
+            return "https://logo.clearbit.com/" + host;
+        }
+
+        function fallbackLogoForApp(app) {
+            return "https://www.google.com/s2/favicons?domain=" + encodeURIComponent(app.app_key || "example") + ".com&sz=64";
+        }
+
+        function renderAppItem(app) {
+            const displayName = safeText(app.display_name);
+            const category = safeText(app.category);
+            const appKey = safeText(app.app_key);
+            const isAllowed = app.trust_level === "ALLOW";
+            const nextTrust = isAllowed ? "BLOCK" : "ALLOW";
+            const buttonText = isAllowed ? "Selected" : "Not Selected";
+            const buttonClass = isAllowed ? "btn selected" : "btn";
+            const logo = safeText(logoForApp(app));
+            const fallbackLogo = safeText(fallbackLogoForApp(app));
+            return `
+                <div class="item">
+                    <img class="logo" src="${logo}" onerror="this.onerror=null;this.src='${fallbackLogo}';" alt="${displayName}">
+                    <div>
+                        <div style="font-size:12px; font-weight:700;">${displayName}</div>
+                        <div style="font-size:10px; color:var(--dim);">${category}</div>
+                    </div>
+                    <button class="${buttonClass}" onclick="toggleApp('${appKey}', '${nextTrust}')">${buttonText}</button>
+                </div>
+            `;
+        }
+
+        async function loadApps() {
+            const q = document.getElementById("search").value.trim();
+            const category = document.getElementById("category").value || "All";
+            const url = "/api/app-governance/apps?q=" + encodeURIComponent(q) + "&category=" + encodeURIComponent(category) + "&limit=420";
+            const res = await fetch(url);
+            const data = await res.json();
+            if (!res.ok) return alert(data.message || "Unable to load apps");
+
+            if (!categoriesLoaded) {
+                document.getElementById("category").innerHTML = data.categories
+                    .map(function(c) { return '<option value="' + safeText(c) + '">' + safeText(c) + "</option>"; })
+                    .join("");
+                categoriesLoaded = true;
+            }
+
+            document.getElementById("appsList").innerHTML = data.apps.map(renderAppItem).join("");
+        }
+
+        async function toggleApp(appKey, trustLevel) {
+            const res = await fetch("/api/app-governance/toggle", {
+                method: "POST",
+                headers: {"Content-Type": "application/json"},
+                body: JSON.stringify({ app_key: appKey, trust_level: trustLevel })
+            });
+            const data = await res.json();
+            if (!res.ok) return alert(data.message || "Unable to update app");
+            await loadApps();
+            await refreshNotifications();
+        }
+
+        async function checkPermission() {
+            const source_type = document.getElementById("sourceType").value;
+            const source = document.getElementById("source").value.trim();
+            const permission = document.getElementById("permission").value;
+            if (!source) return alert("Enter source first");
+
+            const res = await fetch("/api/permissions-vault/check", {
+                method: "POST",
+                headers: {"Content-Type": "application/json"},
+                body: JSON.stringify({ source_type, source, permission })
+            });
+            const data = await res.json();
+            if (!res.ok) return alert(data.message || "Check failed");
+
+            lastCheck = { source_type: source_type, source: source };
+            const label = safeText(data.display_name || source);
+            const message = safeText(data.message || "");
+            const realDataStatus = data.allow_real_data ? "ALLOWED" : "BLOCKED";
+            const realDataColor = data.allow_real_data ? "var(--success)" : "var(--danger)";
+            const shadowStatus = data.shadow_injection ? "ON" : "OFF";
+            const allowButton = data.allow_real_data
+                ? ""
+                : '<button class="action-btn" style="margin-top:8px;" onclick="allowRealData()">Allow Real Data</button>';
+
+            document.getElementById("result").innerHTML =
+                '<div style="font-weight:700;">' + label + "</div>" +
+                '<div style="font-size:12px; color:var(--dim); margin-top:4px;">' + message + "</div>" +
+                '<div style="margin-top:6px; color:' + realDataColor + ';">Real Data: ' + realDataStatus + "</div>" +
+                '<div style="margin-top:6px;">Shadow Mode: ' + shadowStatus + "</div>" +
+                allowButton;
+            document.getElementById("result").classList.add("show");
+            await refreshNotifications();
+        }
+
+        async function allowRealData() {
+            if (!lastCheck) return;
+            const res = await fetch("/api/permissions-vault/manual-trust", {
+                method: "POST",
+                headers: {"Content-Type": "application/json"},
+                body: JSON.stringify(lastCheck)
+            });
+            const data = await res.json();
+            if (!res.ok) return alert(data.message || "Unable to allow");
+            alert("Real data enabled for " + (data.display_name || "source"));
+            await loadApps();
+            await checkPermission();
+        }
+
+        async function refreshNotifications() {
+            const res = await fetch("/api/notifications");
+            if (!res.ok) return;
+            const data = await res.json();
+            document.getElementById("notifBadge").innerText = data.unread_count || 0;
+        }
+
+        async function openNotifications() {
+            const res = await fetch("/api/notifications");
+            const data = await res.json();
+            if (!res.ok) return;
+            const lines = (data.notifications || []).slice(0, 5).map(function(n) {
+                return "* " + n.title + ": " + n.message;
+            });
+            alert(lines.join("\n") || "No notifications");
+        }
+
+        function initVaultPage() {
+            loadApps();
+            refreshNotifications();
+        }
+    </script>
+</body>
+</html>
+
+
+
