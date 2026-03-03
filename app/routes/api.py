@@ -620,7 +620,7 @@ def permissions_vault_feedback():
         return jsonify({"status": "error", "message": "Invalid payload"}), 400
 
     conn = get_db()
-    if verdict == "wrong" and source_type == "LINK":
+    if verdict == "right" and source_type == "LINK":
         trusted_key = persist_whitelist_link(source)
         if trusted_key:
             conn.execute("INSERT OR REPLACE INTO feedback (url, manual_status) VALUES (?, ?)", (_feedback_source_key(source_type, source_key), "VERIFIED SECURE"))
