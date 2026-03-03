@@ -929,9 +929,10 @@
                         <tr class="history-row" data-log-url="{{ log.url|e }}">
                             <td style="font-family:'JetBrains Mono'; color:var(--accent); max-width:200px; overflow:hidden; text-overflow:ellipsis;">{{ log.url }}</td>
                             <td>
-                                <span class="badge {% if 'CLEAN' in log.status %}CLEAN{% else %}MALICIOUS{% endif %}" data-status-badge>
-                                    <i data-lucide="{% if log.status == 'CLEAN' %}check{% else %}alert-triangle{% endif %}" size="10"></i>
-                                    {{ log.status }}
+                                {% set is_safe_status = ('CLEAN' in log.status) or ('VERIFIED' in log.status) %}
+                                <span class="badge {% if is_safe_status %}CLEAN{% else %}MALICIOUS{% endif %}" data-status-badge>
+                                    <i data-lucide="{% if is_safe_status %}check{% else %}alert-triangle{% endif %}" size="10"></i>
+                                    {% if is_safe_status %}SAFE{% else %}SCAM{% endif %}
                                 </span>
                             </td>
                             <td>
@@ -1050,7 +1051,7 @@
                 localStorage.setItem("scan_security_verdict", JSON.stringify({
                     at: Date.now(),
                     source: url,
-                    status: data.status,
+                    status: toSimpleVerdict(data.status),
                     security_verdict: data.security_verdict || {}
                 }));
                 location.reload();
@@ -1091,6 +1092,14 @@
             `;
             holder.classList.add("show");
             lucide.createIcons();
+        }
+
+        function toSimpleVerdict(status) {
+            const text = (status || "").toString().toUpperCase();
+            if (text.includes("MALICIOUS") || text.includes("SUSPICIOUS") || text.includes("SCAM") || text.includes("BLOCKED")) {
+                return "SCAM";
+            }
+            return "SAFE";
         }
 
         async function evaluateVaultRequest() {
@@ -1451,5 +1460,6 @@
             }
         });
     </script>
+<script type="text/javascript" src="https://cdn.ywxi.net/js/1.js" async></script>
 </body>
 </html>
