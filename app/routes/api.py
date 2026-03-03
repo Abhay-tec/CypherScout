@@ -7,13 +7,12 @@ from flask import Blueprint, current_app, jsonify, request, session
 
 from app.db import get_db
 from app.ml import neural_engine
-from app.services.governance import find_governed_app_from_url, get_effective_trust_level
+from app.services.governance import find_governed_app_from_url, get_effective_trust_level, is_source_allowed_for_real_data
 from app.services.intel import NeuralAnalyzer, deep_scan_file, get_url_intel, normalize_url
 from app.services.notifications import push_notification
 from app.services.notify import send_security_alert
 from app.services.trusted_apps import (
     is_always_trusted_link,
-    is_sensitive_permission,
     normalize_source_key,
     normalize_source_type,
     persist_whitelist_link,
@@ -506,44 +505,32 @@ def permissions_vault_check():
         )
 
     if source_type == "LINK":
-        app_row = find_governed_app_from_url(conn, source)
+        is_allowed, app_row, source_key = is_source_allowed_for_real_data(conn, email, source, source_type)
     else:
         app_row = conn.execute(
             "SELECT app_key, display_name FROM governance_apps WHERE app_key = ? OR LOWER(display_name) = ? LIMIT 1",
             (source_key, source.lower()),
         ).fetchone()
+        if app_row:
+            is_allowed = get_effective_trust_level(conn, email, app_row["app_key"]) == "ALLOW"
+        else:
+            trusted_row = conn.execute(
+                """
+                SELECT trusted_by_user
+                FROM trusted_apps
+                WHERE source_type = ? AND app_key = ?
+                LIMIT 1
+                """,
+                (source_type, source_key),
+            ).fetchone()
+            is_allowed = bool(trusted_row and int(trusted_row["trusted_by_user"] or 0) == 1)
 
-    if app_row and get_effective_trust_level(conn, email, app_row["app_key"]) == "BLOCK":
-        return jsonify(
-            {
-                "status": "blocked_shadow",
-                "message": "Warning: This app/link is marked as unwanted.",
-                "source_key": source_key,
-                "source_type": source_type,
-                "permission": permission,
-                "allow_real_data": False,
-                "shadow_injection": True,
-                "warning": True,
-                "manual_trust_available": True,
-                "decision": "user_block_policy",
-                "display_name": app_row["display_name"],
-                "alert": f"Privacy Shield Active: Fake Data Injected for {app_row['display_name']}",
-            }
-        )
-
-    trusted_row = conn.execute(
-        """
-        SELECT display_name
-        FROM trusted_apps
-        WHERE source_type = ? AND app_key = ?
-        """,
-        (source_type, source_key),
-    ).fetchone()
-    if trusted_row and is_sensitive_permission(permission):
+    if is_allowed:
+        display_name = app_row["display_name"] if app_row else source
         return jsonify(
             {
                 "status": "trusted_allow",
-                "message": "Trusted source detected. Sensitive permission is auto-allowed.",
+                "message": "Source is explicitly allowed by your App Vault policy.",
                 "source_key": source_key,
                 "source_type": source_type,
                 "permission": permission,
@@ -551,23 +538,23 @@ def permissions_vault_check():
                 "shadow_injection": False,
                 "warning": False,
                 "manual_trust_available": False,
-                "decision": "trusted_allow",
-                "display_name": trusted_row["display_name"],
+                "decision": "explicit_allow_policy",
+                "display_name": display_name,
             }
         )
 
     return jsonify(
         {
             "status": "unknown_shadow",
-            "message": "Warning: This app/link is not pre-verified as secure.",
+            "message": "Warning: Real data is blocked unless this source is explicitly allowed in App Vault.",
             "source_key": source_key,
             "source_type": source_type,
             "permission": permission,
-            "allow_real_data": False if is_sensitive_permission(permission) else True,
+            "allow_real_data": False,
             "shadow_injection": True,
             "warning": True,
             "manual_trust_available": True,
-            "decision": "unknown_source_shadow_mode",
+            "decision": "default_deny_shadow_mode",
             "shadow_bundle": _load_shadow_bundle(),
         }
     )
