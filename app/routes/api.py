@@ -376,12 +376,24 @@ def teach_ai():
             }
         )
 
+    # If user marks a URL as right, clear prior malicious manual training for that URL.
+    conn.execute(
+        """
+        DELETE FROM feedback
+        WHERE url = ?
+          AND (
+              UPPER(COALESCE(manual_status, '')) LIKE 'MALICIOUS%'
+              OR UPPER(COALESCE(manual_status, '')) LIKE 'PERMANENT SCAM%'
+          )
+        """,
+        (url,),
+    )
     conn.execute(
         """
         INSERT OR REPLACE INTO history (email, url, status, user_feedback, timestamp)
-        VALUES (?, ?, COALESCE((SELECT status FROM history WHERE email = ? AND url = ?), 'CLEAN (User Confirmed)'), ?, ?)
+        VALUES (?, ?, 'CLEAN (User Confirmed)', ?, ?)
         """,
-        (email, url, email, url, "right", now),
+        (email, url, "right", now),
     )
     push_notification(conn, email, "Feedback Saved", f"Marked as correct: {url}", "info")
     conn.commit()
