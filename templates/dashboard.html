@@ -212,6 +212,66 @@
             animation: deepPulse 1.05s ease-in-out 2;
         }
         #fileInput { display: none; }
+        .scan-trust-status {
+            display: none;
+            margin: -6px 0 14px;
+            padding: 10px 12px;
+            border-radius: 12px;
+            border: 1px solid rgba(148, 163, 184, 0.28);
+            background: rgba(15, 23, 42, 0.62);
+            color: #e2e8f0;
+            font-size: 12px;
+        }
+        .scan-trust-status.show { display: block; }
+        .trust-clean {
+            display: inline-flex;
+            align-items: center;
+            gap: 6px;
+            color: #d1fae5;
+            font-weight: 700;
+        }
+        .trust-footer {
+            margin-top: 14px;
+            border: 1px solid rgba(148, 163, 184, 0.24);
+            border-radius: 16px;
+            background: linear-gradient(180deg, rgba(248, 250, 252, 0.08), rgba(148, 163, 184, 0.08));
+            padding: 14px;
+            color: #e2e8f0;
+            flex-shrink: 0;
+        }
+        .trust-badges {
+            display: grid;
+            grid-template-columns: repeat(3, minmax(0, 1fr));
+            gap: 10px;
+        }
+        .trust-badge {
+            border: 1px solid rgba(148, 163, 184, 0.35);
+            border-radius: 12px;
+            background: rgba(248, 250, 252, 0.06);
+            padding: 10px;
+            display: flex;
+            gap: 8px;
+            align-items: center;
+            min-height: 56px;
+        }
+        .trust-badge-title {
+            color: #f8fafc;
+            font-size: 11px;
+            font-weight: 800;
+            letter-spacing: 0.4px;
+        }
+        .trust-badge-sub {
+            color: #cbd5e1;
+            font-size: 10px;
+            margin-top: 2px;
+        }
+        .trust-shadow-note {
+            margin-top: 10px;
+            color: #cbd5e1;
+            font-size: 11px;
+            border-top: 1px solid rgba(148, 163, 184, 0.2);
+            padding-top: 9px;
+        }
 
         @keyframes deepPulse {
             0%, 100% { transform: translateY(0); }
@@ -595,6 +655,9 @@
                 min-height: 200px !important;
                 overflow: hidden !important;
             }
+            .trust-badges {
+                grid-template-columns: 1fr !important;
+            }
             .table-wrapper > div:first-child {
                 display: grid !important;
                 grid-template-columns: 1fr !important;
@@ -881,6 +944,7 @@
             <input type="text" id="scanUrl" placeholder="Paste suspicious link here...">
             <button class="scan-btn" id="scanBtn" onclick="startScan()">ANALYZE</button>
         </div>
+        <div id="scanTrustStatus" class="scan-trust-status"></div>
 
 
         <div class="file-scout-zone frost-panel reveal-item" id="tour-file" onclick="document.getElementById('fileInput').click()">
@@ -931,6 +995,35 @@
                 </table>
             </div>
         </div>
+
+        <footer class="trust-footer reveal-item">
+            <div class="trust-badges">
+                <div class="trust-badge">
+                    <i data-lucide="lock-keyhole" size="18"></i>
+                    <div>
+                        <div class="trust-badge-title">SSL Secure Seal</div>
+                        <div class="trust-badge-sub">256-bit Encryption Active</div>
+                    </div>
+                </div>
+                <div class="trust-badge">
+                    <i data-lucide="shield-check" size="18"></i>
+                    <div>
+                        <div class="trust-badge-title">McAfee SECURE</div>
+                        <div class="trust-badge-sub">Site Verified</div>
+                    </div>
+                </div>
+                <div class="trust-badge">
+                    <i data-lucide="graduation-cap" size="18"></i>
+                    <div>
+                        <div class="trust-badge-title">CypherScout AI Teacher</div>
+                        <div class="trust-badge-sub">Community Verified</div>
+                    </div>
+                </div>
+            </div>
+            <div class="trust-shadow-note">
+                Shadow Mode Active: Real data access is blocked for unauthorized sources and replaced with fake metadata.
+            </div>
+        </footer>
     </div>
 
 
@@ -1013,17 +1106,64 @@
             if(!url) return;
             const btn = document.getElementById('scanBtn');
             btn.disabled = true; btn.innerText = "SCANNING...";
-            
-            const response = await fetch('/api/analyze', { 
-                method: 'POST', 
-                headers: {'Content-Type': 'application/json'},
-                body: JSON.stringify({url: url})
-            });
-            const data = await response.json();
-            if (data.shadow_mode && data.alert) {
-                localStorage.setItem("shadow_mode_alert", data.alert);
+
+            try {
+                const response = await fetch('/api/analyze', {
+                    method: 'POST',
+                    headers: {'Content-Type': 'application/json'},
+                    body: JSON.stringify({url: url})
+                });
+                const data = await response.json();
+                if (!response.ok) {
+                    throw new Error(data.message || "Scan failed");
+                }
+                if (data.shadow_mode && data.alert) {
+                    localStorage.setItem("shadow_mode_alert", data.alert);
+                }
+                localStorage.setItem("scan_security_verdict", JSON.stringify({
+                    at: Date.now(),
+                    source: url,
+                    status: data.status,
+                    security_verdict: data.security_verdict || {}
+                }));
+                location.reload();
+            } catch (err) {
+                alert(`Scan error: ${err.message}`);
+            } finally {
+                btn.disabled = false;
+                btn.innerText = "ANALYZE";
             }
-            location.reload();
+        }
+
+        function renderScanSecurityVerdict() {
+            const holder = document.getElementById('scanTrustStatus');
+            const raw = localStorage.getItem("scan_security_verdict");
+            if (!holder || !raw) return;
+            let parsed = null;
+            try {
+                parsed = JSON.parse(raw);
+            } catch (_) {
+                localStorage.removeItem("scan_security_verdict");
+                return;
+            }
+            const mcafee = ((parsed || {}).security_verdict || {}).mcafee || {};
+            const mcafeeResult = (mcafee.result || "unknown").toString().toLowerCase();
+            const isClean = mcafee.verified === true || mcafeeResult === "clean" || mcafeeResult === "harmless" || mcafeeResult === "undetected";
+            const tick = isClean
+                ? `<span class="trust-clean"><i data-lucide="badge-check" size="14"></i> McAfee Site Verified</span>`
+                : `McAfee result: ${mcafeeResult}`;
+            holder.innerHTML = `
+                <div style="display:flex; align-items:center; justify-content:space-between; gap:10px; flex-wrap:wrap;">
+                    <div style="font-weight:700;">Latest Scan: ${parsed.source || "-"}</div>
+                    <div style="font-size:11px; color:var(--text-dim);">${parsed.status || "-"}</div>
+                </div>
+                <div style="margin-top:6px; display:flex; align-items:center; gap:8px; flex-wrap:wrap;">
+                    <span style="font-weight:800; letter-spacing:0.4px;">McAfee SECURE</span>
+                    ${tick}
+                </div>
+            `;
+            holder.classList.add("show");
+            lucide.createIcons();
         }
 
         async function evaluateVaultRequest() {
@@ -1310,6 +1450,7 @@
         function initSystem() {
             applyMobileClass();
             refreshNotificationCount();
+            renderScanSecurityVerdict();
             const shadowAlert = localStorage.getItem("shadow_mode_alert");
             if (shadowAlert) {
                 const shieldBanner = document.getElementById("shadowShieldBanner");
