@@ -74,6 +74,49 @@ def _is_permanent_scam_status(status: str) -> bool:
     return "SCAM" in text or "MALICIOUS" in text
 
 
+def get_security_verdict(vt_data: dict) -> dict:
+    empty = {
+        "mcafee": {"engine": "McAfee", "result": "unknown", "verified": False},
+        "norton": {"engine": "Norton", "result": "unknown", "verified": False},
+    }
+    try:
+        attrs = vt_data.get("data", {}).get("attributes", {})
+        if not attrs:
+            attrs = vt_data.get("attributes", {})
+        analysis = attrs.get("last_analysis_results", {})
+        if not analysis and isinstance(vt_data.get("last_analysis_results"), dict):
+            analysis = vt_data.get("last_analysis_results", {})
+        if not isinstance(analysis, dict):
+            return empty
+
+        def _engine_result(*names: str) -> str:
+            for key in names:
+                info = analysis.get(key)
+                if isinstance(info, dict):
+                    result = (info.get("result") or info.get("category") or "").strip().lower()
+                    if result:
+                        return result
+            return "unknown"
+
+        clean_markers = {"clean", "harmless", "undetected"}
+        mcafee_result = _engine_result("McAfee")
+        norton_result = _engine_result("Symantec", "Norton", "NortonLifeLock")
+        return {
+            "mcafee": {
+                "engine": "McAfee",
+                "result": mcafee_result,
+                "verified": mcafee_result in clean_markers,
+            },
+            "norton": {
+                "engine": "Norton",
+                "result": norton_result,
+                "verified": norton_result in clean_markers,
+            },
+        }
+    except Exception:
+        return empty
+
+
 @api_bp.route("/analyze", methods=["POST"])
 def analyze_api():
     email, err = _require_email()
@@ -108,6 +151,7 @@ def analyze_api():
                 "is_threat": True,
                 "shadow_mode": True,
                 "alert": "User-Marked Scam: Software learned from your previous interaction.",
+                "security_verdict": get_security_verdict({}),
                 "vendors": [],
                 "stats": {},
             }
@@ -143,6 +187,7 @@ def analyze_api():
                 "app_name": governed_app["display_name"],
                 "alert": f"Privacy Shield Active: Fake Data Injected for {governed_app['display_name']}",
                 "shadow_bundle": _load_shadow_bundle(),
+                "security_verdict": get_security_verdict({}),
                 "vendors": [],
                 "stats": {},
             }
@@ -169,7 +214,26 @@ def analyze_api():
             title="URL Threat Detected",
             details=f"URL: {url}<br>Status: {status}",
         )
-    return jsonify({"status": status, "is_threat": is_threat, "shadow_mode": False, "vendors": vendors, "stats": stats})
+    vt_data = {
+        "attributes": {
+            "last_analysis_results": {
+                v.get("engine", ""): {"result": v.get("result", ""), "category": v.get("category", "")}
+                for v in vendors
+                if isinstance(v, dict)
+            }
+        }
+    }
+    security_verdict = get_security_verdict(vt_data)
+    return jsonify(
+        {
+            "status": status,
+            "is_threat": is_threat,
+            "shadow_mode": False,
+            "security_verdict": security_verdict,
+            "vendors": vendors,
+            "stats": stats,
+        }
+    )
 
 
 @api_bp.route("/deep-scan", methods=["POST"])
