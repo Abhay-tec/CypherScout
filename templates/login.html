@@ -36,6 +36,41 @@
             position: relative;
         }
 
+        .stellar-scroll {
+            position: fixed;
+            inset: 0;
+            z-index: 1;
+            pointer-events: none;
+            overflow: hidden;
+        }
+
+        .stellar-layer {
+            position: absolute;
+            inset: -20%;
+            will-change: transform;
+        }
+
+        .stellar-layer.near {
+            background:
+                radial-gradient(circle at 10% 20%, rgba(186, 230, 253, 0.95) 0 1px, transparent 1px),
+                radial-gradient(circle at 35% 68%, rgba(186, 230, 253, 0.82) 0 1px, transparent 1px),
+                radial-gradient(circle at 75% 40%, rgba(34, 211, 238, 0.85) 0 1px, transparent 1px),
+                radial-gradient(circle at 90% 75%, rgba(186, 230, 253, 0.84) 0 1px, transparent 1px);
+            background-size: 260px 260px, 240px 240px, 300px 300px, 320px 320px;
+            opacity: 0.52;
+            animation: driftStarsNear 80s linear infinite;
+        }
+
+        .stellar-layer.far {
+            background:
+                radial-gradient(circle at 20% 60%, rgba(186, 230, 253, 0.72) 0 1px, transparent 1px),
+                radial-gradient(circle at 62% 30%, rgba(34, 211, 238, 0.72) 0 1px, transparent 1px),
+                radial-gradient(circle at 86% 88%, rgba(186, 230, 253, 0.68) 0 1px, transparent 1px);
+            background-size: 420px 420px, 460px 460px, 380px 380px;
+            opacity: 0.3;
+            animation: driftStarsFar 125s linear infinite reverse;
+        }
+
         .bg-video-wrap {
             position: fixed;
             inset: 0;
@@ -362,6 +397,9 @@
             position: relative;
             overflow: hidden;
         }
+        .intel-section.reveal-io {
+            transform: translateY(32px) scale(0.985);
+        }
         .intel-section::before {
             content: "";
             position: absolute;
@@ -425,6 +463,12 @@
             position: relative;
             overflow: hidden;
             transition: transform 0.28s ease, border-color 0.28s ease, box-shadow 0.28s ease;
+            opacity: 0;
+            transform: translateY(24px) scale(0.98);
+        }
+        .intel-card.in-view {
+            animation: intelCardRise 0.7s cubic-bezier(0.18, 0.8, 0.24, 1) forwards;
+            animation-delay: var(--delay, 0s);
         }
         .intel-card::before {
             content: "";
@@ -486,6 +530,12 @@
             border-radius: 12px;
             padding: 12px;
             background: rgba(2, 6, 23, 0.34);
+            opacity: 0;
+            transform: translateY(20px);
+        }
+        .intel-kpi.in-view {
+            animation: intelKpiIn 0.56s ease forwards;
+            animation-delay: var(--delay, 0s);
         }
         .intel-kpi strong {
             display: block;
@@ -592,6 +642,48 @@
             color: #c6deef;
             font-size: 0.63rem;
         }
+        .footer-sources {
+            margin-top: 10px;
+            border: 1px solid rgba(186, 230, 253, 0.18);
+            border-radius: 10px;
+            padding: 10px;
+            background: rgba(3, 8, 19, 0.58);
+            position: relative;
+            z-index: 2;
+        }
+        .footer-sources-title {
+            font-size: 0.68rem;
+            text-transform: uppercase;
+            letter-spacing: 1.1px;
+            color: #e5f3ff;
+            margin-bottom: 8px;
+            font-weight: 800;
+        }
+        .footer-source-grid {
+            display: grid;
+            grid-template-columns: repeat(3, minmax(0, 1fr));
+            gap: 8px;
+        }
+        .footer-source-item {
+            border: 1px solid rgba(186, 230, 253, 0.2);
+            border-radius: 8px;
+            padding: 8px;
+            background: rgba(6, 12, 24, 0.6);
+            min-height: 58px;
+        }
+        .footer-source-item strong {
+            display: block;
+            font-size: 0.66rem;
+            text-transform: uppercase;
+            letter-spacing: 0.65px;
+            color: #dcf1ff;
+            margin-bottom: 4px;
+        }
+        .footer-source-item span {
+            font-size: 0.62rem;
+            color: var(--text-dim);
+            line-height: 1.4;
+        }
         .footer-dot {
             width: 6px;
             height: 6px;
@@ -618,6 +710,14 @@
             0%, 100% { transform: translate3d(0, 0, 0) scale(1); }
             50% { transform: translate3d(2vmax, -1.5vmax, 0) scale(1.06); }
         }
+        @keyframes driftStarsNear {
+            from { background-position: 0 0, 0 0, 0 0, 0 0; }
+            to { background-position: 110px -90px, 95px -75px, 130px -102px, 120px -88px; }
+        }
+        @keyframes driftStarsFar {
+            from { background-position: 0 0, 0 0, 0 0; }
+            to { background-position: 85px -65px, 96px -74px, 74px -58px; }
+        }
 
         @keyframes footerSweep {
             from { transform: translateX(0); }
@@ -631,9 +731,18 @@
             0%, 100% { opacity: 0.4; }
             50% { opacity: 1; }
         }
+        @keyframes intelCardRise {
+            from { opacity: 0; transform: translateY(24px) scale(0.98); }
+            to { opacity: 1; transform: translateY(0) scale(1); }
+        }
+        @keyframes intelKpiIn {
+            from { opacity: 0; transform: translateY(20px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
 
         @media (max-width: 980px) {
             .intel-grid { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+            .footer-source-grid { grid-template-columns: 1fr 1fr; }
         }
 
         @media (max-width: 768px) {
@@ -645,10 +754,15 @@
             .intel-kpis { grid-template-columns: 1fr; }
             .site-footer { margin: 0 14px 18px; }
             .footer-trust-badges { grid-template-columns: 1fr; }
+            .footer-source-grid { grid-template-columns: 1fr; }
         }
     </style>
 </head>
 <body>
+    <div class="stellar-scroll" aria-hidden="true">
+        <div class="stellar-layer far"></div>
+        <div class="stellar-layer near"></div>
+    </div>
     <div class="bg-video-wrap" aria-hidden="true">
         <div class="bg-orb a"></div>
         <div class="bg-orb b"></div>
@@ -747,7 +861,7 @@
             </div>
 
             <div class="intel-grid">
-                <article class="intel-card">
+                <article class="intel-card reveal-io" style="--delay: 0.05s;">
                     <div class="intel-content">
                         <div class="intel-head"><h4>Signal Capture</h4><i data-lucide="scan-search" size="18" style="color:var(--accent);"></i></div>
                         <div class="intel-lines">
@@ -757,7 +871,7 @@
                         </div>
                     </div>
                 </article>
-                <article class="intel-card">
+                <article class="intel-card reveal-io" style="--delay: 0.14s;">
                     <div class="intel-content">
                         <div class="intel-head"><h4>Context Fusion</h4><i data-lucide="network" size="18" style="color:var(--accent);"></i></div>
                         <div class="intel-lines">
@@ -767,7 +881,7 @@
                         </div>
                     </div>
                 </article>
-                <article class="intel-card">
+                <article class="intel-card reveal-io" style="--delay: 0.22s;">
                     <div class="intel-content">
                         <div class="intel-head"><h4>Adaptive AI</h4><i data-lucide="brain" size="18" style="color:var(--accent);"></i></div>
                         <div class="intel-lines">
@@ -777,7 +891,7 @@
                         </div>
                     </div>
                 </article>
-                <article class="intel-card">
+                <article class="intel-card reveal-io" style="--delay: 0.3s;">
                     <div class="intel-content">
                         <div class="intel-head"><h4>Actionable Verdict</h4><i data-lucide="shield-alert" size="18" style="color:var(--accent);"></i></div>
                         <div class="intel-lines">
@@ -787,7 +901,7 @@
                         </div>
                     </div>
                 </article>
-                <article class="intel-card">
+                <article class="intel-card reveal-io" style="--delay: 0.38s;">
                     <div class="intel-content">
                         <div class="intel-head"><h4>Trust at Scale</h4><i data-lucide="shield-check" size="18" style="color:var(--accent);"></i></div>
                         <div class="intel-lines">
@@ -800,9 +914,9 @@
             </div>
 
             <div class="intel-kpis">
-                <div class="intel-kpi"><strong>OAuth</strong><span>Google Sign-In Session</span></div>
-                <div class="intel-kpi"><strong>3-Layer</strong><span>VT + Heuristic + ML</span></div>
-                <div class="intel-kpi"><strong>Feedback</strong><span>User-Correction Learning</span></div>
+                <div class="intel-kpi reveal-io" style="--delay: 0.06s;"><strong>OAuth</strong><span>Google Sign-In Session</span></div>
+                <div class="intel-kpi reveal-io" style="--delay: 0.14s;"><strong>3-Layer</strong><span>VT + Heuristic + ML</span></div>
+                <div class="intel-kpi reveal-io" style="--delay: 0.22s;"><strong>Feedback</strong><span>User-Correction Learning</span></div>
             </div>
         </section>
 
@@ -841,6 +955,23 @@
             <div class="footer-shadow-note">
                 Shadow Mode Active: Real data access is blocked for unauthorized sources and replaced with fake metadata.
             </div>
+            <div class="footer-sources">
+                <div class="footer-sources-title">Trusted Sources & Signals</div>
+                <div class="footer-source-grid">
+                    <div class="footer-source-item">
+                        <strong>VirusTotal URL API</strong>
+                        <span>Vendor engine consensus, URL metadata, and historical verdict context.</span>
+                    </div>
+                    <div class="footer-source-item">
+                        <strong>SSL/TLS Reachability</strong>
+                        <span>Certificate and endpoint trust checks added as reliability evidence.</span>
+                    </div>
+                    <div class="footer-source-item">
+                        <strong>CypherScout Heuristics + ML</strong>
+                        <span>Risky TLD, entropy, keyword signals with feedback-trained RandomForest scoring.</span>
+                    </div>
+                </div>
+            </div>
         </footer>
     </main>
 
@@ -850,6 +981,8 @@
         window.scrollTo(0, 0);
 
         const bgWrap = document.querySelector('.bg-video-wrap');
+        const stellarFar = document.querySelector('.stellar-layer.far');
+        const stellarNear = document.querySelector('.stellar-layer.near');
         let rafId = 0;
         function paintBg(clientX, clientY) {
             if (!bgWrap) return;
@@ -862,6 +995,13 @@
             if (rafId) cancelAnimationFrame(rafId);
             rafId = requestAnimationFrame(() => paintBg(e.clientX, e.clientY));
         });
+        function updateStellarParallax() {
+            const y = window.scrollY || 0;
+            if (stellarFar) stellarFar.style.transform = `translate3d(0, ${y * -0.08}px, 0)`;
+            if (stellarNear) stellarNear.style.transform = `translate3d(0, ${y * -0.15}px, 0)`;
+        }
+        updateStellarParallax();
+        window.addEventListener('scroll', updateStellarParallax, { passive: true });
 
         function handleStrength(val) {
             const dots = document.querySelectorAll('.dot');
@@ -882,6 +1022,9 @@
             entries.forEach((entry) => {
                 if (entry.isIntersecting) {
                     entry.target.classList.add('in-view');
+                    if (entry.target.classList.contains('intel-card') || entry.target.classList.contains('intel-kpi')) {
+                        entry.target.style.opacity = '1';
+                    }
                     io.unobserve(entry.target);
                 }
             });
