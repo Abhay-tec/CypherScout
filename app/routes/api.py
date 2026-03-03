@@ -157,42 +157,6 @@ def analyze_api():
             }
         )
 
-    governed_app = find_governed_app_from_url(conn, url)
-    if governed_app and get_effective_trust_level(conn, email, governed_app["app_key"]) == "BLOCK":
-        status = "BLOCKED (Shadow Mode)"
-        conn.execute(
-            "INSERT OR REPLACE INTO history (email, url, status, timestamp) VALUES (?, ?, ?, ?)",
-            (email, url, status, datetime.utcnow().strftime("%Y-%m-%d %H:%M:%S")),
-        )
-        push_notification(
-            conn,
-            email,
-            "Privacy Shield Active",
-            f"Fake data injected for blocked app: {governed_app['display_name']}",
-            "danger",
-        )
-        _refresh_user_metrics(conn, email)
-        conn.commit()
-        send_security_alert(
-            current_app._get_current_object(),
-            email=email,
-            title="Action Required: Shadow Mode Activated",
-            details=f"A blocked app attempted sensitive access.<br>App: {governed_app['display_name']}<br>URL: {url}",
-        )
-        return jsonify(
-            {
-                "status": status,
-                "is_threat": True,
-                "shadow_mode": True,
-                "app_name": governed_app["display_name"],
-                "alert": f"Privacy Shield Active: Fake Data Injected for {governed_app['display_name']}",
-                "shadow_bundle": _load_shadow_bundle(),
-                "security_verdict": get_security_verdict({}),
-                "vendors": [],
-                "stats": {},
-            }
-        )
-
     exact = conn.execute("SELECT manual_status FROM feedback WHERE url = ?", (url,)).fetchone()
     exact_status = exact["manual_status"] if exact else None
     if is_always_trusted_link(url):
