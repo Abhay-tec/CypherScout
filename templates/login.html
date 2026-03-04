@@ -641,7 +641,7 @@
             height: 100%;
             display: flex;
             flex-direction: column;
-            justify-content: flex-end;
+            justify-content: space-between;
             padding: 14px;
         }
         .intel-dots {
@@ -710,7 +710,7 @@
             display: flex;
             align-items: center;
             justify-content: flex-start;
-            margin-bottom: 4px;
+            margin-bottom: 0;
         }
         .intel-head h4 {
             font-size: 0.78rem;
@@ -726,17 +726,20 @@
             display: none;
         }
         .intel-lines {
-            position: absolute;
-            width: 1px;
-            height: 1px;
-            overflow: hidden;
-            clip-path: inset(50%);
-            white-space: nowrap;
+            margin-top: auto;
+            display: grid;
+            gap: 5px;
+            padding: 9px 10px;
+            border: 1px solid rgba(186, 230, 253, 0.22);
+            border-radius: 10px;
+            background: linear-gradient(180deg, rgba(2, 6, 23, 0.34), rgba(2, 6, 23, 0.58));
+            max-width: 78%;
+            backdrop-filter: blur(2px);
         }
         .intel-line {
-            color: #d4e9f8;
-            font-size: 0.71rem;
-            line-height: 1.4;
+            color: #dbeafe;
+            font-size: 0.62rem;
+            line-height: 1.35;
         }
 
         .intel-kpis {
