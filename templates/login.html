@@ -218,6 +218,41 @@
             padding-top: 14px;
             max-width: 92%;
         }
+        .hero-gif-panel {
+            margin-top: 16px;
+            border: 1px solid rgba(186, 230, 253, 0.26);
+            border-radius: 14px;
+            background: rgba(2, 6, 23, 0.55);
+            overflow: hidden;
+            box-shadow: 0 12px 28px rgba(2, 6, 23, 0.45);
+        }
+        .hero-gif-head {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            padding: 8px 10px;
+            font-size: 0.56rem;
+            letter-spacing: 0.9px;
+            text-transform: uppercase;
+            color: #e2f4ff;
+            border-bottom: 1px solid rgba(186, 230, 253, 0.2);
+            background: linear-gradient(90deg, rgba(2, 6, 23, 0.65), rgba(7, 16, 33, 0.55));
+        }
+        .hero-gif-dot {
+            width: 6px;
+            height: 6px;
+            border-radius: 50%;
+            background: #22d3ee;
+            box-shadow: 0 0 10px rgba(34, 211, 238, 0.6);
+            animation: footerBlink 1.5s ease-in-out infinite;
+        }
+        .hero-gif-frame {
+            width: 100%;
+            height: 150px;
+            object-fit: cover;
+            display: block;
+            filter: saturate(1.08) contrast(1.03);
+        }
 
         .form-container {
             flex: 1;
@@ -782,6 +817,13 @@
                             <span class="hero-tag">VirusTotal Engines</span>
                             <span class="hero-tag">Heuristic Signals</span>
                             <span class="hero-tag">Feedback Learning</span>
+                        </div>
+                        <div class="hero-gif-panel">
+                            <div class="hero-gif-head">
+                                <span>Access Feed</span>
+                                <i class="hero-gif-dot"></i>
+                            </div>
+                            <img src="/static/register-login.gif" alt="Register and Login preview" class="hero-gif-frame">
                         </div>
                     </div>
                     <div class="protocol-line">PROTOCOL: ON-DEMAND LINK VERIFICATION // STATUS: ANALYZER READY</div>
