@@ -443,29 +443,41 @@
             letter-spacing: 0.7px;
             text-transform: uppercase;
         }
-        .intel-grid {
+        .intel-slider {
             position: relative;
             z-index: 2;
             margin-top: 10px;
-            display: grid;
-            grid-template-columns: repeat(3, minmax(0, 1fr));
-            gap: 12px;
+            overflow: hidden;
+            padding-bottom: 6px;
+            mask-image: linear-gradient(to right, transparent, #000 7%, #000 93%, transparent);
+            -webkit-mask-image: linear-gradient(to right, transparent, #000 7%, #000 93%, transparent);
+        }
+        .intel-track {
+            display: flex;
+            gap: 14px;
+            width: max-content;
+            animation: intelMarquee 28s linear infinite;
+        }
+        .intel-slider:hover .intel-track {
+            animation-play-state: paused;
         }
         .intel-card {
             border: 1px solid rgba(186, 230, 253, 0.28);
-            border-radius: 16px;
-            background:
-                linear-gradient(165deg, rgba(12, 23, 39, 0.84), rgba(7, 12, 24, 0.74)),
-                url("/static/intel_hands.png");
-            background-size: cover;
-            background-position: center;
-            min-height: 220px;
+            border-radius: 18px;
+            min-height: 238px;
+            width: 198px;
+            flex: 0 0 198px;
             position: relative;
             overflow: hidden;
             transition: transform 0.28s ease, border-color 0.28s ease, box-shadow 0.28s ease;
             opacity: 0;
             transform: translateY(24px) scale(0.98);
         }
+        .intel-card.tone-1 { background: linear-gradient(165deg, #5b21b6 0%, #1d4ed8 46%, #1e1b4b 100%); }
+        .intel-card.tone-2 { background: linear-gradient(165deg, #7e22ce 0%, #db2777 48%, #312e81 100%); }
+        .intel-card.tone-3 { background: linear-gradient(165deg, #0f766e 0%, #4f46e5 45%, #312e81 100%); }
+        .intel-card.tone-4 { background: linear-gradient(165deg, #9333ea 0%, #2563eb 43%, #1e293b 100%); }
+        .intel-card.tone-5 { background: linear-gradient(165deg, #be185d 0%, #7c3aed 48%, #1e1b4b 100%); }
         .intel-card.in-view {
             animation: intelCardRise 0.7s cubic-bezier(0.18, 0.8, 0.24, 1) forwards;
             animation-delay: var(--delay, 0s);
@@ -474,7 +486,9 @@
             content: "";
             position: absolute;
             inset: 0;
-            background: linear-gradient(180deg, rgba(2, 6, 23, 0.12), rgba(2, 6, 23, 0.68));
+            background:
+                radial-gradient(120px circle at 78% 12%, rgba(255, 255, 255, 0.22), transparent 70%),
+                linear-gradient(180deg, rgba(2, 6, 23, 0.12), rgba(2, 6, 23, 0.68));
         }
         .intel-card:hover {
             transform: translateY(-5px);
@@ -497,7 +511,7 @@
             margin-bottom: 12px;
         }
         .intel-head h4 {
-            font-size: 0.82rem;
+            font-size: 0.74rem;
             letter-spacing: 1.15px;
             text-transform: uppercase;
             color: #f0f9ff;
@@ -509,12 +523,12 @@
             padding: 10px;
             border: 1px solid rgba(186, 230, 253, 0.2);
             border-radius: 12px;
-            background: linear-gradient(180deg, rgba(2, 6, 23, 0.2), rgba(2, 6, 23, 0.42));
+            background: linear-gradient(180deg, rgba(2, 6, 23, 0.18), rgba(2, 6, 23, 0.36));
         }
         .intel-line {
             color: #d4e9f8;
-            font-size: 0.82rem;
-            line-height: 1.45;
+            font-size: 0.71rem;
+            line-height: 1.4;
         }
 
         .intel-kpis {
@@ -739,9 +753,13 @@
             from { opacity: 0; transform: translateY(20px); }
             to { opacity: 1; transform: translateY(0); }
         }
+        @keyframes intelMarquee {
+            from { transform: translateX(0); }
+            to { transform: translateX(calc(-50% - 7px)); }
+        }
 
         @media (max-width: 980px) {
-            .intel-grid { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+            .intel-card { width: 182px; flex-basis: 182px; }
             .footer-source-grid { grid-template-columns: 1fr 1fr; }
         }
 
@@ -750,7 +768,18 @@
             .login-wrapper { width: calc(100vw - 28px); }
             .form-container { padding: 34px 24px; }
             .intel-section { margin: 0 14px 18px; padding: 24px 18px; }
-            .intel-grid { grid-template-columns: 1fr; }
+            .intel-slider {
+                mask-image: none;
+                -webkit-mask-image: none;
+                overflow-x: auto;
+                overflow-y: hidden;
+                padding-bottom: 10px;
+            }
+            .intel-track {
+                animation: none;
+                padding-right: 8px;
+            }
+            .intel-card { width: 208px; flex-basis: 208px; }
             .intel-kpis { grid-template-columns: 1fr; }
             .site-footer { margin: 0 14px 18px; }
             .footer-trust-badges { grid-template-columns: 1fr; }
@@ -860,57 +889,110 @@
                 </div>
             </div>
 
-            <div class="intel-grid">
-                <article class="intel-card reveal-io" style="--delay: 0.05s;">
-                    <div class="intel-content">
-                        <div class="intel-head"><h4>Signal Capture</h4><i data-lucide="scan-search" size="18" style="color:var(--accent);"></i></div>
-                        <div class="intel-lines">
-                            <p class="intel-line">Normalizes URL format before analysis.</p>
-                            <p class="intel-line">Flags risky TLDs and suspicious keyword patterns.</p>
-                            <p class="intel-line">Uses domain entropy to spot scam-like hostnames.</p>
+            <div class="intel-slider">
+                <div class="intel-track">
+                    <article class="intel-card tone-1 reveal-io" style="--delay: 0.05s;">
+                        <div class="intel-content">
+                            <div class="intel-head"><h4>Signal Capture</h4><i data-lucide="scan-search" size="18" style="color:var(--accent);"></i></div>
+                            <div class="intel-lines">
+                                <p class="intel-line">Normalizes URL format before analysis.</p>
+                                <p class="intel-line">Flags risky TLDs and suspicious keyword patterns.</p>
+                                <p class="intel-line">Uses domain entropy to spot scam-like hostnames.</p>
+                            </div>
                         </div>
-                    </div>
-                </article>
-                <article class="intel-card reveal-io" style="--delay: 0.14s;">
-                    <div class="intel-content">
-                        <div class="intel-head"><h4>Context Fusion</h4><i data-lucide="network" size="18" style="color:var(--accent);"></i></div>
-                        <div class="intel-lines">
-                            <p class="intel-line">Pulls VirusTotal URL analysis with engine metadata.</p>
-                            <p class="intel-line">Includes SSL/TLS reachability as a trust signal.</p>
-                            <p class="intel-line">Combines external and internal risk evidence.</p>
+                    </article>
+                    <article class="intel-card tone-2 reveal-io" style="--delay: 0.14s;">
+                        <div class="intel-content">
+                            <div class="intel-head"><h4>Context Fusion</h4><i data-lucide="network" size="18" style="color:var(--accent);"></i></div>
+                            <div class="intel-lines">
+                                <p class="intel-line">Pulls VirusTotal URL analysis with engine metadata.</p>
+                                <p class="intel-line">Includes SSL/TLS reachability as a trust signal.</p>
+                                <p class="intel-line">Combines external and internal risk evidence.</p>
+                            </div>
                         </div>
-                    </div>
-                </article>
-                <article class="intel-card reveal-io" style="--delay: 0.22s;">
-                    <div class="intel-content">
-                        <div class="intel-head"><h4>Adaptive AI</h4><i data-lucide="brain" size="18" style="color:var(--accent);"></i></div>
-                        <div class="intel-lines">
-                            <p class="intel-line">Stores user corrections in feedback data.</p>
-                            <p class="intel-line">Retrains character n-gram RandomForest model.</p>
-                            <p class="intel-line">Improves future suspicious URL detection.</p>
+                    </article>
+                    <article class="intel-card tone-3 reveal-io" style="--delay: 0.22s;">
+                        <div class="intel-content">
+                            <div class="intel-head"><h4>Adaptive AI</h4><i data-lucide="brain" size="18" style="color:var(--accent);"></i></div>
+                            <div class="intel-lines">
+                                <p class="intel-line">Stores user corrections in feedback data.</p>
+                                <p class="intel-line">Retrains character n-gram RandomForest model.</p>
+                                <p class="intel-line">Improves future suspicious URL detection.</p>
+                            </div>
                         </div>
-                    </div>
-                </article>
-                <article class="intel-card reveal-io" style="--delay: 0.3s;">
-                    <div class="intel-content">
-                        <div class="intel-head"><h4>Actionable Verdict</h4><i data-lucide="shield-alert" size="18" style="color:var(--accent);"></i></div>
-                        <div class="intel-lines">
-                            <p class="intel-line">Returns CLEAN, SUSPICIOUS, or MALICIOUS statuses.</p>
-                            <p class="intel-line">Exposes vendor and stats evidence for context.</p>
-                            <p class="intel-line">Updates user scan and threat counters.</p>
+                    </article>
+                    <article class="intel-card tone-4 reveal-io" style="--delay: 0.3s;">
+                        <div class="intel-content">
+                            <div class="intel-head"><h4>Actionable Verdict</h4><i data-lucide="shield-alert" size="18" style="color:var(--accent);"></i></div>
+                            <div class="intel-lines">
+                                <p class="intel-line">Returns CLEAN, SUSPICIOUS, or MALICIOUS statuses.</p>
+                                <p class="intel-line">Exposes vendor and stats evidence for context.</p>
+                                <p class="intel-line">Updates user scan and threat counters.</p>
+                            </div>
                         </div>
-                    </div>
-                </article>
-                <article class="intel-card reveal-io" style="--delay: 0.38s;">
-                    <div class="intel-content">
-                        <div class="intel-head"><h4>Trust at Scale</h4><i data-lucide="shield-check" size="18" style="color:var(--accent);"></i></div>
-                        <div class="intel-lines">
-                            <p class="intel-line">Maintains recent URL history per user.</p>
-                            <p class="intel-line">Supports correction flow for model learning.</p>
-                            <p class="intel-line">Keeps dashboard metrics synchronized.</p>
+                    </article>
+                    <article class="intel-card tone-5 reveal-io" style="--delay: 0.38s;">
+                        <div class="intel-content">
+                            <div class="intel-head"><h4>Trust at Scale</h4><i data-lucide="shield-check" size="18" style="color:var(--accent);"></i></div>
+                            <div class="intel-lines">
+                                <p class="intel-line">Maintains recent URL history per user.</p>
+                                <p class="intel-line">Supports correction flow for model learning.</p>
+                                <p class="intel-line">Keeps dashboard metrics synchronized.</p>
+                            </div>
                         </div>
-                    </div>
-                </article>
+                    </article>
+
+                    <article class="intel-card tone-1 reveal-io" style="--delay: 0.05s;" aria-hidden="true">
+                        <div class="intel-content">
+                            <div class="intel-head"><h4>Signal Capture</h4><i data-lucide="scan-search" size="18" style="color:var(--accent);"></i></div>
+                            <div class="intel-lines">
+                                <p class="intel-line">Normalizes URL format before analysis.</p>
+                                <p class="intel-line">Flags risky TLDs and suspicious keyword patterns.</p>
+                                <p class="intel-line">Uses domain entropy to spot scam-like hostnames.</p>
+                            </div>
+                        </div>
+                    </article>
+                    <article class="intel-card tone-2 reveal-io" style="--delay: 0.14s;" aria-hidden="true">
+                        <div class="intel-content">
+                            <div class="intel-head"><h4>Context Fusion</h4><i data-lucide="network" size="18" style="color:var(--accent);"></i></div>
+                            <div class="intel-lines">
+                                <p class="intel-line">Pulls VirusTotal URL analysis with engine metadata.</p>
+                                <p class="intel-line">Includes SSL/TLS reachability as a trust signal.</p>
+                                <p class="intel-line">Combines external and internal risk evidence.</p>
+                            </div>
+                        </div>
+                    </article>
+                    <article class="intel-card tone-3 reveal-io" style="--delay: 0.22s;" aria-hidden="true">
+                        <div class="intel-content">
+                            <div class="intel-head"><h4>Adaptive AI</h4><i data-lucide="brain" size="18" style="color:var(--accent);"></i></div>
+                            <div class="intel-lines">
+                                <p class="intel-line">Stores user corrections in feedback data.</p>
+                                <p class="intel-line">Retrains character n-gram RandomForest model.</p>
+                                <p class="intel-line">Improves future suspicious URL detection.</p>
+                            </div>
+                        </div>
+                    </article>
+                    <article class="intel-card tone-4 reveal-io" style="--delay: 0.3s;" aria-hidden="true">
+                        <div class="intel-content">
+                            <div class="intel-head"><h4>Actionable Verdict</h4><i data-lucide="shield-alert" size="18" style="color:var(--accent);"></i></div>
+                            <div class="intel-lines">
+                                <p class="intel-line">Returns CLEAN, SUSPICIOUS, or MALICIOUS statuses.</p>
+                                <p class="intel-line">Exposes vendor and stats evidence for context.</p>
+                                <p class="intel-line">Updates user scan and threat counters.</p>
+                            </div>
+                        </div>
+                    </article>
+                    <article class="intel-card tone-5 reveal-io" style="--delay: 0.38s;" aria-hidden="true">
+                        <div class="intel-content">
+                            <div class="intel-head"><h4>Trust at Scale</h4><i data-lucide="shield-check" size="18" style="color:var(--accent);"></i></div>
+                            <div class="intel-lines">
+                                <p class="intel-line">Maintains recent URL history per user.</p>
+                                <p class="intel-line">Supports correction flow for model learning.</p>
+                                <p class="intel-line">Keeps dashboard metrics synchronized.</p>
+                            </div>
+                        </div>
+                    </article>
+                </div>
             </div>
 
             <div class="intel-kpis">
