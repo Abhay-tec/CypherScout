@@ -449,24 +449,53 @@
             margin-top: 10px;
             overflow: hidden;
             padding-bottom: 6px;
-            mask-image: linear-gradient(to right, transparent, #000 7%, #000 93%, transparent);
-            -webkit-mask-image: linear-gradient(to right, transparent, #000 7%, #000 93%, transparent);
+        }
+        .intel-nav {
+            margin-top: 12px;
+            position: relative;
+            z-index: 2;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            gap: 10px;
+        }
+        .intel-nav-btn {
+            border: 1px solid rgba(186, 230, 253, 0.35);
+            background: rgba(2, 6, 23, 0.45);
+            color: #dff5ff;
+            width: 34px;
+            height: 34px;
+            border-radius: 10px;
+            cursor: pointer;
+            font-size: 1rem;
+            line-height: 1;
+        }
+        .intel-nav-btn:disabled {
+            opacity: 0.4;
+            cursor: not-allowed;
+        }
+        .intel-counter {
+            font-size: 0.72rem;
+            color: #dff5ff;
+            letter-spacing: 0.9px;
+            text-transform: uppercase;
+            border: 1px solid rgba(186, 230, 253, 0.24);
+            border-radius: 999px;
+            padding: 6px 10px;
+            background: rgba(2, 6, 23, 0.34);
         }
         .intel-track {
             display: flex;
             gap: 14px;
-            width: max-content;
-            animation: intelMarquee 28s linear infinite;
-        }
-        .intel-slider:hover .intel-track {
-            animation-play-state: paused;
+            width: 100%;
+            transition: transform 0.65s cubic-bezier(0.2, 0.7, 0.2, 1);
         }
         .intel-card {
             border: 1px solid rgba(186, 230, 253, 0.28);
             border-radius: 18px;
             min-height: 238px;
-            width: 198px;
-            flex: 0 0 198px;
+            width: calc((100% - 28px) / 3);
+            flex: 0 0 calc((100% - 28px) / 3);
             position: relative;
             overflow: hidden;
             transition: transform 0.28s ease, border-color 0.28s ease, box-shadow 0.28s ease;
@@ -753,13 +782,8 @@
             from { opacity: 0; transform: translateY(20px); }
             to { opacity: 1; transform: translateY(0); }
         }
-        @keyframes intelMarquee {
-            from { transform: translateX(0); }
-            to { transform: translateX(calc(-50% - 7px)); }
-        }
-
         @media (max-width: 980px) {
-            .intel-card { width: 182px; flex-basis: 182px; }
+            .intel-card { width: calc((100% - 14px) / 2); flex-basis: calc((100% - 14px) / 2); }
             .footer-source-grid { grid-template-columns: 1fr 1fr; }
         }
 
@@ -768,18 +792,7 @@
             .login-wrapper { width: calc(100vw - 28px); }
             .form-container { padding: 34px 24px; }
             .intel-section { margin: 0 14px 18px; padding: 24px 18px; }
-            .intel-slider {
-                mask-image: none;
-                -webkit-mask-image: none;
-                overflow-x: auto;
-                overflow-y: hidden;
-                padding-bottom: 10px;
-            }
-            .intel-track {
-                animation: none;
-                padding-right: 8px;
-            }
-            .intel-card { width: 208px; flex-basis: 208px; }
+            .intel-card { width: 100%; flex-basis: 100%; }
             .intel-kpis { grid-template-columns: 1fr; }
             .site-footer { margin: 0 14px 18px; }
             .footer-trust-badges { grid-template-columns: 1fr; }
@@ -941,58 +954,12 @@
                             </div>
                         </div>
                     </article>
-
-                    <article class="intel-card tone-1 reveal-io" style="--delay: 0.05s;" aria-hidden="true">
-                        <div class="intel-content">
-                            <div class="intel-head"><h4>Signal Capture</h4><i data-lucide="scan-search" size="18" style="color:var(--accent);"></i></div>
-                            <div class="intel-lines">
-                                <p class="intel-line">Normalizes URL format before analysis.</p>
-                                <p class="intel-line">Flags risky TLDs and suspicious keyword patterns.</p>
-                                <p class="intel-line">Uses domain entropy to spot scam-like hostnames.</p>
-                            </div>
-                        </div>
-                    </article>
-                    <article class="intel-card tone-2 reveal-io" style="--delay: 0.14s;" aria-hidden="true">
-                        <div class="intel-content">
-                            <div class="intel-head"><h4>Context Fusion</h4><i data-lucide="network" size="18" style="color:var(--accent);"></i></div>
-                            <div class="intel-lines">
-                                <p class="intel-line">Pulls VirusTotal URL analysis with engine metadata.</p>
-                                <p class="intel-line">Includes SSL/TLS reachability as a trust signal.</p>
-                                <p class="intel-line">Combines external and internal risk evidence.</p>
-                            </div>
-                        </div>
-                    </article>
-                    <article class="intel-card tone-3 reveal-io" style="--delay: 0.22s;" aria-hidden="true">
-                        <div class="intel-content">
-                            <div class="intel-head"><h4>Adaptive AI</h4><i data-lucide="brain" size="18" style="color:var(--accent);"></i></div>
-                            <div class="intel-lines">
-                                <p class="intel-line">Stores user corrections in feedback data.</p>
-                                <p class="intel-line">Retrains character n-gram RandomForest model.</p>
-                                <p class="intel-line">Improves future suspicious URL detection.</p>
-                            </div>
-                        </div>
-                    </article>
-                    <article class="intel-card tone-4 reveal-io" style="--delay: 0.3s;" aria-hidden="true">
-                        <div class="intel-content">
-                            <div class="intel-head"><h4>Actionable Verdict</h4><i data-lucide="shield-alert" size="18" style="color:var(--accent);"></i></div>
-                            <div class="intel-lines">
-                                <p class="intel-line">Returns CLEAN, SUSPICIOUS, or MALICIOUS statuses.</p>
-                                <p class="intel-line">Exposes vendor and stats evidence for context.</p>
-                                <p class="intel-line">Updates user scan and threat counters.</p>
-                            </div>
-                        </div>
-                    </article>
-                    <article class="intel-card tone-5 reveal-io" style="--delay: 0.38s;" aria-hidden="true">
-                        <div class="intel-content">
-                            <div class="intel-head"><h4>Trust at Scale</h4><i data-lucide="shield-check" size="18" style="color:var(--accent);"></i></div>
-                            <div class="intel-lines">
-                                <p class="intel-line">Maintains recent URL history per user.</p>
-                                <p class="intel-line">Supports correction flow for model learning.</p>
-                                <p class="intel-line">Keeps dashboard metrics synchronized.</p>
-                            </div>
-                        </div>
-                    </article>
                 </div>
+            </div>
+            <div class="intel-nav">
+                <button type="button" class="intel-nav-btn" id="intelPrev" aria-label="Previous slide">&#8249;</button>
+                <span class="intel-counter" id="intelCounter">Slide 1 / 5</span>
+                <button type="button" class="intel-nav-btn" id="intelNext" aria-label="Next slide">&#8250;</button>
             </div>
 
             <div class="intel-kpis">
@@ -1112,6 +1079,58 @@
             });
         }, { threshold: 0.18 });
         scrollRevealEls.forEach((el) => io.observe(el));
+
+        const intelSlider = document.querySelector('.intel-slider');
+        const intelTrack = document.querySelector('.intel-track');
+        const intelCards = intelTrack ? Array.from(intelTrack.querySelectorAll('.intel-card')) : [];
+        const intelPrev = document.getElementById('intelPrev');
+        const intelNext = document.getElementById('intelNext');
+        const intelCounter = document.getElementById('intelCounter');
+        let intelIndex = 0;
+        let intelResizeTimer = 0;
+
+        function intelVisibleCount() {
+            if (window.innerWidth <= 768) return 1;
+            if (window.innerWidth <= 980) return 2;
+            return 3;
+        }
+
+        function intelStepSize() {
+            if (!intelTrack || !intelCards.length) return 0;
+            const styles = window.getComputedStyle(intelTrack);
+            const gap = parseFloat(styles.columnGap || styles.gap || '14') || 14;
+            return intelCards[0].getBoundingClientRect().width + gap;
+        }
+
+        function intelMaxIndex() {
+            return Math.max(0, intelCards.length - intelVisibleCount());
+        }
+
+        function renderIntelSlider() {
+            if (!intelTrack || !intelCards.length) return;
+            const maxIndex = intelMaxIndex();
+            intelIndex = Math.max(0, Math.min(intelIndex, maxIndex));
+            intelTrack.style.transform = `translate3d(${-intelIndex * intelStepSize()}px, 0, 0)`;
+            if (intelCounter) intelCounter.textContent = `Slide ${intelIndex + 1} / ${intelCards.length}`;
+            if (intelPrev) intelPrev.disabled = intelIndex <= 0;
+            if (intelNext) intelNext.disabled = intelIndex >= maxIndex;
+        }
+
+        if (intelSlider && intelTrack && intelCards.length) {
+            if (intelPrev) intelPrev.addEventListener('click', () => {
+                intelIndex -= 1;
+                renderIntelSlider();
+            });
+            if (intelNext) intelNext.addEventListener('click', () => {
+                intelIndex += 1;
+                renderIntelSlider();
+            });
+            window.addEventListener('resize', () => {
+                clearTimeout(intelResizeTimer);
+                intelResizeTimer = setTimeout(renderIntelSlider, 120);
+            });
+            renderIntelSlider();
+        }
 
         function toggleForgotPanel() {
             const panel = document.getElementById('forgotPanel');
