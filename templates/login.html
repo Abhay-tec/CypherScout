@@ -804,37 +804,52 @@
             100% { transform: translateY(0px); }
         }
 
-        .intel-kpis {
+        .intel-hover-cards {
             position: relative;
             z-index: 2;
-            display: grid;
-            grid-template-columns: repeat(3, minmax(0, 1fr));
-            gap: 10px;
-            margin-top: 12px;
+            margin-top: 14px;
+            display: flex;
+            flex-direction: column;
+            gap: 12px;
         }
-        .intel-kpi {
-            border: 1px solid var(--frost-line);
+        .intel-hover-card {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            flex-direction: column;
+            text-align: center;
+            height: 100px;
             border-radius: 12px;
-            padding: 12px;
-            background: rgba(2, 6, 23, 0.34);
+            color: #fff;
+            cursor: pointer;
+            transition: 400ms;
+            border: 1px solid rgba(255, 255, 255, 0.12);
             opacity: 0;
             transform: translateY(20px);
         }
-        .intel-kpi.in-view {
+        .intel-hover-card.in-view {
             animation: intelKpiIn 0.56s ease forwards;
             animation-delay: var(--delay, 0s);
         }
-        .intel-kpi strong {
-            display: block;
-            font-size: 1.1rem;
-            color: #dff5ff;
-            margin-bottom: 3px;
+        .intel-hover-card.red { background-color: #f43f5e; }
+        .intel-hover-card.blue { background-color: #3b82f6; }
+        .intel-hover-card.green { background-color: #22c55e; }
+        .intel-hover-card .tip {
+            font-size: 0.98rem;
+            font-weight: 800;
+            letter-spacing: 0.3px;
         }
-        .intel-kpi span {
-            color: var(--text-dim);
+        .intel-hover-card .second-text {
             font-size: 0.72rem;
-            text-transform: uppercase;
-            letter-spacing: 0.6px;
+            margin-top: 4px;
+            opacity: 0.92;
+        }
+        .intel-hover-cards .intel-hover-card:hover {
+            transform: scale(1.05);
+        }
+        .intel-hover-cards:hover > .intel-hover-card:not(:hover) {
+            filter: blur(8px);
+            transform: scale(0.95);
         }
 
         .site-footer {
@@ -1041,7 +1056,6 @@
             .intel-meter strong { font-size: 1.06rem; }
             .intel-card { width: 100%; flex-basis: 100%; min-height: 286px; }
             .intel-slider { min-height: 286px; }
-            .intel-kpis { grid-template-columns: 1fr; }
             .site-footer { margin: 0 14px 18px; }
             .footer-trust-badges { grid-template-columns: 1fr; }
             .footer-source-grid { grid-template-columns: 1fr; }
@@ -1284,10 +1298,19 @@
                 </aside>
             </div>
 
-            <div class="intel-kpis">
-                <div class="intel-kpi reveal-io" style="--delay: 0.06s;"><strong>OAuth</strong><span>Google Sign-In Session</span></div>
-                <div class="intel-kpi reveal-io" style="--delay: 0.14s;"><strong>3-Layer</strong><span>VT + Heuristic + ML</span></div>
-                <div class="intel-kpi reveal-io" style="--delay: 0.22s;"><strong>Feedback</strong><span>User-Correction Learning</span></div>
+            <div class="intel-hover-cards">
+                <div class="intel-hover-card red reveal-io" style="--delay: 0.06s;">
+                    <p class="tip">Google OAuth Session</p>
+                    <p class="second-text">Protected login and trusted access flow</p>
+                </div>
+                <div class="intel-hover-card blue reveal-io" style="--delay: 0.14s;">
+                    <p class="tip">3-Layer Verdict Engine</p>
+                    <p class="second-text">VirusTotal + Heuristic + ML confidence fusion</p>
+                </div>
+                <div class="intel-hover-card green reveal-io" style="--delay: 0.22s;">
+                    <p class="tip">Feedback Learning Loop</p>
+                    <p class="second-text">User corrections continuously improve detection</p>
+                </div>
             </div>
         </section>
 
@@ -1393,7 +1416,7 @@
             entries.forEach((entry) => {
                 if (entry.isIntersecting) {
                     entry.target.classList.add('in-view');
-                    if (entry.target.classList.contains('intel-card') || entry.target.classList.contains('intel-kpi')) {
+                    if (entry.target.classList.contains('intel-card') || entry.target.classList.contains('intel-hover-card')) {
                         entry.target.style.opacity = '1';
                     }
                     io.unobserve(entry.target);
