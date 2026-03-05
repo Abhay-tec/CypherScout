@@ -533,10 +533,15 @@
             font-weight: 700;
         }
         .intel-back-list {
+            margin: 0;
+            padding-left: 16px;
             display: grid;
-            gap: 6px;
+            gap: 7px;
             font-size: 0.68rem;
-            line-height: 1.45;
+            line-height: 1.5;
+        }
+        .intel-back-list li {
+            color: #dbeafe;
         }
         .intel-tilt-card.tone-1 .intel-face.front { background-image: linear-gradient(43deg, #4158d0 0%, #c850c0 46%, #ffcc70 100%); }
         .intel-tilt-card.tone-2 .intel-face.front { background-image: linear-gradient(43deg, #2563eb 0%, #0ea5e9 48%, #22d3ee 100%); }
@@ -896,11 +901,11 @@
                             <div class="intel-face back">
                                 <div>
                                     <div class="intel-back-title">Signal Capture</div>
-                                    <div class="intel-back-list">
-                                        <div>Normalizes URL format before analysis.</div>
-                                        <div>Flags risky TLDs and suspicious keyword patterns.</div>
-                                        <div>Uses domain entropy to spot scam-like hostnames.</div>
-                                    </div>
+                                    <ul class="intel-back-list">
+                                        <li>Normalizes URL format before analysis.</li>
+                                        <li>Flags risky TLDs and suspicious keyword patterns.</li>
+                                        <li>Uses domain entropy to spot scam-like hostnames.</li>
+                                    </ul>
                                 </div>
                             </div>
                         </div>
@@ -918,11 +923,11 @@
                             <div class="intel-face back">
                                 <div>
                                     <div class="intel-back-title">Context Fusion</div>
-                                    <div class="intel-back-list">
-                                        <div>Pulls VirusTotal URL analysis with engine metadata.</div>
-                                        <div>Includes SSL/TLS reachability as a trust signal.</div>
-                                        <div>Combines external and internal risk evidence.</div>
-                                    </div>
+                                    <ul class="intel-back-list">
+                                        <li>Pulls VirusTotal URL analysis with engine metadata.</li>
+                                        <li>Includes SSL/TLS reachability as a trust signal.</li>
+                                        <li>Combines external and internal risk evidence.</li>
+                                    </ul>
                                 </div>
                             </div>
                         </div>
@@ -940,11 +945,11 @@
                             <div class="intel-face back">
                                 <div>
                                     <div class="intel-back-title">Adaptive AI</div>
-                                    <div class="intel-back-list">
-                                        <div>Stores user corrections in feedback data.</div>
-                                        <div>Retrains character n-gram RandomForest model.</div>
-                                        <div>Improves future suspicious URL detection.</div>
-                                    </div>
+                                    <ul class="intel-back-list">
+                                        <li>Stores user corrections in feedback data.</li>
+                                        <li>Retrains character n-gram RandomForest model.</li>
+                                        <li>Improves future suspicious URL detection.</li>
+                                    </ul>
                                 </div>
                             </div>
                         </div>
@@ -962,11 +967,11 @@
                             <div class="intel-face back">
                                 <div>
                                     <div class="intel-back-title">Actionable Verdict</div>
-                                    <div class="intel-back-list">
-                                        <div>Returns CLEAN, SUSPICIOUS, or MALICIOUS statuses.</div>
-                                        <div>Exposes vendor and stats evidence for context.</div>
-                                        <div>Updates user scan and threat counters.</div>
-                                    </div>
+                                    <ul class="intel-back-list">
+                                        <li>Returns CLEAN, SUSPICIOUS, or MALICIOUS statuses.</li>
+                                        <li>Exposes vendor and stats evidence for context.</li>
+                                        <li>Updates user scan and threat counters.</li>
+                                    </ul>
                                 </div>
                             </div>
                         </div>
@@ -984,11 +989,11 @@
                             <div class="intel-face back">
                                 <div>
                                     <div class="intel-back-title">Trust at Scale</div>
-                                    <div class="intel-back-list">
-                                        <div>Maintains recent URL history per user.</div>
-                                        <div>Supports correction flow for model learning.</div>
-                                        <div>Keeps dashboard metrics synchronized.</div>
-                                    </div>
+                                    <ul class="intel-back-list">
+                                        <li>Maintains recent URL history per user.</li>
+                                        <li>Supports correction flow for model learning.</li>
+                                        <li>Keeps dashboard metrics synchronized.</li>
+                                    </ul>
                                 </div>
                             </div>
                         </div>
