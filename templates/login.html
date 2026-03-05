@@ -443,414 +443,134 @@
             letter-spacing: 0.7px;
             text-transform: uppercase;
         }
-        .intel-carousel-shell {
+        .intel-card-row {
             position: relative;
             z-index: 2;
             display: grid;
-            grid-template-columns: minmax(0, 1.7fr) minmax(250px, 1fr);
-            gap: 16px;
-            align-items: start;
+            grid-template-columns: repeat(5, minmax(0, 1fr));
+            gap: 12px;
+            margin-top: 10px;
         }
-        .intel-left-stack {
-            border: 1px solid rgba(244, 63, 94, 0.25);
-            border-radius: 20px;
-            background: linear-gradient(170deg, rgba(3, 8, 19, 0.95), rgba(2, 6, 23, 0.92));
-            padding: 12px;
+        .intel-tilt-card {
             position: relative;
-            overflow: hidden;
+            min-height: 236px;
+            border-radius: 16px;
+            perspective: 900px;
         }
-        .intel-left-stack::before {
-            content: "";
+        .intel-tilt-canvas {
             position: absolute;
             inset: 0;
-            background:
-                radial-gradient(420px circle at 50% -20%, rgba(244, 63, 94, 0.12), transparent 70%),
-                radial-gradient(350px circle at -10% 50%, rgba(59, 130, 246, 0.12), transparent 70%);
-            pointer-events: none;
-        }
-        .intel-meters {
-            position: relative;
-            z-index: 2;
-            display: flex;
-            gap: 10px;
-            align-items: center;
-            margin-bottom: 10px;
-        }
-        .intel-meter {
-            width: 70px;
-            height: 70px;
-            border-radius: 50%;
-            border: 1px solid rgba(255, 255, 255, 0.15);
-            background: rgba(255, 255, 255, 0.04);
             display: grid;
-            place-items: center;
-            text-align: center;
-            color: #eef6ff;
-            font-size: 0.66rem;
-            text-transform: uppercase;
-            letter-spacing: 0.7px;
-            line-height: 1.2;
+            grid-template-columns: repeat(5, 1fr);
+            grid-template-rows: repeat(5, 1fr);
+            z-index: 3;
         }
-        .intel-meter strong {
+        .intel-tilt-tracker {
             display: block;
-            font-size: 1.25rem;
-            letter-spacing: -0.4px;
         }
-        .intel-meter.hot {
-            background: #dc2626;
-            border-color: rgba(248, 113, 113, 0.6);
-        }
-        .intel-slider {
-            position: relative;
-            z-index: 2;
-            margin-top: 8px;
-            overflow: hidden;
-            padding-bottom: 6px;
-            min-height: 320px;
-            border: 1px solid rgba(255, 255, 255, 0.08);
-            border-radius: 18px;
-            background: radial-gradient(520px circle at 50% 10%, rgba(255, 255, 255, 0.05), transparent 70%);
-            display: flex;
-            align-items: center;
-            justify-content: center;
-        }
-        .intel-slider::before {
-            content: "";
+        .intel-tilt-shell {
             position: absolute;
-            width: 540px;
-            height: 540px;
-            border-radius: 50%;
-            border: 1px solid rgba(148, 163, 184, 0.12);
-            top: -300px;
-            left: 50%;
-            transform: translateX(-50%);
-            pointer-events: none;
-        }
-        .intel-slider::after {
-            content: "";
-            position: absolute;
-            width: 420px;
-            height: 420px;
-            border-radius: 50%;
-            border: 1px solid rgba(148, 163, 184, 0.08);
-            top: -240px;
-            left: 50%;
-            transform: translateX(-50%);
-            pointer-events: none;
-        }
-        .intel-nav {
-            margin-top: 12px;
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            gap: 10px;
-        }
-        .intel-nav-btn {
-            border: 1px solid rgba(186, 230, 253, 0.35);
-            background: rgba(2, 6, 23, 0.72);
-            color: #dff5ff;
-            width: 44px;
-            height: 44px;
-            border-radius: 50%;
-            cursor: pointer;
-            font-size: 1.2rem;
-            line-height: 1;
-        }
-        .intel-nav-btn:disabled {
-            opacity: 0.4;
-            cursor: not-allowed;
-        }
-        .intel-counter {
-            font-size: 0.72rem;
-            color: #dff5ff;
-            letter-spacing: 0.9px;
-            text-transform: uppercase;
-            border: 1px solid rgba(186, 230, 253, 0.24);
-            border-radius: 999px;
-            padding: 6px 10px;
-            background: rgba(2, 6, 23, 0.34);
-        }
-        .intel-track {
-            display: flex;
-            gap: 14px;
-            width: 100%;
-            transition: transform 0.65s cubic-bezier(0.2, 0.7, 0.2, 1);
-        }
-        .intel-card {
-            border: none;
-            border-radius: 18px;
-            min-height: 318px;
-            width: 100%;
-            flex: 0 0 100%;
-            position: relative;
-            overflow: visible;
-            perspective: 1000px;
-            transition: transform 0.35s ease;
-            opacity: 0;
-            transform: translateY(24px) scale(0.95);
-        }
-        .intel-card.in-view {
-            animation: intelCardRise 0.7s cubic-bezier(0.18, 0.8, 0.24, 1) forwards;
-            animation-delay: var(--delay, 0s);
-        }
-        .intel-flip-content {
-            width: 100%;
-            height: 100%;
+            inset: 0;
+            border-radius: 16px;
             transform-style: preserve-3d;
-            transition: transform 0.32s ease, box-shadow 0.32s ease;
-            box-shadow: 0 10px 22px rgba(0, 0, 0, 0.45);
-            border-radius: 12px;
-            position: relative;
+            transition: transform 180ms ease, box-shadow 220ms ease, filter 220ms ease;
+            box-shadow: 0 10px 24px rgba(2, 6, 23, 0.42);
         }
-        .intel-card:hover .intel-flip-content,
-        .intel-card.is-active .intel-flip-content {
-            transform: none;
+        .intel-tilt-card:hover .intel-tilt-shell {
+            filter: brightness(1.08);
+            box-shadow: 0 18px 34px rgba(2, 6, 23, 0.58);
         }
         .intel-face {
             position: absolute;
             inset: 0;
-            border-radius: 12px;
-            overflow: hidden;
+            border-radius: 16px;
+            border: 1px solid rgba(255, 255, 255, 0.16);
             backface-visibility: hidden;
             -webkit-backface-visibility: hidden;
-            border: 1px solid rgba(255, 255, 255, 0.1);
-        }
-        .intel-back {
-            display: none;
-        }
-        .intel-back::before {
-            content: "";
-            position: absolute;
-            width: 160px;
-            height: 160%;
-            background: linear-gradient(90deg, transparent, #ff9966, #ff9966, #ff9966, transparent);
-            animation: intelSpin 5000ms infinite linear;
-        }
-        .intel-back-content {
-            position: absolute;
-            width: 97%;
-            height: 97%;
-            border-radius: 10px;
-            background: #151515;
-            color: #fff;
+            overflow: hidden;
             display: flex;
-            flex-direction: column;
-            align-items: center;
-            justify-content: center;
-            gap: 10px;
-            text-align: center;
-            padding: 10px;
+            align-items: flex-end;
+            padding: 12px;
         }
-        .intel-back-content strong {
-            font-size: 0.78rem;
-            letter-spacing: 1px;
+        .intel-face.front {
+            color: #fff;
+            font-size: 0.9rem;
+            font-weight: 800;
             text-transform: uppercase;
+            letter-spacing: 0.8px;
+            background-size: 180% 180%;
+            animation: intelGradientFlow 7s ease infinite;
         }
-        .intel-front {
-            transform: none;
-            background: #0b1020;
-        }
-        .intel-card.tone-1 .intel-front { background: linear-gradient(165deg, #5b21b6 0%, #1d4ed8 46%, #1e1b4b 100%); }
-        .intel-card.tone-2 .intel-front { background: linear-gradient(165deg, #7e22ce 0%, #db2777 48%, #312e81 100%); }
-        .intel-card.tone-3 .intel-front { background: linear-gradient(165deg, #0f766e 0%, #4f46e5 45%, #312e81 100%); }
-        .intel-card.tone-4 .intel-front { background: linear-gradient(165deg, #9333ea 0%, #2563eb 43%, #1e293b 100%); }
-        .intel-card.tone-5 .intel-front { background: linear-gradient(165deg, #be185d 0%, #7c3aed 48%, #1e1b4b 100%); }
-        .intel-front-art {
-            position: absolute;
-            inset: 0;
-        }
-        .intel-front-art .blob {
-            position: absolute;
-            border-radius: 50%;
-            filter: blur(16px);
-            animation: floating 2600ms infinite linear;
-        }
-        .intel-front-art .b1 { width: 90px; height: 90px; left: 12px; top: 18px; background: #ffbb66; }
-        .intel-front-art .b2 { width: 150px; height: 150px; left: 50px; top: 50px; background: #ff8866; animation-delay: -800ms; }
-        .intel-front-art .b3 { width: 30px; height: 30px; left: 160px; top: 18px; background: #ff2233; animation-delay: -1800ms; }
-        .intel-front-art .photo {
-            position: absolute;
-            inset: 0;
-            background:
-                linear-gradient(180deg, rgba(2, 6, 23, 0.16), rgba(2, 6, 23, 0.72)),
-                url("/static/intel_hands.png");
-            background-size: cover;
-            background-position: center;
-            mix-blend-mode: screen;
-            opacity: 0.62;
-        }
-        .intel-card:hover {
-            transform: translateY(-7px) scale(1.02);
-        }
-        .intel-card.is-active {
-            transform: translateY(-4px) scale(1.02);
-        }
-        .intel-card:hover .intel-flip-content,
-        .intel-card.is-active .intel-flip-content {
-            box-shadow: 0 18px 36px rgba(2, 6, 23, 0.62);
-        }
-        .intel-front::after {
+        .intel-face.front::after {
             content: "";
             position: absolute;
             inset: 0;
-            background: linear-gradient(120deg, transparent 35%, rgba(255, 255, 255, 0.14) 50%, transparent 65%);
-            transform: translateX(-120%);
-            opacity: 0;
-            transition: transform 0.6s ease, opacity 0.3s ease;
+            background: linear-gradient(160deg, transparent 20%, rgba(2, 6, 23, 0.58) 100%);
             pointer-events: none;
         }
-        .intel-card:hover .intel-front::after {
-            transform: translateX(120%);
-            opacity: 1;
-        }
-        .intel-content {
+        .intel-face.front span {
             position: relative;
             z-index: 2;
-            height: 100%;
-            display: flex;
-            flex-direction: column;
-            justify-content: space-between;
-            padding: 14px;
         }
-        .intel-dots {
-            margin-top: 10px;
-            display: flex;
-            gap: 6px;
-            justify-content: center;
-        }
-        .intel-dot {
-            width: 7px;
-            height: 7px;
-            border-radius: 50%;
-            border: 1px solid rgba(186, 230, 253, 0.55);
-            background: rgba(2, 6, 23, 0.5);
-            transition: transform 0.2s ease, background-color 0.2s ease;
-        }
-        .intel-dot.active {
-            background: #22d3ee;
-            transform: scale(1.2);
-        }
-        .intel-detail {
-            border: 1px solid rgba(244, 63, 94, 0.28);
-            border-radius: 16px;
-            background: linear-gradient(165deg, rgba(8, 14, 26, 0.96), rgba(3, 7, 15, 0.92));
-            padding: 12px;
-            min-height: 390px;
-            opacity: 0;
-            transform: translateX(14px);
-            transition: opacity 0.32s ease, transform 0.32s ease;
-        }
-        .intel-detail.in {
-            opacity: 1;
-            transform: translateX(0);
-        }
-        .intel-detail-head {
-            font-size: 0.68rem;
-            letter-spacing: 1px;
-            text-transform: uppercase;
-            color: var(--accent-ice);
-            margin-bottom: 6px;
-        }
-        .intel-detail-title {
-            color: #f8fafc;
-            font-size: 1.02rem;
-            text-transform: uppercase;
-            letter-spacing: 1px;
-            margin-bottom: 8px;
-            border-left: 3px solid rgba(244, 63, 94, 0.75);
-            padding-left: 8px;
-        }
-        .intel-detail-lines {
-            display: grid;
-            gap: 7px;
-        }
-        .intel-detail-line {
-            color: #cfe8f8;
-            font-size: 0.78rem;
-            line-height: 1.5;
-            border: 1px solid rgba(244, 63, 94, 0.16);
-            border-radius: 10px;
-            padding: 7px 8px;
-            background: rgba(10, 16, 30, 0.62);
-        }
-
-        .intel-head {
-            display: flex;
-            align-items: center;
-            justify-content: flex-start;
-            margin-bottom: 0;
-        }
-        .intel-head h4 {
-            font-size: 0.78rem;
-            letter-spacing: 1.2px;
-            text-transform: uppercase;
-            color: #f0f9ff;
-            border-left: 3px solid rgba(244, 63, 94, 0.78);
-            padding-left: 8px;
-            background: rgba(2, 6, 23, 0.45);
-            border-radius: 3px;
-        }
-        .intel-head i {
-            display: none;
-        }
-        .intel-lines {
-            margin-top: auto;
-            display: grid;
-            gap: 5px;
-            padding: 9px 10px;
-            border: 1px solid rgba(186, 230, 253, 0.22);
-            border-radius: 10px;
-            background: linear-gradient(180deg, rgba(2, 6, 23, 0.34), rgba(2, 6, 23, 0.58));
-            max-width: 100%;
-            backdrop-filter: blur(2px);
-        }
-        .intel-line {
+        .intel-face.back {
+            transform: rotateY(180deg);
+            background: linear-gradient(180deg, rgba(7, 14, 29, 0.97), rgba(2, 6, 23, 0.95));
             color: #dbeafe;
-            font-size: 0.62rem;
-            line-height: 1.35;
-        }
-        @keyframes intelSpin {
-            0% { transform: rotateZ(0deg); }
-            100% { transform: rotateZ(360deg); }
-        }
-        @keyframes floating {
-            0% { transform: translateY(0px); }
-            50% { transform: translateY(10px); }
-            100% { transform: translateY(0px); }
-        }
-
-        .intel-kpis {
-            position: relative;
-            z-index: 2;
-            display: grid;
-            grid-template-columns: repeat(3, minmax(0, 1fr));
-            gap: 10px;
-            margin-top: 12px;
-        }
-        .intel-kpi {
-            border: 1px solid var(--frost-line);
-            border-radius: 12px;
+            align-items: flex-start;
             padding: 12px;
-            background: rgba(2, 6, 23, 0.34);
-            opacity: 0;
-            transform: translateY(20px);
         }
-        .intel-kpi.in-view {
-            animation: intelKpiIn 0.56s ease forwards;
-            animation-delay: var(--delay, 0s);
-        }
-        .intel-kpi strong {
-            display: block;
-            font-size: 1.1rem;
-            color: #dff5ff;
-            margin-bottom: 3px;
-        }
-        .intel-kpi span {
-            color: var(--text-dim);
-            font-size: 0.72rem;
+        .intel-back-title {
+            font-size: 0.76rem;
             text-transform: uppercase;
-            letter-spacing: 0.6px;
+            letter-spacing: 1px;
+            color: #a5f3fc;
+            margin-bottom: 8px;
+            font-weight: 700;
         }
+        .intel-back-list {
+            display: grid;
+            gap: 6px;
+            font-size: 0.68rem;
+            line-height: 1.45;
+        }
+        .intel-tilt-card:hover .intel-tilt-shell {
+            transform: rotateY(180deg);
+        }
+        .intel-tilt-card.tone-1 .intel-face.front { background-image: linear-gradient(43deg, #4158d0 0%, #c850c0 46%, #ffcc70 100%); }
+        .intel-tilt-card.tone-2 .intel-face.front { background-image: linear-gradient(43deg, #2563eb 0%, #0ea5e9 48%, #22d3ee 100%); }
+        .intel-tilt-card.tone-3 .intel-face.front { background-image: linear-gradient(43deg, #0f766e 0%, #4f46e5 50%, #7c3aed 100%); }
+        .intel-tilt-card.tone-4 .intel-face.front { background-image: linear-gradient(43deg, #be123c 0%, #7c3aed 52%, #2563eb 100%); }
+        .intel-tilt-card.tone-5 .intel-face.front { background-image: linear-gradient(43deg, #0ea5e9 0%, #2563eb 45%, #9333ea 100%); }
+        @keyframes intelGradientFlow {
+            0% { background-position: 0% 50%; }
+            50% { background-position: 100% 50%; }
+            100% { background-position: 0% 50%; }
+        }
+        .intel-tilt-tracker:nth-child(1):hover ~ .intel-tilt-shell { transform: rotateX(10deg) rotateY(-10deg) rotateY(180deg); }
+        .intel-tilt-tracker:nth-child(2):hover ~ .intel-tilt-shell { transform: rotateX(10deg) rotateY(-5deg) rotateY(180deg); }
+        .intel-tilt-tracker:nth-child(3):hover ~ .intel-tilt-shell { transform: rotateX(10deg) rotateY(0deg) rotateY(180deg); }
+        .intel-tilt-tracker:nth-child(4):hover ~ .intel-tilt-shell { transform: rotateX(10deg) rotateY(5deg) rotateY(180deg); }
+        .intel-tilt-tracker:nth-child(5):hover ~ .intel-tilt-shell { transform: rotateX(10deg) rotateY(10deg) rotateY(180deg); }
+        .intel-tilt-tracker:nth-child(6):hover ~ .intel-tilt-shell { transform: rotateX(5deg) rotateY(-10deg) rotateY(180deg); }
+        .intel-tilt-tracker:nth-child(7):hover ~ .intel-tilt-shell { transform: rotateX(5deg) rotateY(-5deg) rotateY(180deg); }
+        .intel-tilt-tracker:nth-child(8):hover ~ .intel-tilt-shell { transform: rotateX(5deg) rotateY(0deg) rotateY(180deg); }
+        .intel-tilt-tracker:nth-child(9):hover ~ .intel-tilt-shell { transform: rotateX(5deg) rotateY(5deg) rotateY(180deg); }
+        .intel-tilt-tracker:nth-child(10):hover ~ .intel-tilt-shell { transform: rotateX(5deg) rotateY(10deg) rotateY(180deg); }
+        .intel-tilt-tracker:nth-child(11):hover ~ .intel-tilt-shell { transform: rotateX(0deg) rotateY(-10deg) rotateY(180deg); }
+        .intel-tilt-tracker:nth-child(12):hover ~ .intel-tilt-shell { transform: rotateX(0deg) rotateY(-5deg) rotateY(180deg); }
+        .intel-tilt-tracker:nth-child(13):hover ~ .intel-tilt-shell { transform: rotateX(0deg) rotateY(0deg) rotateY(180deg); }
+        .intel-tilt-tracker:nth-child(14):hover ~ .intel-tilt-shell { transform: rotateX(0deg) rotateY(5deg) rotateY(180deg); }
+        .intel-tilt-tracker:nth-child(15):hover ~ .intel-tilt-shell { transform: rotateX(0deg) rotateY(10deg) rotateY(180deg); }
+        .intel-tilt-tracker:nth-child(16):hover ~ .intel-tilt-shell { transform: rotateX(-5deg) rotateY(-10deg) rotateY(180deg); }
+        .intel-tilt-tracker:nth-child(17):hover ~ .intel-tilt-shell { transform: rotateX(-5deg) rotateY(-5deg) rotateY(180deg); }
+        .intel-tilt-tracker:nth-child(18):hover ~ .intel-tilt-shell { transform: rotateX(-5deg) rotateY(0deg) rotateY(180deg); }
+        .intel-tilt-tracker:nth-child(19):hover ~ .intel-tilt-shell { transform: rotateX(-5deg) rotateY(5deg) rotateY(180deg); }
+        .intel-tilt-tracker:nth-child(20):hover ~ .intel-tilt-shell { transform: rotateX(-5deg) rotateY(10deg) rotateY(180deg); }
+        .intel-tilt-tracker:nth-child(21):hover ~ .intel-tilt-shell { transform: rotateX(-10deg) rotateY(-10deg) rotateY(180deg); }
+        .intel-tilt-tracker:nth-child(22):hover ~ .intel-tilt-shell { transform: rotateX(-10deg) rotateY(-5deg) rotateY(180deg); }
+        .intel-tilt-tracker:nth-child(23):hover ~ .intel-tilt-shell { transform: rotateX(-10deg) rotateY(0deg) rotateY(180deg); }
+        .intel-tilt-tracker:nth-child(24):hover ~ .intel-tilt-shell { transform: rotateX(-10deg) rotateY(5deg) rotateY(180deg); }
+        .intel-tilt-tracker:nth-child(25):hover ~ .intel-tilt-shell { transform: rotateX(-10deg) rotateY(10deg) rotateY(180deg); }
 
         .site-footer {
             max-width: 1100px;
@@ -1042,8 +762,7 @@
             to { opacity: 1; transform: translateY(0); }
         }
         @media (max-width: 980px) {
-            .intel-carousel-shell { grid-template-columns: 1fr; }
-            .intel-detail { min-height: 220px; }
+            .intel-card-row { grid-template-columns: repeat(2, minmax(0, 1fr)); }
             .footer-source-grid { grid-template-columns: 1fr 1fr; }
         }
 
@@ -1052,11 +771,8 @@
             .login-wrapper { width: calc(100vw - 28px); }
             .form-container { padding: 34px 24px; }
             .intel-section { margin: 0 14px 18px; padding: 24px 18px; }
-            .intel-meter { width: 62px; height: 62px; font-size: 0.58rem; }
-            .intel-meter strong { font-size: 1.06rem; }
-            .intel-card { width: 100%; flex-basis: 100%; min-height: 286px; }
-            .intel-slider { min-height: 286px; }
-            .intel-kpis { grid-template-columns: 1fr; }
+            .intel-card-row { grid-template-columns: 1fr; }
+            .intel-tilt-card { min-height: 220px; }
             .site-footer { margin: 0 14px 18px; }
             .footer-trust-badges { grid-template-columns: 1fr; }
             .footer-source-grid { grid-template-columns: 1fr; }
@@ -1165,144 +881,117 @@
                 </div>
             </div>
 
-            <div class="intel-carousel-shell">
-                <div class="intel-left-stack">
-                    <div class="intel-meters">
-                        <div class="intel-meter"><span>Layer<strong>3</strong></span></div>
-                        <div class="intel-meter hot"><span>Live<strong>24/7</strong></span></div>
-                        <div class="intel-meter"><span>Modes<strong>5</strong></span></div>
-                    </div>
-                    <div class="intel-slider">
-                        <div class="intel-track">
-                            <article class="intel-card tone-1 reveal-io" style="--delay: 0.05s;">
-                                <div class="intel-flip-content">
-                                    <div class="intel-face intel-back">
-                                        <div class="intel-back-content">
-                                            <i data-lucide="scan-search" size="34"></i>
-                                            <strong>Hover To Inspect</strong>
-                                        </div>
-                                    </div>
-                                    <div class="intel-face intel-front">
-                                        <div class="intel-front-art"><span class="blob b1"></span><span class="blob b2"></span><span class="blob b3"></span><span class="photo"></span></div>
-                                        <div class="intel-content">
-                                            <div class="intel-head"><h4>Signal Capture</h4></div>
-                                            <div class="intel-lines">
-                                                <p class="intel-line">Normalizes URL format before analysis.</p>
-                                                <p class="intel-line">Flags risky TLDs and suspicious keyword patterns.</p>
-                                                <p class="intel-line">Uses domain entropy to spot scam-like hostnames.</p>
-                                            </div>
-                                        </div>
+            <div class="intel-card-row">
+                <article class="intel-tilt-card tone-1 reveal-io">
+                    <div class="intel-tilt-canvas">
+                        <span class="intel-tilt-tracker"></span><span class="intel-tilt-tracker"></span><span class="intel-tilt-tracker"></span><span class="intel-tilt-tracker"></span><span class="intel-tilt-tracker"></span>
+                        <span class="intel-tilt-tracker"></span><span class="intel-tilt-tracker"></span><span class="intel-tilt-tracker"></span><span class="intel-tilt-tracker"></span><span class="intel-tilt-tracker"></span>
+                        <span class="intel-tilt-tracker"></span><span class="intel-tilt-tracker"></span><span class="intel-tilt-tracker"></span><span class="intel-tilt-tracker"></span><span class="intel-tilt-tracker"></span>
+                        <span class="intel-tilt-tracker"></span><span class="intel-tilt-tracker"></span><span class="intel-tilt-tracker"></span><span class="intel-tilt-tracker"></span><span class="intel-tilt-tracker"></span>
+                        <span class="intel-tilt-tracker"></span><span class="intel-tilt-tracker"></span><span class="intel-tilt-tracker"></span><span class="intel-tilt-tracker"></span><span class="intel-tilt-tracker"></span>
+                        <div class="intel-tilt-shell">
+                            <div class="intel-face front"><span>Signal Capture</span></div>
+                            <div class="intel-face back">
+                                <div>
+                                    <div class="intel-back-title">Signal Capture</div>
+                                    <div class="intel-back-list">
+                                        <div>Normalizes URL format before analysis.</div>
+                                        <div>Flags risky TLDs and suspicious keyword patterns.</div>
+                                        <div>Uses domain entropy to spot scam-like hostnames.</div>
                                     </div>
                                 </div>
-                            </article>
-                            <article class="intel-card tone-2 reveal-io" style="--delay: 0.14s;">
-                                <div class="intel-flip-content">
-                                    <div class="intel-face intel-back">
-                                        <div class="intel-back-content">
-                                            <i data-lucide="network" size="34"></i>
-                                            <strong>Hover To Inspect</strong>
-                                        </div>
-                                    </div>
-                                    <div class="intel-face intel-front">
-                                        <div class="intel-front-art"><span class="blob b1"></span><span class="blob b2"></span><span class="blob b3"></span><span class="photo"></span></div>
-                                        <div class="intel-content">
-                                            <div class="intel-head"><h4>Context Fusion</h4></div>
-                                            <div class="intel-lines">
-                                                <p class="intel-line">Pulls VirusTotal URL analysis with engine metadata.</p>
-                                                <p class="intel-line">Includes SSL/TLS reachability as a trust signal.</p>
-                                                <p class="intel-line">Combines external and internal risk evidence.</p>
-                                            </div>
-                                        </div>
-                                    </div>
-                                </div>
-                            </article>
-                            <article class="intel-card tone-3 reveal-io" style="--delay: 0.22s;">
-                                <div class="intel-flip-content">
-                                    <div class="intel-face intel-back">
-                                        <div class="intel-back-content">
-                                            <i data-lucide="brain" size="34"></i>
-                                            <strong>Hover To Inspect</strong>
-                                        </div>
-                                    </div>
-                                    <div class="intel-face intel-front">
-                                        <div class="intel-front-art"><span class="blob b1"></span><span class="blob b2"></span><span class="blob b3"></span><span class="photo"></span></div>
-                                        <div class="intel-content">
-                                            <div class="intel-head"><h4>Adaptive AI</h4></div>
-                                            <div class="intel-lines">
-                                                <p class="intel-line">Stores user corrections in feedback data.</p>
-                                                <p class="intel-line">Retrains character n-gram RandomForest model.</p>
-                                                <p class="intel-line">Improves future suspicious URL detection.</p>
-                                            </div>
-                                        </div>
-                                    </div>
-                                </div>
-                            </article>
-                            <article class="intel-card tone-4 reveal-io" style="--delay: 0.3s;">
-                                <div class="intel-flip-content">
-                                    <div class="intel-face intel-back">
-                                        <div class="intel-back-content">
-                                            <i data-lucide="shield-alert" size="34"></i>
-                                            <strong>Hover To Inspect</strong>
-                                        </div>
-                                    </div>
-                                    <div class="intel-face intel-front">
-                                        <div class="intel-front-art"><span class="blob b1"></span><span class="blob b2"></span><span class="blob b3"></span><span class="photo"></span></div>
-                                        <div class="intel-content">
-                                            <div class="intel-head"><h4>Actionable Verdict</h4></div>
-                                            <div class="intel-lines">
-                                                <p class="intel-line">Returns CLEAN, SUSPICIOUS, or MALICIOUS statuses.</p>
-                                                <p class="intel-line">Exposes vendor and stats evidence for context.</p>
-                                                <p class="intel-line">Updates user scan and threat counters.</p>
-                                            </div>
-                                        </div>
-                                    </div>
-                                </div>
-                            </article>
-                            <article class="intel-card tone-5 reveal-io" style="--delay: 0.38s;">
-                                <div class="intel-flip-content">
-                                    <div class="intel-face intel-back">
-                                        <div class="intel-back-content">
-                                            <i data-lucide="shield-check" size="34"></i>
-                                            <strong>Hover To Inspect</strong>
-                                        </div>
-                                    </div>
-                                    <div class="intel-face intel-front">
-                                        <div class="intel-front-art"><span class="blob b1"></span><span class="blob b2"></span><span class="blob b3"></span><span class="photo"></span></div>
-                                        <div class="intel-content">
-                                            <div class="intel-head"><h4>Trust at Scale</h4></div>
-                                            <div class="intel-lines">
-                                                <p class="intel-line">Maintains recent URL history per user.</p>
-                                                <p class="intel-line">Supports correction flow for model learning.</p>
-                                                <p class="intel-line">Keeps dashboard metrics synchronized.</p>
-                                            </div>
-                                        </div>
-                                    </div>
-                                </div>
-                            </article>
+                            </div>
                         </div>
                     </div>
-                    <div class="intel-nav">
-                        <button type="button" class="intel-nav-btn" id="intelPrev" aria-label="Previous slide">&#8249;</button>
-                        <span class="intel-counter" id="intelCounter">Intel 01 / 05</span>
-                        <button type="button" class="intel-nav-btn" id="intelNext" aria-label="Next slide">&#8250;</button>
+                </article>
+                <article class="intel-tilt-card tone-2 reveal-io">
+                    <div class="intel-tilt-canvas">
+                        <span class="intel-tilt-tracker"></span><span class="intel-tilt-tracker"></span><span class="intel-tilt-tracker"></span><span class="intel-tilt-tracker"></span><span class="intel-tilt-tracker"></span>
+                        <span class="intel-tilt-tracker"></span><span class="intel-tilt-tracker"></span><span class="intel-tilt-tracker"></span><span class="intel-tilt-tracker"></span><span class="intel-tilt-tracker"></span>
+                        <span class="intel-tilt-tracker"></span><span class="intel-tilt-tracker"></span><span class="intel-tilt-tracker"></span><span class="intel-tilt-tracker"></span><span class="intel-tilt-tracker"></span>
+                        <span class="intel-tilt-tracker"></span><span class="intel-tilt-tracker"></span><span class="intel-tilt-tracker"></span><span class="intel-tilt-tracker"></span><span class="intel-tilt-tracker"></span>
+                        <span class="intel-tilt-tracker"></span><span class="intel-tilt-tracker"></span><span class="intel-tilt-tracker"></span><span class="intel-tilt-tracker"></span><span class="intel-tilt-tracker"></span>
+                        <div class="intel-tilt-shell">
+                            <div class="intel-face front"><span>Context Fusion</span></div>
+                            <div class="intel-face back">
+                                <div>
+                                    <div class="intel-back-title">Context Fusion</div>
+                                    <div class="intel-back-list">
+                                        <div>Pulls VirusTotal URL analysis with engine metadata.</div>
+                                        <div>Includes SSL/TLS reachability as a trust signal.</div>
+                                        <div>Combines external and internal risk evidence.</div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
                     </div>
-                    <div class="intel-dots" id="intelDots"></div>
-                </div>
-                <aside class="intel-detail" id="intelDetail">
-                    <div class="intel-detail-head">Intel Brief</div>
-                    <h4 class="intel-detail-title" id="intelDetailTitle">Signal Capture</h4>
-                    <div class="intel-detail-lines" id="intelDetailLines">
-                        <div class="intel-detail-line">Normalizes URL format before analysis.</div>
-                        <div class="intel-detail-line">Flags risky TLDs and suspicious keyword patterns.</div>
-                        <div class="intel-detail-line">Uses domain entropy to spot scam-like hostnames.</div>
+                </article>
+                <article class="intel-tilt-card tone-3 reveal-io">
+                    <div class="intel-tilt-canvas">
+                        <span class="intel-tilt-tracker"></span><span class="intel-tilt-tracker"></span><span class="intel-tilt-tracker"></span><span class="intel-tilt-tracker"></span><span class="intel-tilt-tracker"></span>
+                        <span class="intel-tilt-tracker"></span><span class="intel-tilt-tracker"></span><span class="intel-tilt-tracker"></span><span class="intel-tilt-tracker"></span><span class="intel-tilt-tracker"></span>
+                        <span class="intel-tilt-tracker"></span><span class="intel-tilt-tracker"></span><span class="intel-tilt-tracker"></span><span class="intel-tilt-tracker"></span><span class="intel-tilt-tracker"></span>
+                        <span class="intel-tilt-tracker"></span><span class="intel-tilt-tracker"></span><span class="intel-tilt-tracker"></span><span class="intel-tilt-tracker"></span><span class="intel-tilt-tracker"></span>
+                        <span class="intel-tilt-tracker"></span><span class="intel-tilt-tracker"></span><span class="intel-tilt-tracker"></span><span class="intel-tilt-tracker"></span><span class="intel-tilt-tracker"></span>
+                        <div class="intel-tilt-shell">
+                            <div class="intel-face front"><span>Adaptive AI</span></div>
+                            <div class="intel-face back">
+                                <div>
+                                    <div class="intel-back-title">Adaptive AI</div>
+                                    <div class="intel-back-list">
+                                        <div>Stores user corrections in feedback data.</div>
+                                        <div>Retrains character n-gram RandomForest model.</div>
+                                        <div>Improves future suspicious URL detection.</div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
                     </div>
-                </aside>
-            </div>
-
-            <div class="intel-kpis">
-                <div class="intel-kpi reveal-io" style="--delay: 0.06s;"><strong>OAuth</strong><span>Google Sign-In Session</span></div>
-                <div class="intel-kpi reveal-io" style="--delay: 0.14s;"><strong>3-Layer</strong><span>VT + Heuristic + ML</span></div>
-                <div class="intel-kpi reveal-io" style="--delay: 0.22s;"><strong>Feedback</strong><span>User-Correction Learning</span></div>
+                </article>
+                <article class="intel-tilt-card tone-4 reveal-io">
+                    <div class="intel-tilt-canvas">
+                        <span class="intel-tilt-tracker"></span><span class="intel-tilt-tracker"></span><span class="intel-tilt-tracker"></span><span class="intel-tilt-tracker"></span><span class="intel-tilt-tracker"></span>
+                        <span class="intel-tilt-tracker"></span><span class="intel-tilt-tracker"></span><span class="intel-tilt-tracker"></span><span class="intel-tilt-tracker"></span><span class="intel-tilt-tracker"></span>
+                        <span class="intel-tilt-tracker"></span><span class="intel-tilt-tracker"></span><span class="intel-tilt-tracker"></span><span class="intel-tilt-tracker"></span><span class="intel-tilt-tracker"></span>
+                        <span class="intel-tilt-tracker"></span><span class="intel-tilt-tracker"></span><span class="intel-tilt-tracker"></span><span class="intel-tilt-tracker"></span><span class="intel-tilt-tracker"></span>
+                        <span class="intel-tilt-tracker"></span><span class="intel-tilt-tracker"></span><span class="intel-tilt-tracker"></span><span class="intel-tilt-tracker"></span><span class="intel-tilt-tracker"></span>
+                        <div class="intel-tilt-shell">
+                            <div class="intel-face front"><span>Actionable Verdict</span></div>
+                            <div class="intel-face back">
+                                <div>
+                                    <div class="intel-back-title">Actionable Verdict</div>
+                                    <div class="intel-back-list">
+                                        <div>Returns CLEAN, SUSPICIOUS, or MALICIOUS statuses.</div>
+                                        <div>Exposes vendor and stats evidence for context.</div>
+                                        <div>Updates user scan and threat counters.</div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </article>
+                <article class="intel-tilt-card tone-5 reveal-io">
+                    <div class="intel-tilt-canvas">
+                        <span class="intel-tilt-tracker"></span><span class="intel-tilt-tracker"></span><span class="intel-tilt-tracker"></span><span class="intel-tilt-tracker"></span><span class="intel-tilt-tracker"></span>
+                        <span class="intel-tilt-tracker"></span><span class="intel-tilt-tracker"></span><span class="intel-tilt-tracker"></span><span class="intel-tilt-tracker"></span><span class="intel-tilt-tracker"></span>
+                        <span class="intel-tilt-tracker"></span><span class="intel-tilt-tracker"></span><span class="intel-tilt-tracker"></span><span class="intel-tilt-tracker"></span><span class="intel-tilt-tracker"></span>
+                        <span class="intel-tilt-tracker"></span><span class="intel-tilt-tracker"></span><span class="intel-tilt-tracker"></span><span class="intel-tilt-tracker"></span><span class="intel-tilt-tracker"></span>
+                        <span class="intel-tilt-tracker"></span><span class="intel-tilt-tracker"></span><span class="intel-tilt-tracker"></span><span class="intel-tilt-tracker"></span><span class="intel-tilt-tracker"></span>
+                        <div class="intel-tilt-shell">
+                            <div class="intel-face front"><span>Trust at Scale</span></div>
+                            <div class="intel-face back">
+                                <div>
+                                    <div class="intel-back-title">Trust at Scale</div>
+                                    <div class="intel-back-list">
+                                        <div>Maintains recent URL history per user.</div>
+                                        <div>Supports correction flow for model learning.</div>
+                                        <div>Keeps dashboard metrics synchronized.</div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </article>
             </div>
         </section>
 
@@ -1408,7 +1097,7 @@
             entries.forEach((entry) => {
                 if (entry.isIntersecting) {
                     entry.target.classList.add('in-view');
-                    if (entry.target.classList.contains('intel-card') || entry.target.classList.contains('intel-kpi')) {
+                    if (entry.target.classList.contains('intel-tilt-card')) {
                         entry.target.style.opacity = '1';
                     }
                     io.unobserve(entry.target);
@@ -1416,126 +1105,6 @@
             });
         }, { threshold: 0.18 });
         scrollRevealEls.forEach((el) => io.observe(el));
-
-        const intelSlider = document.querySelector('.intel-slider');
-        const intelTrack = document.querySelector('.intel-track');
-        const intelCards = intelTrack ? Array.from(intelTrack.querySelectorAll('.intel-card')) : [];
-        const intelPrev = document.getElementById('intelPrev');
-        const intelNext = document.getElementById('intelNext');
-        const intelCounter = document.getElementById('intelCounter');
-        const intelDots = document.getElementById('intelDots');
-        const intelDetail = document.getElementById('intelDetail');
-        const intelDetailTitle = document.getElementById('intelDetailTitle');
-        const intelDetailLines = document.getElementById('intelDetailLines');
-        let intelIndex = 0;
-        let intelActive = 0;
-        let intelResizeTimer = 0;
-        let intelAutoTimer = 0;
-
-        function intelVisibleCount() {
-            return 1;
-        }
-
-        function intelStepSize() {
-            if (!intelTrack || !intelCards.length) return 0;
-            const styles = window.getComputedStyle(intelTrack);
-            const gap = parseFloat(styles.columnGap || styles.gap || '14') || 14;
-            return intelCards[0].getBoundingClientRect().width + gap;
-        }
-
-        function intelMaxIndex() {
-            return Math.max(0, intelCards.length - intelVisibleCount());
-        }
-
-        function renderIntelDetail(index) {
-            if (!intelDetail || !intelDetailTitle || !intelDetailLines || !intelCards[index]) return;
-            const heading = intelCards[index].querySelector('.intel-head h4');
-            const lines = Array.from(intelCards[index].querySelectorAll('.intel-line')).map((el) => el.textContent.trim());
-            intelDetailTitle.textContent = heading ? heading.textContent.trim() : `Slide ${index + 1}`;
-            intelDetailLines.innerHTML = lines.map((line) => `<div class="intel-detail-line">${line}</div>`).join('');
-            intelDetail.classList.remove('in');
-            requestAnimationFrame(() => intelDetail.classList.add('in'));
-        }
-
-        function renderIntelDots(index) {
-            if (!intelDots) return;
-            if (!intelDots.children.length) {
-                intelDots.innerHTML = intelCards.map((_, i) => `<button type="button" class="intel-dot${i === index ? ' active' : ''}" aria-label="Go to slide ${i + 1}"></button>`).join('');
-                Array.from(intelDots.children).forEach((dot, i) => {
-                    dot.addEventListener('click', () => {
-                        intelActive = i;
-                        intelIndex = Math.max(0, Math.min(i, intelMaxIndex()));
-                        renderIntelSlider();
-                        restartIntelAutoplay();
-                    });
-                });
-                return;
-            }
-            Array.from(intelDots.children).forEach((dot, i) => dot.classList.toggle('active', i === index));
-        }
-
-        function renderIntelSlider() {
-            if (!intelTrack || !intelCards.length) return;
-            const maxIndex = intelMaxIndex();
-            intelIndex = Math.max(0, Math.min(intelIndex, maxIndex));
-            intelTrack.style.transform = `translate3d(${-intelIndex * intelStepSize()}px, 0, 0)`;
-            intelActive = Math.max(0, Math.min(intelActive, intelCards.length - 1));
-            intelCards.forEach((card, i) => card.classList.toggle('is-active', i === intelActive));
-            if (intelCounter) intelCounter.textContent = `Intel ${String(intelActive + 1).padStart(2, '0')} / ${String(intelCards.length).padStart(2, '0')}`;
-            if (intelPrev) intelPrev.disabled = intelActive <= 0;
-            if (intelNext) intelNext.disabled = intelActive >= intelCards.length - 1;
-            renderIntelDots(intelActive);
-            renderIntelDetail(intelActive);
-        }
-
-        function startIntelAutoplay() {
-            clearInterval(intelAutoTimer);
-            intelAutoTimer = setInterval(() => {
-                intelActive = (intelActive + 1) % intelCards.length;
-                intelIndex = Math.max(0, Math.min(intelActive, intelMaxIndex()));
-                renderIntelSlider();
-            }, 3400);
-        }
-
-        function restartIntelAutoplay() {
-            clearInterval(intelAutoTimer);
-            startIntelAutoplay();
-        }
-
-        if (intelSlider && intelTrack && intelCards.length) {
-            if (intelPrev) intelPrev.addEventListener('click', () => {
-                intelActive -= 1;
-                intelIndex = Math.max(0, Math.min(intelActive, intelMaxIndex()));
-                renderIntelSlider();
-                restartIntelAutoplay();
-            });
-            if (intelNext) intelNext.addEventListener('click', () => {
-                intelActive += 1;
-                intelIndex = Math.max(0, Math.min(intelActive, intelMaxIndex()));
-                renderIntelSlider();
-                restartIntelAutoplay();
-            });
-            intelCards.forEach((card, index) => {
-                card.addEventListener('click', () => {
-                    intelActive = index;
-                    intelIndex = Math.max(0, Math.min(index, intelMaxIndex()));
-                    renderIntelSlider();
-                    restartIntelAutoplay();
-                });
-            });
-            intelSlider.addEventListener('mouseenter', () => clearInterval(intelAutoTimer));
-            intelSlider.addEventListener('mouseleave', startIntelAutoplay);
-            window.addEventListener('resize', () => {
-                clearTimeout(intelResizeTimer);
-                intelResizeTimer = setTimeout(() => {
-                    intelIndex = Math.max(0, Math.min(intelActive, intelMaxIndex()));
-                    renderIntelSlider();
-                }, 120);
-            });
-            if (intelDetail) intelDetail.classList.add('in');
-            renderIntelSlider();
-            startIntelAutoplay();
-        }
 
         function toggleForgotPanel() {
             const panel = document.getElementById('forgotPanel');
