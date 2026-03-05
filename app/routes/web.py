@@ -31,6 +31,13 @@ def _best_effort_location(request_obj) -> str:
 def home():
     if session.get("logged_in"):
         return redirect(url_for("web.dashboard"))
+    return render_template("landing.html")
+
+
+@web_bp.route("/login", methods=["GET"])
+def login_page():
+    if session.get("logged_in"):
+        return redirect(url_for("web.dashboard"))
     return render_template("login.html")
 
 
@@ -38,7 +45,7 @@ def home():
 def dashboard():
     email = session.get("user_email")
     if not email:
-        return redirect(url_for("web.home"))
+        return redirect(url_for("web.login_page"))
 
     show_tour = request.args.get("tour", "false") == "true"
     conn = get_db()
@@ -66,7 +73,7 @@ def dashboard():
 def app_vault_page():
     email = session.get("user_email")
     if not email:
-        return redirect(url_for("web.home"))
+        return redirect(url_for("web.login_page"))
     conn = get_db()
     user = conn.execute("SELECT * FROM users WHERE email = ?", (email,)).fetchone()
     unread_notifications = conn.execute(
@@ -80,7 +87,7 @@ def app_vault_page():
 def deep_scan_page():
     email = session.get("user_email")
     if not email:
-        return redirect(url_for("web.home"))
+        return redirect(url_for("web.login_page"))
     conn = get_db()
     user = conn.execute("SELECT * FROM users WHERE email = ?", (email,)).fetchone()
     return render_template("deep_scan.html", user=user)
@@ -92,12 +99,12 @@ def subscription():
 
 
 @web_bp.route("/login", methods=["POST"])
-def login():
+def login_submit():
     email = (request.form.get("email") or "").strip().lower()
     password = request.form.get("password") or ""
     if not email or not password:
         flash("Email and password are required.")
-        return redirect(url_for("web.home"))
+        return redirect(url_for("web.login_page"))
 
     conn = get_db()
     user = conn.execute("SELECT * FROM users WHERE email = ?", (email,)).fetchone()
@@ -113,7 +120,7 @@ def login():
         if saved_hash:
             if not check_password_hash(saved_hash, password):
                 flash("Invalid credentials.")
-                return redirect(url_for("web.home"))
+                return redirect(url_for("web.login_page"))
         else:
             conn.execute("UPDATE users SET password_hash = ? WHERE email = ?", (generate_password_hash(password), email))
             conn.commit()
@@ -151,7 +158,7 @@ def auth():
     token = google.authorize_access_token()
     user_info = token.get("userinfo")
     if not user_info:
-        return redirect(url_for("web.home"))
+        return redirect(url_for("web.login_page"))
 
     email = user_info["email"]
     conn = get_db()
@@ -194,7 +201,7 @@ def forgot_password_request():
     email = (request.form.get("email") or "").strip().lower()
     if not email:
         flash("Please enter a valid email.", "error")
-        return redirect(url_for("web.home"))
+        return redirect(url_for("web.login_page"))
 
     conn = get_db()
     user = conn.execute("SELECT email FROM users WHERE email = ?", (email,)).fetchone()
@@ -217,7 +224,7 @@ def forgot_password_request():
         send_password_reset_code(current_app._get_current_object(), email, code, expiry_minutes)
 
     flash("If account exists, a verification code has been sent to your email.", "info")
-    return redirect(url_for("web.home"))
+    return redirect(url_for("web.login_page"))
 
 
 @web_bp.route("/forgot-password/verify", methods=["POST"])
@@ -228,10 +235,10 @@ def forgot_password_verify():
 
     if not email or not code or not new_password:
         flash("Email, code, and new password are required.", "error")
-        return redirect(url_for("web.home"))
+        return redirect(url_for("web.login_page"))
     if len(new_password) < 8:
         flash("Password must be at least 8 characters.", "error")
-        return redirect(url_for("web.home"))
+        return redirect(url_for("web.login_page"))
 
     conn = get_db()
     row = conn.execute(
@@ -246,19 +253,19 @@ def forgot_password_verify():
     ).fetchone()
     if not row:
         flash("Invalid or expired code.", "error")
-        return redirect(url_for("web.home"))
+        return redirect(url_for("web.login_page"))
 
     now = int(time.time())
     raw = f"{email}|{code}|{current_app.config['SECRET_KEY']}"
     expected_hash = hashlib.sha256(raw.encode()).hexdigest()
     if row["used"] or now > row["expires_at"] or expected_hash != row["code_hash"]:
         flash("Invalid or expired code.", "error")
-        return redirect(url_for("web.home"))
+        return redirect(url_for("web.login_page"))
 
     user = conn.execute("SELECT email FROM users WHERE email = ?", (email,)).fetchone()
     if not user:
         flash("Invalid account.", "error")
-        return redirect(url_for("web.home"))
+        return redirect(url_for("web.login_page"))
 
     conn.execute("UPDATE users SET password_hash = ? WHERE email = ?", (generate_password_hash(new_password), email))
     conn.execute("UPDATE password_reset_codes SET used = 1 WHERE id = ?", (row["id"],))
@@ -272,4 +279,5 @@ def forgot_password_verify():
     )
 
     flash("Password updated. You can login now.", "success")
-    return redirect(url_for("web.home"))
+    return redirect(url_for("web.login_page"))
+
