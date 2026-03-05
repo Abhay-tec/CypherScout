@@ -495,9 +495,11 @@
             display: flex;
             align-items: flex-end;
             padding: 12px;
+            transition: visibility 120ms ease, opacity 120ms ease;
         }
         .intel-face.front {
-            transform: rotateY(0deg) translateZ(0.1px);
+            z-index: 2;
+            transform: rotateY(0deg);
             color: #fff;
             font-size: 0.9rem;
             font-weight: 800;
@@ -518,11 +520,22 @@
             z-index: 2;
         }
         .intel-face.back {
-            transform: rotateY(180deg) translateZ(0.1px);
+            z-index: 3;
+            transform: rotateY(180deg);
             background: linear-gradient(180deg, rgba(7, 14, 29, 0.97), rgba(2, 6, 23, 0.95));
             color: #dbeafe;
             align-items: flex-start;
             padding: 12px;
+            visibility: hidden;
+            opacity: 0;
+        }
+        .intel-tilt-card:hover .intel-face.front {
+            visibility: hidden;
+            opacity: 0;
+        }
+        .intel-tilt-card:hover .intel-face.back {
+            visibility: visible;
+            opacity: 1;
         }
         .intel-back-title {
             font-size: 0.76rem;
