@@ -481,7 +481,7 @@
             pointer-events: none;
         }
         .intel-tilt-tracker:hover ~ .intel-tilt-shell {
-            transform: rotateX(var(--rx)) rotateY(calc(180deg + var(--ry)));
+            transform: rotateX(var(--rx)) rotateY(var(--ry));
             filter: brightness(1.08);
             box-shadow: 0 18px 34px rgba(2, 6, 23, 0.58);
         }
@@ -496,7 +496,7 @@
             display: flex;
             align-items: flex-end;
             padding: 12px;
-            transition: visibility 120ms ease, opacity 120ms ease;
+            transition: transform 240ms ease, visibility 120ms ease, opacity 120ms ease;
         }
         .intel-face.front {
             z-index: 2;
@@ -522,7 +522,7 @@
         }
         .intel-face.back {
             z-index: 3;
-            transform: rotateY(180deg);
+            transform: rotateY(-180deg);
             background: linear-gradient(180deg, rgba(7, 14, 29, 0.97), rgba(2, 6, 23, 0.95));
             color: #dbeafe;
             align-items: flex-start;
@@ -531,10 +531,12 @@
             opacity: 0;
         }
         .intel-tilt-tracker:hover ~ .intel-tilt-shell .intel-face.front {
+            transform: rotateY(180deg);
             visibility: hidden;
             opacity: 0;
         }
         .intel-tilt-tracker:hover ~ .intel-tilt-shell .intel-face.back {
+            transform: rotateY(0deg);
             visibility: visible;
             opacity: 1;
         }
