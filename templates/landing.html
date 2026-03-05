@@ -1,283 +1,643 @@
-import hashlib
-import secrets
-import time
-from datetime import datetime
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>CypherScout | Creative Intelligence</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&family=Poppins:wght@500;600;700;800&display=swap" rel="stylesheet">
+    <script src="https://unpkg.com/lucide@latest"></script>
+    <style>
+        :root {
+            --bg: #f6f7fb;
+            --bg-soft: #eef1f9;
+            --text: #101828;
+            --muted: #4a5568;
+            --line: rgba(16, 24, 40, 0.08);
+            --card: rgba(255, 255, 255, 0.72);
+            --accent-a: #4f7cff;
+            --accent-b: #7a6dff;
+            --accent-c: #73d6ff;
+            --shadow: 0 22px 52px rgba(34, 46, 96, 0.14);
+            --radius: 20px;
+        }
 
-from flask import Blueprint, current_app, flash, redirect, render_template, request, session, url_for
-from werkzeug.security import check_password_hash, generate_password_hash
+        * { box-sizing: border-box; margin: 0; padding: 0; }
+        html { scroll-behavior: smooth; }
+        body {
+            font-family: "Inter", sans-serif;
+            color: var(--text);
+            background:
+                radial-gradient(circle at 15% 10%, rgba(79, 124, 255, 0.13), transparent 36%),
+                radial-gradient(circle at 85% 0%, rgba(122, 109, 255, 0.16), transparent 34%),
+                linear-gradient(180deg, #fbfcff 0%, #f3f6fd 48%, #f8f9fc 100%);
+            background-size: 130% 130%;
+            animation: bgShift 18s ease-in-out infinite alternate;
+            min-height: 100vh;
+            overflow-x: hidden;
+        }
 
-from app import oauth
-from app.db import get_db
-from app.services.notifications import push_notification
-from app.services.notify import send_login_notification, send_password_reset_code, send_security_alert
+        body::before {
+            content: "";
+            position: fixed;
+            inset: 0;
+            pointer-events: none;
+            background-image:
+                linear-gradient(rgba(16, 24, 40, 0.03) 1px, transparent 1px),
+                linear-gradient(90deg, rgba(16, 24, 40, 0.03) 1px, transparent 1px);
+            background-size: 46px 46px;
+            mask-image: radial-gradient(circle at center, black 35%, transparent 88%);
+            z-index: -1;
+        }
 
-web_bp = Blueprint("web", __name__)
+        @keyframes bgShift {
+            0% { background-position: 0% 0%, 100% 0%, 0 0; }
+            100% { background-position: 15% 18%, 86% 10%, 0 0; }
+        }
 
+        .container {
+            width: min(1160px, calc(100% - 2.5rem));
+            margin: 0 auto;
+        }
 
-@web_bp.route("/healthz")
-def healthz():
-    return {"status": "ok"}, 200
+        .top-nav {
+            position: sticky;
+            top: 0;
+            z-index: 30;
+            backdrop-filter: blur(0px);
+            transition: background-color 300ms ease, backdrop-filter 300ms ease, border-color 300ms ease;
+            border-bottom: 1px solid transparent;
+        }
 
+        .top-nav.scrolled {
+            background: rgba(249, 251, 255, 0.88);
+            backdrop-filter: blur(12px);
+            border-bottom-color: var(--line);
+        }
 
-def _best_effort_location(request_obj) -> str:
-    city = request_obj.headers.get("X-AppEngine-City") or request_obj.headers.get("CF-IPCity") or ""
-    region = request_obj.headers.get("X-AppEngine-Region") or request_obj.headers.get("CF-IPRegion") or ""
-    country = request_obj.headers.get("X-AppEngine-Country") or request_obj.headers.get("CF-IPCountry") or ""
-    parts = [part for part in [city, region, country] if part]
-    return ", ".join(parts) if parts else "Unknown"
+        .nav-inner {
+            min-height: 76px;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            gap: 20px;
+        }
 
+        .brand {
+            display: inline-flex;
+            align-items: center;
+            gap: 10px;
+            font-family: "Poppins", sans-serif;
+            font-weight: 700;
+            letter-spacing: 0.3px;
+        }
 
-@web_bp.route("/")
-def home():
-    if session.get("logged_in"):
-        return redirect(url_for("web.dashboard"))
-    return render_template("landing.html")
+        .brand-badge {
+            width: 34px;
+            height: 34px;
+            border-radius: 10px;
+            display: grid;
+            place-items: center;
+            color: #fff;
+            background: linear-gradient(130deg, var(--accent-a), var(--accent-b));
+            box-shadow: 0 12px 24px rgba(79, 124, 255, 0.28);
+        }
 
+        .nav-links {
+            display: flex;
+            align-items: center;
+            gap: 26px;
+        }
 
-@web_bp.route("/login", methods=["GET"])
-def login_page():
-    if session.get("logged_in"):
-        return redirect(url_for("web.dashboard"))
-    return render_template("login.html")
+        .nav-links a {
+            text-decoration: none;
+            color: #2d3748;
+            font-weight: 500;
+            transition: color 180ms ease;
+        }
 
+        .nav-links a:hover { color: var(--accent-a); }
 
-@web_bp.route("/dashboard")
-def dashboard():
-    email = session.get("user_email")
-    if not email:
-        return redirect(url_for("web.login_page"))
+        .btn {
+            border: 1px solid transparent;
+            border-radius: 999px;
+            padding: 12px 20px;
+            text-decoration: none;
+            font-weight: 600;
+            font-size: 0.95rem;
+            transition: transform 220ms ease, box-shadow 220ms ease, background 220ms ease;
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            gap: 8px;
+        }
 
-    show_tour = request.args.get("tour", "false") == "true"
-    conn = get_db()
-    user = conn.execute("SELECT * FROM users WHERE email = ?", (email,)).fetchone()
-    history = conn.execute(
-        "SELECT * FROM history WHERE email = ? ORDER BY timestamp DESC LIMIT 10",
-        (email,),
-    ).fetchall()
-    patterns = conn.execute("SELECT COUNT(*) FROM feedback").fetchone()[0]
-    unread_notifications = conn.execute(
-        "SELECT COUNT(*) FROM notifications WHERE email = ? AND is_read = 0",
-        (email,),
-    ).fetchone()[0]
-    return render_template(
-        "dashboard.html",
-        user=user,
-        history=history,
-        show_tour=show_tour,
-        ai_stats={"patterns_learned": patterns},
-        unread_notifications=unread_notifications,
-    )
+        .btn-primary {
+            color: #fff;
+            background: linear-gradient(125deg, var(--accent-a), var(--accent-b));
+            box-shadow: 0 16px 28px rgba(79, 124, 255, 0.28);
+        }
 
+        .btn-secondary {
+            color: var(--text);
+            border-color: var(--line);
+            background: rgba(255, 255, 255, 0.72);
+        }
 
-@web_bp.route("/app-vault")
-def app_vault_page():
-    email = session.get("user_email")
-    if not email:
-        return redirect(url_for("web.login_page"))
-    conn = get_db()
-    user = conn.execute("SELECT * FROM users WHERE email = ?", (email,)).fetchone()
-    unread_notifications = conn.execute(
-        "SELECT COUNT(*) FROM notifications WHERE email = ? AND is_read = 0",
-        (email,),
-    ).fetchone()[0]
-    return render_template("app_vault.html", user=user, unread_notifications=unread_notifications)
+        .btn:hover {
+            transform: translateY(-2px) scale(1.01);
+            box-shadow: 0 20px 34px rgba(79, 124, 255, 0.24);
+        }
 
+        .hero {
+            min-height: clamp(620px, 92vh, 760px);
+            display: grid;
+            place-items: center;
+            padding: 64px 0 32px;
+        }
 
-@web_bp.route("/deep-scan")
-def deep_scan_page():
-    email = session.get("user_email")
-    if not email:
-        return redirect(url_for("web.login_page"))
-    conn = get_db()
-    user = conn.execute("SELECT * FROM users WHERE email = ?", (email,)).fetchone()
-    return render_template("deep_scan.html", user=user)
+        .hero-grid {
+            display: grid;
+            grid-template-columns: 1.1fr 0.9fr;
+            gap: 34px;
+            align-items: center;
+        }
 
+        .entry-anim {
+            opacity: 0;
+            transform: scale(0.96) translateY(20px);
+            animation: heroEntry 820ms cubic-bezier(.22,.8,.28,1) forwards;
+        }
 
-@web_bp.route("/subscription")
-def subscription():
-    return render_template("subscription.html")
+        @keyframes heroEntry {
+            to { opacity: 1; transform: scale(1) translateY(0); }
+        }
 
+        .tag {
+            display: inline-flex;
+            align-items: center;
+            gap: 8px;
+            border: 1px solid rgba(79, 124, 255, 0.2);
+            background: rgba(255, 255, 255, 0.65);
+            border-radius: 999px;
+            padding: 8px 14px;
+            color: #1f3f9d;
+            font-weight: 600;
+            margin-bottom: 16px;
+            font-size: 0.82rem;
+        }
 
-@web_bp.route("/login", methods=["POST"])
-def login_submit():
-    email = (request.form.get("email") or "").strip().lower()
-    password = request.form.get("password") or ""
-    if not email or not password:
-        flash("Email and password are required.")
-        return redirect(url_for("web.login_page"))
+        h1 {
+            font-family: "Poppins", sans-serif;
+            font-size: clamp(2.2rem, 5vw, 4.3rem);
+            line-height: 1.02;
+            letter-spacing: -0.03em;
+            margin-bottom: 16px;
+        }
 
-    conn = get_db()
-    user = conn.execute("SELECT * FROM users WHERE email = ?", (email,)).fetchone()
-    if user is None:
-        name = email.split("@")[0].replace(".", " ").title()
-        conn.execute(
-            "INSERT INTO users (email, name, profile_pic, scans, threats, password_hash) VALUES (?, ?, ?, 0, 0, ?)",
-            (email, name, "", generate_password_hash(password)),
-        )
-        conn.commit()
-    else:
-        saved_hash = user["password_hash"]
-        if saved_hash:
-            if not check_password_hash(saved_hash, password):
-                flash("Invalid credentials.")
-                return redirect(url_for("web.login_page"))
-        else:
-            conn.execute("UPDATE users SET password_hash = ? WHERE email = ?", (generate_password_hash(password), email))
-            conn.commit()
+        .type-line {
+            min-height: 2rem;
+            color: #243b5e;
+            font-size: clamp(1rem, 2vw, 1.2rem);
+            margin-bottom: 20px;
+        }
 
-    session.update({"logged_in": True, "user_email": email, "login_at": datetime.utcnow().isoformat()})
-    send_login_notification(
-        current_app._get_current_object(),
-        email=email,
-        method="Email/Password",
-        ip_address=request.headers.get("X-Forwarded-For", request.remote_addr),
-        user_agent=request.user_agent.string,
-        location=_best_effort_location(request),
-    )
-    push_notification(
-        conn,
-        email,
-        "New Login",
-        f"Email/Password login from {request.headers.get('X-Forwarded-For', request.remote_addr) or 'Unknown IP'}",
-        "info",
-    )
-    conn.commit()
-    return redirect(url_for("web.dashboard"))
+        .type-line .cursor {
+            display: inline-block;
+            width: 2px;
+            height: 1em;
+            background: var(--accent-a);
+            margin-left: 4px;
+            animation: blink 1s step-end infinite;
+        }
 
+        @keyframes blink { 50% { opacity: 0; } }
 
-@web_bp.route("/google-login")
-def google_login():
-    google = oauth.create_client("google")
-    redirect_uri = current_app.config.get("OAUTH_REDIRECT_URI") or url_for("web.auth", _external=True)
-    return google.authorize_redirect(redirect_uri)
+        .hero-copy {
+            color: var(--muted);
+            line-height: 1.75;
+            max-width: 58ch;
+            margin-bottom: 26px;
+        }
 
+        .cta-row {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            flex-wrap: wrap;
+        }
 
-@web_bp.route("/auth")
-def auth():
-    google = oauth.create_client("google")
-    token = google.authorize_access_token()
-    user_info = token.get("userinfo")
-    if not user_info:
-        return redirect(url_for("web.login_page"))
+        .preview {
+            position: relative;
+            border-radius: 24px;
+            border: 1px solid rgba(79, 124, 255, 0.22);
+            background: linear-gradient(160deg, rgba(255, 255, 255, 0.82), rgba(236, 242, 255, 0.82));
+            box-shadow: var(--shadow);
+            overflow: hidden;
+            padding: 14px;
+            transform: translateZ(0);
+        }
 
-    email = user_info["email"]
-    conn = get_db()
-    existing = conn.execute("SELECT * FROM users WHERE email = ?", (email,)).fetchone()
-    if not existing:
-        conn.execute(
-            "INSERT INTO users (email, name, profile_pic, scans, threats, password_hash) VALUES (?, ?, ?, 0, 0, NULL)",
-            (email, user_info.get("name", email), user_info.get("picture", "")),
-        )
-        conn.commit()
+        .preview::after,
+        .shimmer::after {
+            content: "";
+            position: absolute;
+            inset: 0;
+            background: linear-gradient(110deg, transparent 25%, rgba(255,255,255,0.6) 48%, transparent 72%);
+            transform: translateX(-120%);
+            animation: shimmer 2.8s linear infinite;
+            pointer-events: none;
+        }
 
-    session.update({"logged_in": True, "user_email": email, "login_at": datetime.utcnow().isoformat()})
-    send_login_notification(
-        current_app._get_current_object(),
-        email=email,
-        method="Google OAuth",
-        ip_address=request.headers.get("X-Forwarded-For", request.remote_addr),
-        user_agent=request.user_agent.string,
-        location=_best_effort_location(request),
-    )
-    push_notification(
-        conn,
-        email,
-        "New Login",
-        f"Google OAuth login from {request.headers.get('X-Forwarded-For', request.remote_addr) or 'Unknown IP'}",
-        "info",
-    )
-    conn.commit()
-    return redirect(url_for("web.dashboard", tour="true"))
+        @keyframes shimmer {
+            to { transform: translateX(140%); }
+        }
 
+        .preview-media {
+            border-radius: 16px;
+            min-height: 360px;
+            background:
+                linear-gradient(140deg, rgba(79, 124, 255, 0.2), rgba(122, 109, 255, 0.24)),
+                url("https://images.unsplash.com/photo-1682687218147-9806132dc697?auto=format&fit=crop&w=1200&q=80");
+            background-size: cover;
+            background-position: center;
+            transition: transform 360ms ease;
+        }
 
-@web_bp.route("/logout")
-def logout():
-    session.clear()
-    return redirect(url_for("web.home"))
+        .preview:hover .preview-media { transform: scale(1.06); }
 
+        .preview-pill-row {
+            position: absolute;
+            bottom: 24px;
+            left: 24px;
+            right: 24px;
+            display: flex;
+            gap: 10px;
+            flex-wrap: wrap;
+        }
 
-@web_bp.route("/forgot-password/request", methods=["POST"])
-def forgot_password_request():
-    email = (request.form.get("email") or "").strip().lower()
-    if not email:
-        flash("Please enter a valid email.", "error")
-        return redirect(url_for("web.login_page"))
+        .pill {
+            font-size: 0.74rem;
+            border-radius: 999px;
+            padding: 7px 10px;
+            color: #1b365f;
+            border: 1px solid rgba(27, 54, 95, 0.18);
+            background: rgba(255,255,255,0.7);
+            backdrop-filter: blur(7px);
+        }
 
-    conn = get_db()
-    user = conn.execute("SELECT email FROM users WHERE email = ?", (email,)).fetchone()
-    # Generic response to prevent user enumeration
-    if user:
-        code = f"{secrets.randbelow(1000000):06d}"
-        raw = f"{email}|{code}|{current_app.config['SECRET_KEY']}"
-        code_hash = hashlib.sha256(raw.encode()).hexdigest()
-        now = int(time.time())
-        expiry_minutes = 10
-        expires_at = now + expiry_minutes * 60
+        .wave {
+            width: 100%;
+            display: block;
+            height: 80px;
+            margin-top: -6px;
+        }
 
-        conn.execute("UPDATE password_reset_codes SET used = 1 WHERE email = ? AND used = 0", (email,))
-        conn.execute(
-            "INSERT INTO password_reset_codes (email, code_hash, expires_at, used, created_at) VALUES (?, ?, ?, 0, ?)",
-            (email, code_hash, expires_at, now),
-        )
-        conn.commit()
+        section { padding: 64px 0; }
 
-        send_password_reset_code(current_app._get_current_object(), email, code, expiry_minutes)
+        .section-head {
+            margin-bottom: 26px;
+            display: flex;
+            justify-content: space-between;
+            align-items: end;
+            gap: 20px;
+            flex-wrap: wrap;
+        }
 
-    flash("If account exists, a verification code has been sent to your email.", "info")
-    return redirect(url_for("web.login_page"))
+        .section-head h2 {
+            font-family: "Poppins", sans-serif;
+            font-size: clamp(1.55rem, 3vw, 2.2rem);
+            letter-spacing: -0.02em;
+        }
 
+        .section-head p { color: var(--muted); max-width: 62ch; line-height: 1.7; }
 
-@web_bp.route("/forgot-password/verify", methods=["POST"])
-def forgot_password_verify():
-    email = (request.form.get("email") or "").strip().lower()
-    code = (request.form.get("code") or "").strip()
-    new_password = request.form.get("new_password") or ""
+        .grid {
+            display: grid;
+            gap: 16px;
+            grid-template-columns: repeat(3, minmax(0, 1fr));
+        }
 
-    if not email or not code or not new_password:
-        flash("Email, code, and new password are required.", "error")
-        return redirect(url_for("web.login_page"))
-    if len(new_password) < 8:
-        flash("Password must be at least 8 characters.", "error")
-        return redirect(url_for("web.login_page"))
+        .card {
+            background: var(--card);
+            border: 1px solid var(--line);
+            border-radius: var(--radius);
+            padding: 20px;
+            box-shadow: 0 12px 26px rgba(31, 49, 90, 0.08);
+            backdrop-filter: blur(8px);
+            transition: transform 240ms ease, box-shadow 240ms ease, border-color 240ms ease;
+            position: relative;
+            overflow: hidden;
+        }
 
-    conn = get_db()
-    row = conn.execute(
-        """
-        SELECT id, code_hash, expires_at, used
-        FROM password_reset_codes
-        WHERE email = ?
-        ORDER BY created_at DESC
-        LIMIT 1
-        """,
-        (email,),
-    ).fetchone()
-    if not row:
-        flash("Invalid or expired code.", "error")
-        return redirect(url_for("web.login_page"))
+        .card:hover {
+            transform: translateY(-6px);
+            box-shadow: 0 22px 34px rgba(31, 49, 90, 0.16);
+            border-color: rgba(79, 124, 255, 0.35);
+        }
 
-    now = int(time.time())
-    raw = f"{email}|{code}|{current_app.config['SECRET_KEY']}"
-    expected_hash = hashlib.sha256(raw.encode()).hexdigest()
-    if row["used"] or now > row["expires_at"] or expected_hash != row["code_hash"]:
-        flash("Invalid or expired code.", "error")
-        return redirect(url_for("web.login_page"))
+        .icon {
+            width: 36px;
+            height: 36px;
+            border-radius: 12px;
+            display: grid;
+            place-items: center;
+            color: #fff;
+            background: linear-gradient(145deg, var(--accent-a), var(--accent-b));
+            margin-bottom: 14px;
+            transition: transform 220ms ease;
+        }
 
-    user = conn.execute("SELECT email FROM users WHERE email = ?", (email,)).fetchone()
-    if not user:
-        flash("Invalid account.", "error")
-        return redirect(url_for("web.login_page"))
+        .card:hover .icon { transform: scale(1.08); }
 
-    conn.execute("UPDATE users SET password_hash = ? WHERE email = ?", (generate_password_hash(new_password), email))
-    conn.execute("UPDATE password_reset_codes SET used = 1 WHERE id = ?", (row["id"],))
-    conn.commit()
+        .card h3 {
+            font-family: "Poppins", sans-serif;
+            font-size: 1.05rem;
+            margin-bottom: 8px;
+        }
 
-    send_security_alert(
-        current_app._get_current_object(),
-        email=email,
-        title="Password Changed",
-        details="Your CypherScout account password was updated successfully.",
-    )
+        .card p { color: var(--muted); line-height: 1.65; font-size: 0.95rem; }
 
-    flash("Password updated. You can login now.", "success")
-    return redirect(url_for("web.login_page"))
+        .two-col {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 18px;
+        }
 
+        .step {
+            background: rgba(255, 255, 255, 0.78);
+            border: 1px solid var(--line);
+            border-radius: var(--radius);
+            padding: 20px;
+            display: flex;
+            gap: 14px;
+            align-items: start;
+            transition: transform 220ms ease, box-shadow 220ms ease;
+        }
+
+        .step:hover {
+            transform: translateY(-4px);
+            box-shadow: 0 18px 28px rgba(31, 49, 90, 0.14);
+        }
+
+        .step-num {
+            font-weight: 700;
+            color: #1d3f99;
+            background: rgba(79, 124, 255, 0.14);
+            border-radius: 10px;
+            min-width: 44px;
+            min-height: 44px;
+            display: grid;
+            place-items: center;
+        }
+
+        .cta-band {
+            border: 1px solid rgba(79, 124, 255, 0.3);
+            border-radius: 26px;
+            padding: clamp(24px, 4vw, 38px);
+            background:
+                radial-gradient(circle at top right, rgba(122, 109, 255, 0.24), transparent 55%),
+                linear-gradient(150deg, rgba(255,255,255,0.95), rgba(238,243,255,0.88));
+            box-shadow: var(--shadow);
+            display: grid;
+            grid-template-columns: 1fr auto;
+            align-items: center;
+            gap: 18px;
+        }
+
+        .footer {
+            padding: 26px 0 34px;
+            color: #52607a;
+            font-size: 0.92rem;
+        }
+
+        .reveal {
+            opacity: 0;
+            transform: translateY(26px);
+            transition: opacity 620ms ease, transform 620ms ease;
+        }
+
+        .reveal.from-top { transform: translateY(-26px); }
+
+        .reveal.in {
+            opacity: 1;
+            transform: translateY(0);
+        }
+
+        .stagger { transition-delay: var(--delay, 0ms); }
+
+        .parallax {
+            transform: translateY(var(--scroll-offset, 0px));
+            will-change: transform;
+        }
+
+        @media (max-width: 980px) {
+            .hero-grid,
+            .grid,
+            .two-col,
+            .cta-band { grid-template-columns: 1fr; }
+            .nav-links a { display: none; }
+            .preview-media { min-height: 290px; }
+            .hero { padding-top: 32px; }
+        }
+
+        @media (max-width: 640px) {
+            .container { width: calc(100% - 1.4rem); }
+            .nav-inner { min-height: 66px; }
+            .btn { padding: 10px 16px; font-size: 0.88rem; }
+            .card, .step { padding: 16px; }
+            .wave { height: 56px; }
+        }
+    </style>
+</head>
+<body>
+    <header class="top-nav" id="topNav">
+        <div class="container nav-inner">
+            <div class="brand">
+                <span class="brand-badge"><i data-lucide="sparkles" size="18"></i></span>
+                <span>CypherScout Create</span>
+            </div>
+            <nav class="nav-links">
+                <a href="#capabilities">Create</a>
+                <a href="#workflow">Motion</a>
+                <a href="#scale">Scale</a>
+                <a href="/login" class="btn btn-primary">Go to Login</a>
+            </nav>
+        </div>
+    </header>
+
+    <main>
+        <section class="hero">
+            <div class="container hero-grid">
+                <div class="entry-anim">
+                    <div class="tag"><i data-lucide="zap" size="15"></i> Generative Platform Experience</div>
+                    <h1>Create visual stories without limits</h1>
+                    <div class="type-line"> <span id="typeTarget"></span><span class="cursor"></span></div>
+                    <p class="hero-copy">CypherScout ka cinematic AI launchpad: concepts se polished visuals tak, motion-ready assets, and precision edits in one fluid workspace. Minimal layout, premium depth, fast interaction.</p>
+                    <div class="cta-row">
+                        <a href="/login" class="btn btn-primary">Start with Login <i data-lucide="arrow-right" size="16"></i></a>
+                        <a href="#capabilities" class="btn btn-secondary">Explore Features</a>
+                    </div>
+                </div>
+
+                <article class="preview parallax entry-anim shimmer" style="animation-delay:140ms;">
+                    <div class="preview-media"></div>
+                    <div class="preview-pill-row">
+                        <span class="pill">Image Generation</span>
+                        <span class="pill">Video Motion</span>
+                        <span class="pill">Precision Editing</span>
+                    </div>
+                </article>
+            </div>
+        </section>
+
+        <svg class="wave" viewBox="0 0 1440 120" preserveAspectRatio="none" aria-hidden="true">
+            <path fill="#f1f5ff" d="M0,96L60,90.7C120,85,240,75,360,74.7C480,75,600,85,720,85.3C840,85,960,75,1080,64C1200,53,1320,43,1380,37.3L1440,32L1440,120L1380,120C1320,120,1200,120,1080,120C960,120,840,120,720,120C600,120,480,120,360,120C240,120,120,120,60,120L0,120Z"></path>
+        </svg>
+
+        <section id="capabilities" style="background:#f1f5ff;">
+            <div class="container">
+                <div class="section-head reveal from-top">
+                    <h2>Built for artists, teams, and product creators</h2>
+                    <p>Section animations soft fade + directional slide se appear karte hain. Cards staggered reveal mein aate hain aur hover par lift + glow depth create karte hain.</p>
+                </div>
+                <div class="grid">
+                    <article class="card reveal stagger" style="--delay: 60ms;">
+                        <div class="icon"><i data-lucide="image" size="18"></i></div>
+                        <h3>Create Images</h3>
+                        <p>Simple prompts se high-quality outputs. Style consistency ke saath brand-centric visual directions generate karein.</p>
+                    </article>
+                    <article class="card reveal stagger" style="--delay: 140ms;">
+                        <div class="icon"><i data-lucide="film" size="18"></i></div>
+                        <h3>Bring Motion</h3>
+                        <p>Static frames ko dynamic shorts me transform karein with cinematic timing, social-ready pacing, and clean motion polish.</p>
+                    </article>
+                    <article class="card reveal stagger" style="--delay: 220ms;">
+                        <div class="icon"><i data-lucide="wand-sparkles" size="18"></i></div>
+                        <h3>Edit with Precision</h3>
+                        <p>Characters, composition, and style preserve rakhte hue targeted refinements. No need to restart from scratch.</p>
+                    </article>
+                    <article class="card reveal stagger" style="--delay: 80ms;">
+                        <div class="icon"><i data-lucide="maximize" size="18"></i></div>
+                        <h3>Upscale Quality</h3>
+                        <p>Resolution boost with detail retention for print, high-density displays, and professional client delivery.</p>
+                    </article>
+                    <article class="card reveal stagger" style="--delay: 160ms;">
+                        <div class="icon"><i data-lucide="shapes" size="18"></i></div>
+                        <h3>Flexible Models</h3>
+                        <p>Different aesthetics, stylization depth, and model personality with reusable configurations for fast iteration.</p>
+                    </article>
+                    <article class="card reveal stagger" style="--delay: 240ms;">
+                        <div class="icon"><i data-lucide="shield-check" size="18"></i></div>
+                        <h3>Production Ready</h3>
+                        <p>Enterprise-friendly workflow with layered UI depth, clean visual hierarchy, and reliable creative control points.</p>
+                    </article>
+                </div>
+            </div>
+        </section>
+
+        <svg class="wave" viewBox="0 0 1440 120" preserveAspectRatio="none" aria-hidden="true">
+            <path fill="#f8f9fd" d="M0,64L60,74.7C120,85,240,107,360,101.3C480,96,600,64,720,53.3C840,43,960,53,1080,58.7C1200,64,1320,64,1380,64L1440,64L1440,120L1380,120C1320,120,1200,120,1080,120C960,120,840,120,720,120C600,120,480,120,360,120C240,120,120,120,60,120L0,120Z"></path>
+        </svg>
+
+        <section id="workflow">
+            <div class="container">
+                <div class="section-head reveal">
+                    <h2>Fluid workflow from idea to launch</h2>
+                    <p>Scroll-based reveal + subtle parallax experience create cinematic depth while keeping the interface clean and minimal.</p>
+                </div>
+                <div class="two-col">
+                    <article class="step reveal stagger" style="--delay: 70ms;">
+                        <div class="step-num">01</div>
+                        <div>
+                            <h3>Ideate Fast</h3>
+                            <p>Prompt, remix, and branch concepts rapidly. Generate multiple high-fidelity options in minutes.</p>
+                        </div>
+                    </article>
+                    <article class="step reveal stagger" style="--delay: 140ms;">
+                        <div class="step-num">02</div>
+                        <div>
+                            <h3>Animate & Refine</h3>
+                            <p>Motion tools + precision edit controls maintain subject identity and visual consistency across iterations.</p>
+                        </div>
+                    </article>
+                    <article class="step reveal stagger" style="--delay: 210ms;">
+                        <div class="step-num">03</div>
+                        <div>
+                            <h3>Upscale & Package</h3>
+                            <p>Final assets ko print, web, social, and campaign use-cases ke liye export-ready quality par le jao.</p>
+                        </div>
+                    </article>
+                    <article class="step reveal stagger" style="--delay: 280ms;">
+                        <div class="step-num">04</div>
+                        <div>
+                            <h3>Secure Access</h3>
+                            <p>Is landing page ke baad direct login flow. Team authentication ke through dashboard access continue hota hai.</p>
+                        </div>
+                    </article>
+                </div>
+            </div>
+        </section>
+
+        <section id="scale">
+            <div class="container">
+                <div class="cta-band reveal">
+                    <div>
+                        <h2 style="font-family:'Poppins',sans-serif; margin-bottom:8px;">Ready to create at scale?</h2>
+                        <p style="color:var(--muted); line-height:1.7; max-width:62ch;">Yahan se user login page par jayega aur phir secure CypherScout dashboard experience continue karega.</p>
+                    </div>
+                    <a href="/login" class="btn btn-primary">Continue to Login <i data-lucide="arrow-right" size="16"></i></a>
+                </div>
+            </div>
+        </section>
+    </main>
+
+    <footer class="footer">
+        <div class="container" style="display:flex; justify-content:space-between; gap:14px; flex-wrap:wrap;">
+            <span>CypherScout Creative Landing</span>
+            <span>Responsive cinematic UI with modern motion system</span>
+        </div>
+    </footer>
+
+    <script>
+        lucide.createIcons();
+
+        const nav = document.getElementById("topNav");
+        const typeTarget = document.getElementById("typeTarget");
+        const line = "Generate, animate, edit, and scale with cinematic precision.";
+        let index = 0;
+
+        function typeWriter() {
+            if (!typeTarget || index > line.length) return;
+            typeTarget.textContent = line.slice(0, index);
+            index += 1;
+            setTimeout(typeWriter, 28);
+        }
+        typeWriter();
+
+        const revealEls = document.querySelectorAll(".reveal");
+        const observer = new IntersectionObserver((entries) => {
+            entries.forEach((entry) => {
+                if (entry.isIntersecting) {
+                    entry.target.classList.add("in");
+                    observer.unobserve(entry.target);
+                }
+            });
+        }, { threshold: 0.14 });
+        revealEls.forEach((el) => observer.observe(el));
+
+        const parallaxEls = document.querySelectorAll(".parallax");
+        function onScroll() {
+            const y = window.scrollY || 0;
+            if (nav) nav.classList.toggle("scrolled", y > 12);
+            parallaxEls.forEach((el, idx) => {
+                const speed = idx % 2 === 0 ? -0.04 : -0.07;
+                el.style.setProperty("--scroll-offset", `${y * speed}px`);
+            });
+        }
+        onScroll();
+        window.addEventListener("scroll", onScroll, { passive: true });
+    </script>
+</body>
+</html>
