@@ -473,10 +473,14 @@
             inset: 0;
             border-radius: 16px;
             transform-style: preserve-3d;
+            --rx: 0deg;
+            --ry: 0deg;
+            transform: rotateX(0deg) rotateY(0deg);
             transition: transform 180ms ease, box-shadow 220ms ease, filter 220ms ease;
             box-shadow: 0 10px 24px rgba(2, 6, 23, 0.42);
         }
         .intel-tilt-card:hover .intel-tilt-shell {
+            transform: rotateX(var(--rx)) rotateY(calc(180deg + var(--ry)));
             filter: brightness(1.08);
             box-shadow: 0 18px 34px rgba(2, 6, 23, 0.58);
         }
@@ -493,6 +497,7 @@
             padding: 12px;
         }
         .intel-face.front {
+            transform: rotateY(0deg) translateZ(0.1px);
             color: #fff;
             font-size: 0.9rem;
             font-weight: 800;
@@ -513,7 +518,7 @@
             z-index: 2;
         }
         .intel-face.back {
-            transform: rotateY(180deg);
+            transform: rotateY(180deg) translateZ(0.1px);
             background: linear-gradient(180deg, rgba(7, 14, 29, 0.97), rgba(2, 6, 23, 0.95));
             color: #dbeafe;
             align-items: flex-start;
@@ -533,9 +538,6 @@
             font-size: 0.68rem;
             line-height: 1.45;
         }
-        .intel-tilt-card:hover .intel-tilt-shell {
-            transform: rotateY(180deg);
-        }
         .intel-tilt-card.tone-1 .intel-face.front { background-image: linear-gradient(43deg, #4158d0 0%, #c850c0 46%, #ffcc70 100%); }
         .intel-tilt-card.tone-2 .intel-face.front { background-image: linear-gradient(43deg, #2563eb 0%, #0ea5e9 48%, #22d3ee 100%); }
         .intel-tilt-card.tone-3 .intel-face.front { background-image: linear-gradient(43deg, #0f766e 0%, #4f46e5 50%, #7c3aed 100%); }
@@ -546,31 +548,31 @@
             50% { background-position: 100% 50%; }
             100% { background-position: 0% 50%; }
         }
-        .intel-tilt-tracker:nth-child(1):hover ~ .intel-tilt-shell { transform: rotateX(10deg) rotateY(-10deg) rotateY(180deg); }
-        .intel-tilt-tracker:nth-child(2):hover ~ .intel-tilt-shell { transform: rotateX(10deg) rotateY(-5deg) rotateY(180deg); }
-        .intel-tilt-tracker:nth-child(3):hover ~ .intel-tilt-shell { transform: rotateX(10deg) rotateY(0deg) rotateY(180deg); }
-        .intel-tilt-tracker:nth-child(4):hover ~ .intel-tilt-shell { transform: rotateX(10deg) rotateY(5deg) rotateY(180deg); }
-        .intel-tilt-tracker:nth-child(5):hover ~ .intel-tilt-shell { transform: rotateX(10deg) rotateY(10deg) rotateY(180deg); }
-        .intel-tilt-tracker:nth-child(6):hover ~ .intel-tilt-shell { transform: rotateX(5deg) rotateY(-10deg) rotateY(180deg); }
-        .intel-tilt-tracker:nth-child(7):hover ~ .intel-tilt-shell { transform: rotateX(5deg) rotateY(-5deg) rotateY(180deg); }
-        .intel-tilt-tracker:nth-child(8):hover ~ .intel-tilt-shell { transform: rotateX(5deg) rotateY(0deg) rotateY(180deg); }
-        .intel-tilt-tracker:nth-child(9):hover ~ .intel-tilt-shell { transform: rotateX(5deg) rotateY(5deg) rotateY(180deg); }
-        .intel-tilt-tracker:nth-child(10):hover ~ .intel-tilt-shell { transform: rotateX(5deg) rotateY(10deg) rotateY(180deg); }
-        .intel-tilt-tracker:nth-child(11):hover ~ .intel-tilt-shell { transform: rotateX(0deg) rotateY(-10deg) rotateY(180deg); }
-        .intel-tilt-tracker:nth-child(12):hover ~ .intel-tilt-shell { transform: rotateX(0deg) rotateY(-5deg) rotateY(180deg); }
-        .intel-tilt-tracker:nth-child(13):hover ~ .intel-tilt-shell { transform: rotateX(0deg) rotateY(0deg) rotateY(180deg); }
-        .intel-tilt-tracker:nth-child(14):hover ~ .intel-tilt-shell { transform: rotateX(0deg) rotateY(5deg) rotateY(180deg); }
-        .intel-tilt-tracker:nth-child(15):hover ~ .intel-tilt-shell { transform: rotateX(0deg) rotateY(10deg) rotateY(180deg); }
-        .intel-tilt-tracker:nth-child(16):hover ~ .intel-tilt-shell { transform: rotateX(-5deg) rotateY(-10deg) rotateY(180deg); }
-        .intel-tilt-tracker:nth-child(17):hover ~ .intel-tilt-shell { transform: rotateX(-5deg) rotateY(-5deg) rotateY(180deg); }
-        .intel-tilt-tracker:nth-child(18):hover ~ .intel-tilt-shell { transform: rotateX(-5deg) rotateY(0deg) rotateY(180deg); }
-        .intel-tilt-tracker:nth-child(19):hover ~ .intel-tilt-shell { transform: rotateX(-5deg) rotateY(5deg) rotateY(180deg); }
-        .intel-tilt-tracker:nth-child(20):hover ~ .intel-tilt-shell { transform: rotateX(-5deg) rotateY(10deg) rotateY(180deg); }
-        .intel-tilt-tracker:nth-child(21):hover ~ .intel-tilt-shell { transform: rotateX(-10deg) rotateY(-10deg) rotateY(180deg); }
-        .intel-tilt-tracker:nth-child(22):hover ~ .intel-tilt-shell { transform: rotateX(-10deg) rotateY(-5deg) rotateY(180deg); }
-        .intel-tilt-tracker:nth-child(23):hover ~ .intel-tilt-shell { transform: rotateX(-10deg) rotateY(0deg) rotateY(180deg); }
-        .intel-tilt-tracker:nth-child(24):hover ~ .intel-tilt-shell { transform: rotateX(-10deg) rotateY(5deg) rotateY(180deg); }
-        .intel-tilt-tracker:nth-child(25):hover ~ .intel-tilt-shell { transform: rotateX(-10deg) rotateY(10deg) rotateY(180deg); }
+        .intel-tilt-tracker:nth-child(1):hover ~ .intel-tilt-shell { --rx: 10deg; --ry: -10deg; }
+        .intel-tilt-tracker:nth-child(2):hover ~ .intel-tilt-shell { --rx: 10deg; --ry: -5deg; }
+        .intel-tilt-tracker:nth-child(3):hover ~ .intel-tilt-shell { --rx: 10deg; --ry: 0deg; }
+        .intel-tilt-tracker:nth-child(4):hover ~ .intel-tilt-shell { --rx: 10deg; --ry: 5deg; }
+        .intel-tilt-tracker:nth-child(5):hover ~ .intel-tilt-shell { --rx: 10deg; --ry: 10deg; }
+        .intel-tilt-tracker:nth-child(6):hover ~ .intel-tilt-shell { --rx: 5deg; --ry: -10deg; }
+        .intel-tilt-tracker:nth-child(7):hover ~ .intel-tilt-shell { --rx: 5deg; --ry: -5deg; }
+        .intel-tilt-tracker:nth-child(8):hover ~ .intel-tilt-shell { --rx: 5deg; --ry: 0deg; }
+        .intel-tilt-tracker:nth-child(9):hover ~ .intel-tilt-shell { --rx: 5deg; --ry: 5deg; }
+        .intel-tilt-tracker:nth-child(10):hover ~ .intel-tilt-shell { --rx: 5deg; --ry: 10deg; }
+        .intel-tilt-tracker:nth-child(11):hover ~ .intel-tilt-shell { --rx: 0deg; --ry: -10deg; }
+        .intel-tilt-tracker:nth-child(12):hover ~ .intel-tilt-shell { --rx: 0deg; --ry: -5deg; }
+        .intel-tilt-tracker:nth-child(13):hover ~ .intel-tilt-shell { --rx: 0deg; --ry: 0deg; }
+        .intel-tilt-tracker:nth-child(14):hover ~ .intel-tilt-shell { --rx: 0deg; --ry: 5deg; }
+        .intel-tilt-tracker:nth-child(15):hover ~ .intel-tilt-shell { --rx: 0deg; --ry: 10deg; }
+        .intel-tilt-tracker:nth-child(16):hover ~ .intel-tilt-shell { --rx: -5deg; --ry: -10deg; }
+        .intel-tilt-tracker:nth-child(17):hover ~ .intel-tilt-shell { --rx: -5deg; --ry: -5deg; }
+        .intel-tilt-tracker:nth-child(18):hover ~ .intel-tilt-shell { --rx: -5deg; --ry: 0deg; }
+        .intel-tilt-tracker:nth-child(19):hover ~ .intel-tilt-shell { --rx: -5deg; --ry: 5deg; }
+        .intel-tilt-tracker:nth-child(20):hover ~ .intel-tilt-shell { --rx: -5deg; --ry: 10deg; }
+        .intel-tilt-tracker:nth-child(21):hover ~ .intel-tilt-shell { --rx: -10deg; --ry: -10deg; }
+        .intel-tilt-tracker:nth-child(22):hover ~ .intel-tilt-shell { --rx: -10deg; --ry: -5deg; }
+        .intel-tilt-tracker:nth-child(23):hover ~ .intel-tilt-shell { --rx: -10deg; --ry: 0deg; }
+        .intel-tilt-tracker:nth-child(24):hover ~ .intel-tilt-shell { --rx: -10deg; --ry: 5deg; }
+        .intel-tilt-tracker:nth-child(25):hover ~ .intel-tilt-shell { --rx: -10deg; --ry: 10deg; }
 
         .site-footer {
             max-width: 1100px;
