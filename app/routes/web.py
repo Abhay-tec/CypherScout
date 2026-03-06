@@ -2,8 +2,9 @@ import hashlib
 import secrets
 import time
 from datetime import datetime
+from pathlib import Path
 
-from flask import Blueprint, current_app, flash, redirect, render_template, request, session, url_for
+from flask import Blueprint, current_app, flash, redirect, render_template, request, send_from_directory, session, url_for
 from werkzeug.security import check_password_hash, generate_password_hash
 
 from app import oauth
@@ -96,6 +97,12 @@ def deep_scan_page():
 @web_bp.route("/subscription")
 def subscription():
     return render_template("subscription.html")
+
+
+@web_bp.route("/hero-video")
+def hero_video():
+    static_dir = Path(current_app.root_path).parent / "templates" / "static"
+    return send_from_directory(static_dir, "heroscreen.mp4", mimetype="video/mp4")
 
 
 @web_bp.route("/login", methods=["POST"])
@@ -280,4 +287,3 @@ def forgot_password_verify():
 
     flash("Password updated. You can login now.", "success")
     return redirect(url_for("web.login_page"))
-
