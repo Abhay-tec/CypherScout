@@ -1242,7 +1242,7 @@
         async function loadGovernanceApps() {
             const q = document.getElementById('appVaultSearch')?.value?.trim() || '';
             const category = document.getElementById('appVaultCategory')?.value || 'All';
-            const res = await fetch(`/api/app-vault/apps?q=${encodeURIComponent(q)}&category=${encodeURIComponent(category)}`);
+            const res = await fetch(`/api/app-governance/apps?q=${encodeURIComponent(q)}&category=${encodeURIComponent(category)}`);
             const data = await res.json();
             if (!res.ok) return;
             if (!governanceCategoriesLoaded) {
@@ -1253,13 +1253,13 @@
             const list = document.getElementById('appVaultList');
             list.innerHTML = data.apps.map(app => `
                 <div class="app-vault-item">
-                    <img class="app-logo" src="${app.logo_url}" onerror="this.src='https://www.google.com/s2/favicons?domain=${app.app_key}.com&sz=64';" alt="${app.display_name}">
+                    <img class="app-logo" src="https://www.google.com/s2/favicons?domain=${(app.homepage || app.app_key + '.com').replace(/^https?:\/\//,'')}&sz=64" alt="${app.display_name}">
                     <div>
                         <div style="font-size:12px; font-weight:700;">${app.display_name}</div>
                         <div style="font-size:10px; color:var(--text-dim);">${app.category}</div>
                     </div>
-                    <button class="app-select-btn ${app.selected ? 'selected' : ''}" onclick="toggleAppSelection('${app.app_key}', ${app.selected ? 0 : 1})">
-                        ${app.selected ? 'Selected' : 'Not Selected'}
+                    <button class="app-select-btn ${app.trust_level === 'ALLOW' ? 'selected' : ''}" onclick="toggleAppSelection('${app.app_key}', ${app.trust_level === 'ALLOW' ? 0 : 1})">
+                        ${app.trust_level === 'ALLOW' ? 'Selected' : 'Not Selected'}
                     </button>
                 </div>
             `).join('');
@@ -1460,6 +1460,5 @@
             }
         });
     </script>
-<script type="text/javascript" src="https://cdn.ywxi.net/js/1.js" async></script>
 </body>
 </html>
