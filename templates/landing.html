@@ -4,11 +4,12 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>CypherScout | AI Security Platform</title>
-    <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@300;400;600;800&family=Inter:wght@400;600;700&family=JetBrains+Mono:wght@500;700&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&family=Inter:wght@400;500;600;700&family=JetBrains+Mono:wght@500;700&display=swap" rel="stylesheet">
     <script src="https://unpkg.com/lucide@latest"></script>
     <style>
         :root {
             --bg-dark: #020617;
+            --bg-soft: #081327;
             --surface: rgba(15, 23, 42, 0.64);
             --surface-soft: rgba(15, 23, 42, 0.42);
             --border: rgba(186, 230, 253, 0.22);
@@ -17,10 +18,9 @@
             --accent-ice: #bae6fd;
             --text-white: #f8fafc;
             --text-dim: #94a3b8;
-            --hero-grad-a: rgba(56, 189, 248, 0.18);
-            --hero-grad-b: rgba(34, 211, 238, 0.12);
-            --danger: #fb7185;
             --ok: #34d399;
+            --danger: #fb7185;
+            --shadow: 0 24px 56px rgba(2, 6, 23, 0.46);
         }
 
         * { box-sizing: border-box; margin: 0; padding: 0; }
@@ -31,10 +31,9 @@
             font-family: "Inter", sans-serif;
             color: var(--text-white);
             background:
-                radial-gradient(circle at 15% 10%, var(--hero-grad-a), transparent 36%),
-                radial-gradient(circle at 86% 86%, var(--hero-grad-b), transparent 42%),
+                radial-gradient(circle at 15% 10%, rgba(56, 189, 248, 0.15), transparent 34%),
+                radial-gradient(circle at 86% 86%, rgba(34, 211, 238, 0.12), transparent 40%),
                 radial-gradient(circle at 50% 50%, #1e293b 0%, var(--bg-dark) 100%);
-            position: relative;
         }
 
         body::before {
@@ -42,104 +41,66 @@
             position: fixed;
             inset: 0;
             pointer-events: none;
-            background-image: linear-gradient(to right, rgba(186, 230, 253, 0.03) 1px, transparent 1px), linear-gradient(to bottom, rgba(186, 230, 253, 0.03) 1px, transparent 1px);
-            background-size: 36px 36px;
-            mask-image: radial-gradient(circle at 55% 30%, black 30%, transparent 88%);
             z-index: -1;
+            background-image:
+                linear-gradient(to right, rgba(186, 230, 253, 0.03) 1px, transparent 1px),
+                linear-gradient(to bottom, rgba(186, 230, 253, 0.03) 1px, transparent 1px);
+            background-size: 36px 36px;
+            mask-image: radial-gradient(circle at 55% 30%, black 30%, transparent 86%);
         }
-
-        .stellar {
-            position: fixed;
-            inset: -18%;
-            z-index: 0;
-            pointer-events: none;
-        }
-
-        .stars-a,
-        .stars-b {
-            position: absolute;
-            inset: 0;
-            will-change: transform;
-        }
-
-        .stars-a {
-            background:
-                radial-gradient(circle at 12% 20%, rgba(186, 230, 253, 0.88) 0 1px, transparent 1px),
-                radial-gradient(circle at 62% 33%, rgba(34, 211, 238, 0.8) 0 1px, transparent 1px),
-                radial-gradient(circle at 86% 75%, rgba(186, 230, 253, 0.76) 0 1px, transparent 1px);
-            background-size: 280px 280px, 320px 320px, 260px 260px;
-            opacity: 0.45;
-            animation: driftA 95s linear infinite;
-        }
-
-        .stars-b {
-            background:
-                radial-gradient(circle at 35% 65%, rgba(186, 230, 253, 0.7) 0 1px, transparent 1px),
-                radial-gradient(circle at 78% 38%, rgba(34, 211, 238, 0.62) 0 1px, transparent 1px);
-            background-size: 420px 420px, 470px 470px;
-            opacity: 0.28;
-            animation: driftB 120s linear infinite reverse;
-        }
-
-        @keyframes driftA { to { transform: translateY(18px); } }
-        @keyframes driftB { to { transform: translateY(-24px); } }
 
         .orb {
             position: fixed;
-            width: 45vmax;
-            height: 45vmax;
+            width: 42vmax;
+            height: 42vmax;
             border-radius: 999px;
-            filter: blur(70px);
-            opacity: 0.25;
-            z-index: 0;
             pointer-events: none;
+            filter: blur(72px);
+            opacity: 0.22;
+            z-index: 0;
             animation: orbFloat 16s ease-in-out infinite;
         }
 
         .orb.a {
-            top: -18vmax;
-            left: -14vmax;
-            background: radial-gradient(circle, rgba(56, 189, 248, 0.56) 0%, rgba(56, 189, 248, 0) 65%);
+            top: -14vmax;
+            left: -13vmax;
+            background: radial-gradient(circle, rgba(56, 189, 248, 0.58) 0%, rgba(56, 189, 248, 0) 65%);
         }
 
         .orb.b {
-            right: -16vmax;
+            right: -15vmax;
             bottom: -16vmax;
-            background: radial-gradient(circle, rgba(34, 211, 238, 0.54) 0%, rgba(34, 211, 238, 0) 66%);
+            background: radial-gradient(circle, rgba(34, 211, 238, 0.52) 0%, rgba(34, 211, 238, 0) 66%);
             animation-delay: -7s;
         }
 
         @keyframes orbFloat {
-            0%, 100% { transform: translateY(0px); }
-            50% { transform: translateY(-14px); }
+            0%, 100% { transform: translateY(0); }
+            50% { transform: translateY(-16px); }
         }
 
-        .site {
-            position: relative;
-            z-index: 5;
-        }
-
+        .site { position: relative; z-index: 5; }
         .container {
-            width: min(1140px, calc(100% - 34px));
-            margin: 0 auto;
+            width: min(1160px, calc(100% - 34px));
+            margin-inline: auto;
         }
 
         .top-nav {
             position: sticky;
             top: 0;
-            z-index: 20;
+            z-index: 40;
             border-bottom: 1px solid transparent;
-            transition: background 280ms ease, border-color 280ms ease, backdrop-filter 280ms ease;
+            transition: background 260ms ease, border-color 260ms ease, backdrop-filter 260ms ease;
         }
 
         .top-nav.scrolled {
-            background: rgba(2, 6, 23, 0.62);
-            backdrop-filter: blur(12px);
+            background: rgba(2, 6, 23, 0.66);
+            backdrop-filter: blur(10px);
             border-bottom-color: var(--border);
         }
 
         .nav-row {
-            min-height: 74px;
+            min-height: 76px;
             display: flex;
             align-items: center;
             justify-content: space-between;
@@ -150,34 +111,34 @@
             display: inline-flex;
             align-items: center;
             gap: 10px;
+            text-transform: uppercase;
+            letter-spacing: 1px;
             font-family: "Plus Jakarta Sans", sans-serif;
             font-weight: 800;
-            letter-spacing: 1px;
-            text-transform: uppercase;
         }
 
         .brand-badge {
-            width: 34px;
-            height: 34px;
+            width: 36px;
+            height: 36px;
             border-radius: 10px;
             display: grid;
             place-items: center;
-            background: linear-gradient(130deg, #8be9ff, #22d3ee);
+            background: linear-gradient(130deg, var(--accent-ice), var(--accent));
             color: #001018;
-            box-shadow: 0 0 22px rgba(34, 211, 238, 0.32);
+            box-shadow: 0 0 22px rgba(34, 211, 238, 0.35);
         }
 
         .nav-links {
             display: flex;
             align-items: center;
-            gap: 24px;
+            gap: 22px;
         }
 
         .nav-links a {
             text-decoration: none;
             color: var(--text-dim);
-            font-size: 0.92rem;
             font-weight: 600;
+            font-size: 0.92rem;
             transition: color 180ms ease;
         }
 
@@ -188,13 +149,13 @@
             align-items: center;
             justify-content: center;
             gap: 8px;
-            text-decoration: none;
             border-radius: 999px;
             border: 1px solid transparent;
             padding: 11px 18px;
             font-size: 0.9rem;
             font-weight: 700;
-            transition: transform 220ms ease, box-shadow 220ms ease, border-color 220ms ease;
+            text-decoration: none;
+            transition: transform 200ms ease, box-shadow 200ms ease, border-color 200ms ease;
         }
 
         .btn-main {
@@ -205,74 +166,69 @@
 
         .btn-alt {
             color: var(--accent-ice);
-            background: rgba(15, 23, 42, 0.45);
+            background: rgba(15, 23, 42, 0.46);
             border-color: var(--border);
         }
 
         .btn:hover {
             transform: translateY(-2px);
-            box-shadow: 0 14px 28px rgba(34, 211, 238, 0.28);
+            box-shadow: 0 14px 30px rgba(34, 211, 238, 0.26);
             border-color: var(--frost-line);
         }
 
         .hero {
-            min-height: 88vh;
+            padding: 34px 0 56px;
+            min-height: calc(100vh - 76px);
             display: grid;
             place-items: center;
-            padding: 30px 0 26px;
         }
 
         .hero-grid {
             display: grid;
-            grid-template-columns: 1.05fr 0.95fr;
+            grid-template-columns: 1.02fr 0.98fr;
             gap: 24px;
             align-items: center;
-        }
-
-        .entry {
-            opacity: 0;
-            transform: translateY(26px) scale(0.97);
-            animation: entryIn 860ms cubic-bezier(.2,.8,.25,1) forwards;
-        }
-
-        .entry.delay { animation-delay: 130ms; }
-
-        @keyframes entryIn {
-            to { opacity: 1; transform: translateY(0) scale(1); }
         }
 
         .eyebrow {
             display: inline-flex;
             align-items: center;
-            gap: 7px;
+            gap: 8px;
             padding: 8px 12px;
             border-radius: 999px;
-            border: 1px solid var(--frost-line);
             background: rgba(15, 23, 42, 0.48);
+            border: 1px solid var(--frost-line);
             color: var(--accent-ice);
-            font-weight: 700;
-            letter-spacing: 0.7px;
-            font-size: 0.75rem;
             text-transform: uppercase;
-            margin-bottom: 14px;
+            letter-spacing: 0.7px;
+            font-size: 0.74rem;
+            font-weight: 700;
+            margin-bottom: 15px;
         }
 
         h1 {
             font-family: "Plus Jakarta Sans", sans-serif;
-            font-weight: 800;
-            line-height: 0.96;
-            letter-spacing: -1.8px;
             text-transform: uppercase;
-            font-size: clamp(2.3rem, 5vw, 4.1rem);
-            margin-bottom: 12px;
+            letter-spacing: -1.8px;
+            line-height: 0.95;
+            font-weight: 800;
+            font-size: clamp(2.2rem, 5.2vw, 4.25rem);
+            margin-bottom: 14px;
             text-shadow: 0 12px 28px rgba(2, 6, 23, 0.56);
         }
 
+        .hero-copy {
+            color: var(--text-dim);
+            line-height: 1.72;
+            max-width: 60ch;
+            margin-bottom: 22px;
+        }
+
         .type-line {
-            min-height: 30px;
-            margin-bottom: 14px;
-            color: #dff5ff;
-            font-size: clamp(0.95rem, 2vw, 1.12rem);
+            min-height: 28px;
+            margin-bottom: 15px;
+            color: #e2f7ff;
+            font-size: clamp(0.94rem, 2vw, 1.08rem);
             font-family: "JetBrains Mono", monospace;
         }
 
@@ -280,211 +236,216 @@
             display: inline-block;
             width: 2px;
             height: 1em;
-            background: var(--accent);
             margin-left: 3px;
+            background: var(--accent);
             animation: blink 1s step-end infinite;
         }
 
         @keyframes blink { 50% { opacity: 0; } }
 
-        .hero-copy {
-            color: var(--text-dim);
-            line-height: 1.75;
-            max-width: 58ch;
-            margin-bottom: 22px;
-        }
-
         .cta-row {
             display: flex;
-            align-items: center;
             gap: 10px;
             flex-wrap: wrap;
-            margin-bottom: 16px;
+            margin-bottom: 18px;
         }
 
-        .quick-badges {
+        .mini-stats {
             display: flex;
             flex-wrap: wrap;
             gap: 8px;
         }
 
-        .quick-badges span {
-            border: 1px solid var(--border);
+        .mini-stats span {
             border-radius: 999px;
-            padding: 6px 10px;
-            font-size: 0.7rem;
-            letter-spacing: 0.5px;
-            color: var(--accent-ice);
-            background: rgba(15, 23, 42, 0.4);
-            text-transform: uppercase;
-        }
-
-        .hero-panel {
             border: 1px solid var(--border);
-            border-radius: 24px;
-            background: linear-gradient(160deg, rgba(15, 23, 42, 0.72), rgba(15, 23, 42, 0.5));
-            box-shadow: 0 28px 70px rgba(2, 6, 23, 0.45);
-            overflow: hidden;
-            backdrop-filter: blur(14px);
-            position: relative;
+            background: rgba(15, 23, 42, 0.42);
+            color: var(--accent-ice);
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+            font-size: 0.7rem;
+            padding: 6px 10px;
         }
 
-        .hero-panel::after {
+        .hero-card {
+            border-radius: 24px;
+            border: 1px solid var(--border);
+            background: linear-gradient(160deg, rgba(15, 23, 42, 0.72), rgba(15, 23, 42, 0.5));
+            box-shadow: var(--shadow);
+            overflow: hidden;
+            position: relative;
+            backdrop-filter: blur(12px);
+        }
+
+        .hero-card::after {
             content: "";
             position: absolute;
             inset: 0;
-            background: linear-gradient(112deg, transparent 30%, rgba(186, 230, 253, 0.2) 48%, transparent 70%);
-            transform: translateX(-120%);
-            animation: shimmer 3s linear infinite;
             pointer-events: none;
+            background: linear-gradient(108deg, transparent 30%, rgba(186, 230, 253, 0.2) 48%, transparent 72%);
+            transform: translateX(-120%);
+            animation: shimmer 3.2s linear infinite;
         }
 
-        @keyframes shimmer {
-            to { transform: translateX(150%); }
-        }
+        @keyframes shimmer { to { transform: translateX(150%); } }
 
-        .hero-media {
+        .hero-video-wrap {
+            min-height: 390px;
             position: relative;
-            min-height: 400px;
             overflow: hidden;
-            transition: transform 360ms ease;
-            background: linear-gradient(145deg, rgba(2, 6, 23, 0.45), rgba(2, 6, 23, 0.78));
+            background: linear-gradient(145deg, rgba(2, 6, 23, 0.45), rgba(2, 6, 23, 0.82));
+            transition: transform 300ms ease;
         }
 
-        .hero-media video {
+        .hero-video-wrap video {
             width: 100%;
             height: 100%;
-            min-height: 400px;
+            min-height: 390px;
             object-fit: cover;
             display: block;
-            filter: saturate(1.05) contrast(1.04);
+            filter: saturate(1.04) contrast(1.02);
         }
 
-        .hero-media::after {
+        .hero-video-wrap::after {
             content: "";
             position: absolute;
             inset: 0;
-            background: linear-gradient(145deg, rgba(2, 6, 23, 0.42), rgba(2, 6, 23, 0.72));
             pointer-events: none;
+            background: linear-gradient(145deg, rgba(2, 6, 23, 0.42), rgba(2, 6, 23, 0.7));
         }
 
-        .hero-panel:hover .hero-media { transform: scale(1.04); }
+        .hero-card:hover .hero-video-wrap { transform: scale(1.035); }
 
-        .hero-stats {
+        .hero-stat-row {
             position: absolute;
-            left: 16px;
-            right: 16px;
-            bottom: 16px;
+            left: 15px;
+            right: 15px;
+            bottom: 15px;
             display: grid;
             grid-template-columns: repeat(3, minmax(0, 1fr));
             gap: 8px;
         }
 
         .hero-stat {
-            border: 1px solid rgba(186, 230, 253, 0.28);
+            border: 1px solid rgba(186, 230, 253, 0.26);
+            background: rgba(2, 6, 23, 0.72);
             border-radius: 12px;
-            background: rgba(2, 6, 23, 0.7);
             padding: 10px 8px;
             text-align: center;
         }
 
         .hero-stat strong {
             display: block;
-            color: #e0f7ff;
-            font-size: 1rem;
             font-family: "JetBrains Mono", monospace;
+            font-size: 0.98rem;
+            color: #e5f8ff;
         }
 
         .hero-stat span {
             color: var(--text-dim);
-            font-size: 0.7rem;
             text-transform: uppercase;
             letter-spacing: 0.4px;
+            font-size: 0.68rem;
         }
 
-        .divider-wave {
-            width: 100%;
-            display: block;
-            height: 76px;
-            margin-top: -6px;
+        .partner-strip {
+            padding: 14px 0 24px;
+        }
+
+        .partner-box {
+            border: 1px solid var(--border);
+            border-radius: 16px;
+            background: rgba(15, 23, 42, 0.38);
+            display: grid;
+            grid-template-columns: repeat(5, minmax(0, 1fr));
+            gap: 6px;
+            padding: 14px;
+        }
+
+        .partner-box span {
+            text-align: center;
+            color: rgba(186, 230, 253, 0.8);
+            font-size: 0.78rem;
+            letter-spacing: 0.55px;
+            text-transform: uppercase;
+            border: 1px solid rgba(186, 230, 253, 0.16);
+            border-radius: 10px;
+            padding: 8px;
+            background: rgba(2, 6, 23, 0.45);
         }
 
         section {
-            padding: 62px 0;
-            position: relative;
+            padding: 60px 0;
         }
 
         .section-head {
-            margin-bottom: 20px;
             display: flex;
             justify-content: space-between;
-            gap: 12px;
             align-items: end;
             flex-wrap: wrap;
+            gap: 12px;
+            margin-bottom: 20px;
         }
 
         .section-head h2 {
             font-family: "Plus Jakarta Sans", sans-serif;
             text-transform: uppercase;
             letter-spacing: 0.5px;
-            font-size: clamp(1.35rem, 3vw, 2rem);
+            font-size: clamp(1.35rem, 2.9vw, 2rem);
         }
 
         .section-head p {
-            max-width: 62ch;
+            max-width: 64ch;
             color: var(--text-dim);
             line-height: 1.7;
             font-size: 0.95rem;
         }
 
-        .grid {
+        .feature-grid {
             display: grid;
-            gap: 14px;
             grid-template-columns: repeat(3, minmax(0, 1fr));
+            gap: 14px;
         }
 
-        .card {
+        .feature {
             border: 1px solid var(--border);
             border-radius: 18px;
             background: linear-gradient(160deg, rgba(15, 23, 42, 0.7), rgba(15, 23, 42, 0.48));
             padding: 18px;
             box-shadow: 0 16px 36px rgba(2, 6, 23, 0.38);
-            transition: transform 220ms ease, box-shadow 220ms ease, border-color 220ms ease;
+            transition: transform 220ms ease, border-color 220ms ease, box-shadow 220ms ease;
         }
 
-        .card:hover {
+        .feature:hover {
             transform: translateY(-5px);
             border-color: var(--frost-line);
-            box-shadow: 0 20px 42px rgba(2, 6, 23, 0.45);
+            box-shadow: 0 22px 45px rgba(2, 6, 23, 0.45);
         }
 
-        .card .icon {
-            width: 36px;
-            height: 36px;
+        .feature .icon {
+            width: 38px;
+            height: 38px;
+            border-radius: 11px;
             display: grid;
             place-items: center;
-            border-radius: 10px;
-            background: linear-gradient(130deg, rgba(186, 230, 253, 0.9), rgba(34, 211, 238, 0.9));
-            color: #001018;
             margin-bottom: 12px;
-            transition: transform 220ms ease;
+            background: linear-gradient(130deg, var(--accent-ice), var(--accent));
+            color: #001018;
         }
 
-        .card:hover .icon { transform: scale(1.08); }
-
-        .card h3 {
+        .feature h3 {
             font-family: "Plus Jakarta Sans", sans-serif;
-            margin-bottom: 7px;
+            margin-bottom: 8px;
             font-size: 1rem;
         }
 
-        .card p {
+        .feature p {
             color: var(--text-dim);
             line-height: 1.66;
             font-size: 0.9rem;
         }
 
-        .workflow {
+        .workflow-grid {
             display: grid;
             grid-template-columns: 1fr 1fr;
             gap: 14px;
@@ -496,79 +457,85 @@
             background: var(--surface-soft);
             padding: 16px;
             display: flex;
-            align-items: start;
             gap: 12px;
-            transition: transform 220ms ease, box-shadow 220ms ease;
+            align-items: start;
+            transition: transform 200ms ease, box-shadow 200ms ease;
         }
 
         .step:hover {
             transform: translateY(-4px);
-            box-shadow: 0 14px 30px rgba(2, 6, 23, 0.42);
+            box-shadow: 0 14px 32px rgba(2, 6, 23, 0.42);
         }
 
         .step-num {
             min-width: 42px;
             min-height: 42px;
             border-radius: 10px;
-            border: 1px solid var(--frost-line);
             display: grid;
             place-items: center;
-            color: #dff5ff;
             font-family: "JetBrains Mono", monospace;
             font-weight: 700;
-            background: rgba(2, 6, 23, 0.55);
+            color: #dff5ff;
+            background: rgba(2, 6, 23, 0.56);
+            border: 1px solid var(--frost-line);
         }
 
-        .status-strip {
+        .step p {
+            color: var(--text-dim);
+            margin-top: 6px;
+            line-height: 1.68;
+            font-size: 0.9rem;
+        }
+
+        .impact-strip {
             border: 1px solid var(--border);
             border-radius: 22px;
-            background: linear-gradient(145deg, rgba(15, 23, 42, 0.78), rgba(15, 23, 42, 0.56));
+            background: linear-gradient(145deg, rgba(15, 23, 42, 0.8), rgba(15, 23, 42, 0.58));
             padding: 24px;
+            box-shadow: 0 20px 44px rgba(2, 6, 23, 0.4);
             display: grid;
             grid-template-columns: 1fr auto;
-            align-items: center;
             gap: 14px;
-            box-shadow: 0 20px 44px rgba(2, 6, 23, 0.4);
+            align-items: center;
         }
 
-        .status-strip p {
+        .impact-strip p {
             color: var(--text-dim);
-            line-height: 1.7;
             margin-top: 6px;
+            line-height: 1.7;
         }
 
-        .tiny-status {
-            margin-top: 10px;
+        .tags {
             display: flex;
             gap: 8px;
             flex-wrap: wrap;
+            margin-top: 10px;
         }
 
-        .tiny-status span {
+        .tags span {
             font-size: 0.72rem;
-            border: 1px solid var(--border);
             border-radius: 999px;
             padding: 5px 10px;
-            background: rgba(2, 6, 23, 0.52);
+            border: 1px solid var(--border);
             color: var(--accent-ice);
+            background: rgba(2, 6, 23, 0.52);
         }
 
-        .ok { color: var(--ok); }
-        .bad { color: var(--danger); }
+        .tags .ok { color: var(--ok); }
+        .tags .bad { color: var(--danger); }
 
         .footer {
-            padding: 24px 0 32px;
+            padding: 24px 0 34px;
             color: var(--text-dim);
-            font-size: 0.86rem;
+            font-size: 0.85rem;
         }
 
         .reveal {
             opacity: 0;
-            transform: translateY(28px);
-            transition: opacity 640ms ease, transform 640ms ease;
+            transform: translateY(24px);
+            transition: opacity 620ms ease, transform 620ms ease;
         }
 
-        .reveal.top { transform: translateY(-24px); }
         .reveal.in {
             opacity: 1;
             transform: translateY(0);
@@ -576,36 +543,29 @@
 
         .stagger { transition-delay: var(--d, 0ms); }
 
-        .parallax {
-            transform: translateY(var(--yoff, 0px));
-            will-change: transform;
-        }
-
         @media (max-width: 980px) {
             .hero-grid,
-            .grid,
-            .workflow,
-            .status-strip,
-            .hero-stats { grid-template-columns: 1fr; }
+            .feature-grid,
+            .workflow-grid,
+            .impact-strip,
+            .hero-stat-row,
+            .partner-box { grid-template-columns: 1fr; }
+
+            .hero-video-wrap,
+            .hero-video-wrap video { min-height: 300px; }
+
             .nav-links a:not(.btn) { display: none; }
-            .hero-media,
-            .hero-media video { min-height: 300px; }
         }
 
         @media (max-width: 640px) {
             .container { width: calc(100% - 20px); }
             .nav-row { min-height: 64px; }
             .btn { padding: 10px 14px; font-size: 0.82rem; }
-            .card, .step { padding: 14px; }
-            .divider-wave { height: 58px; }
+            h1 { line-height: 1; }
         }
     </style>
 </head>
 <body>
-    <div class="stellar" aria-hidden="true">
-        <div class="stars-a"></div>
-        <div class="stars-b"></div>
-    </div>
     <div class="orb a" aria-hidden="true"></div>
     <div class="orb b" aria-hidden="true"></div>
 
@@ -628,29 +588,29 @@
         <main>
             <section class="hero">
                 <div class="container hero-grid">
-                    <div class="entry">
+                    <div class="reveal in">
                         <div class="eyebrow"><i data-lucide="radar" size="14"></i> AI Security Platform</div>
                         <h1>Protect users from modern scam infrastructure</h1>
                         <div class="type-line"><span id="typeTarget"></span><span class="cursor"></span></div>
-                        <p class="hero-copy">CypherScout is a website-level trust layer for phishing, scam links, and malicious domains. Platform combines multi-signal analysis, explainable verdicts, and adaptive intelligence so teams can move fast without compromising security.</p>
+                        <p class="hero-copy">CypherScout gives your team a website-level trust layer for phishing links, fake login pages, and malicious domains. Intelligence fusion, explainable risk scoring, and adaptive detection keep response fast without sacrificing accuracy.</p>
                         <div class="cta-row">
                             <a href="/login" class="btn btn-main">Enter Secure Console <i data-lucide="arrow-right" size="15"></i></a>
-                            <a href="#capabilities" class="btn btn-alt">View Capabilities</a>
+                            <a href="#capabilities" class="btn btn-alt">Explore Platform</a>
                         </div>
-                        <div class="quick-badges">
-                            <span>Vendor Verdict Fusion</span>
+                        <div class="mini-stats">
+                            <span>Multi-source Verdict Fusion</span>
                             <span>Adaptive URL Classifier</span>
-                            <span>Risk Explainability</span>
+                            <span>Investigation Ready Explainability</span>
                         </div>
                     </div>
 
-                    <article class="hero-panel parallax entry delay">
-                        <div class="hero-media">
+                    <article class="hero-card reveal stagger" style="--d:120ms;">
+                        <div class="hero-video-wrap">
                             <video autoplay muted loop playsinline preload="auto" aria-label="CypherScout hero motion background">
                                 <source src="{{ url_for('web.hero_video') }}" type="video/mp4">
                             </video>
                         </div>
-                        <div class="hero-stats">
+                        <div class="hero-stat-row">
                             <div class="hero-stat">
                                 <strong>250K+</strong>
                                 <span>Threat Signals</span>
@@ -668,46 +628,54 @@
                 </div>
             </section>
 
-            <svg class="divider-wave" viewBox="0 0 1440 120" preserveAspectRatio="none" aria-hidden="true">
-                <path fill="#081327" d="M0,96L80,101.3C160,107,320,117,480,112C640,107,800,85,960,80C1120,75,1280,85,1360,90.7L1440,96L1440,120L1360,120C1280,120,1120,120,960,120C800,120,640,120,480,120C320,120,160,120,80,120L0,120Z"></path>
-            </svg>
+            <section class="partner-strip">
+                <div class="container">
+                    <div class="partner-box reveal">
+                        <span>URL Reputation</span>
+                        <span>SSL Signal Checks</span>
+                        <span>Domain Behavior Graph</span>
+                        <span>Malware Pattern Feed</span>
+                        <span>Risk Explainability</span>
+                    </div>
+                </div>
+            </section>
 
             <section id="capabilities" style="background: linear-gradient(180deg, rgba(2,6,23,0.38), rgba(2,6,23,0.24));">
                 <div class="container">
-                    <div class="section-head reveal top">
+                    <div class="section-head reveal">
                         <h2>Platform Capabilities</h2>
-                        <p>CypherScout website experience highlights how detection, visibility, and response come together in one security platform.</p>
+                        <p>CypherScout combines continuous web intelligence, machine learning, and analyst-grade context so teams can classify and respond to suspicious infrastructure with confidence.</p>
                     </div>
-                    <div class="grid">
-                        <article class="card reveal stagger" style="--d: 60ms;">
+                    <div class="feature-grid">
+                        <article class="feature reveal stagger" style="--d:50ms;">
                             <div class="icon"><i data-lucide="link" size="18"></i></div>
                             <h3>Threat Detection Engine</h3>
-                            <p>Detects malicious patterns across domain behavior, URL structure, and threat reputation signals to classify risk confidently.</p>
+                            <p>Evaluates URL structure, hosting traits, and domain behavior patterns to identify scam infrastructure quickly.</p>
                         </article>
-                        <article class="card reveal stagger" style="--d: 130ms;">
+                        <article class="feature reveal stagger" style="--d:100ms;">
                             <div class="icon"><i data-lucide="database-zap" size="18"></i></div>
-                            <h3>Multi-Source Intelligence</h3>
-                            <p>Correlates independent intelligence providers and internal checks to reduce blind spots and improve decision reliability.</p>
+                            <h3>Intelligence Correlation</h3>
+                            <p>Fuses external reputation feeds and internal signals to reduce false positives and improve verdict confidence.</p>
                         </article>
-                        <article class="card reveal stagger" style="--d: 200ms;">
+                        <article class="feature reveal stagger" style="--d:150ms;">
                             <div class="icon"><i data-lucide="brain-circuit" size="18"></i></div>
-                            <h3>Adaptive ML Layer</h3>
-                            <p>Learns from validated outcomes and evolving patterns so detection quality improves continuously over time.</p>
+                            <h3>Adaptive ML Scoring</h3>
+                            <p>Continuously improves risk scoring from validated outcomes and attacker behavior changes.</p>
                         </article>
-                        <article class="card reveal stagger" style="--d: 80ms;">
-                            <div class="icon"><i data-lucide="bell-ring" size="18"></i></div>
-                            <h3>Actionable Alerts</h3>
-                            <p>Prioritized alerting with clear context helps security teams respond faster to events that actually matter.</p>
-                        </article>
-                        <article class="card reveal stagger" style="--d: 150ms;">
+                        <article class="feature reveal stagger" style="--d:70ms;">
                             <div class="icon"><i data-lucide="scan-search" size="18"></i></div>
                             <h3>Deep Investigation</h3>
-                            <p>Escalate suspicious findings into deeper analysis modes for high-risk campaigns and targeted abuse monitoring.</p>
+                            <p>Escalates suspicious indicators into deeper scan modes for targeted campaigns and higher-risk entities.</p>
                         </article>
-                        <article class="card reveal stagger" style="--d: 230ms;">
+                        <article class="feature reveal stagger" style="--d:120ms;">
+                            <div class="icon"><i data-lucide="bell-ring" size="18"></i></div>
+                            <h3>Actionable Alerts</h3>
+                            <p>Delivers prioritized alert context so analysts can decide and act faster during active phishing waves.</p>
+                        </article>
+                        <article class="feature reveal stagger" style="--d:170ms;">
                             <div class="icon"><i data-lucide="shield-ellipsis" size="18"></i></div>
-                            <h3>Governance Controls</h3>
-                            <p>Policy-aware controls keep workflows compliant while enabling teams to scale security operations safely.</p>
+                            <h3>Policy-Aware Controls</h3>
+                            <p>Aligns detection workflows with governance requirements while keeping operations practical and scalable.</p>
                         </article>
                     </div>
                 </div>
@@ -716,36 +684,36 @@
             <section id="workflow">
                 <div class="container">
                     <div class="section-head reveal">
-                        <h2>How CypherScout Delivers Value</h2>
-                        <p>From intake to decisioning and action, every stage is designed for speed, clarity, and operational trust.</p>
+                        <h2>How CypherScout Works</h2>
+                        <p>CypherScout is built to move from intake to trusted response in a clear sequence that supports both automation and analyst decisions.</p>
                     </div>
-                    <div class="workflow">
-                        <article class="step reveal stagger" style="--d: 60ms;">
+                    <div class="workflow-grid">
+                        <article class="step reveal stagger" style="--d:60ms;">
                             <div class="step-num">01</div>
                             <div>
                                 <h3>Collect & Normalize</h3>
-                                <p style="color:var(--text-dim); margin-top:6px; line-height:1.65;">Incoming web indicators are normalized and enriched so downstream analysis remains accurate and consistent.</p>
+                                <p>Incoming indicators are normalized to a consistent format so downstream analysis remains reliable.</p>
                             </div>
                         </article>
-                        <article class="step reveal stagger" style="--d: 130ms;">
+                        <article class="step reveal stagger" style="--d:120ms;">
                             <div class="step-num">02</div>
                             <div>
-                                <h3>Correlate Intelligence</h3>
-                                <p style="color:var(--text-dim); margin-top:6px; line-height:1.65;">Independent signals are fused into a confidence model to separate noise from real threats.</p>
+                                <h3>Fuse Intelligence</h3>
+                                <p>Signals from multiple providers and internal models are correlated into a unified confidence layer.</p>
                             </div>
                         </article>
-                        <article class="step reveal stagger" style="--d: 190ms;">
+                        <article class="step reveal stagger" style="--d:180ms;">
                             <div class="step-num">03</div>
                             <div>
-                                <h3>Explain Decisions</h3>
-                                <p style="color:var(--text-dim); margin-top:6px; line-height:1.65;">Every verdict includes transparent context so analysts and stakeholders can trust the outcome.</p>
+                                <h3>Explain The Verdict</h3>
+                                <p>Each risk decision includes transparent reasons that security teams can trust and audit later.</p>
                             </div>
                         </article>
-                        <article class="step reveal stagger" style="--d: 250ms;">
+                        <article class="step reveal stagger" style="--d:240ms;">
                             <div class="step-num">04</div>
                             <div>
-                                <h3>Respond & Improve</h3>
-                                <p style="color:var(--text-dim); margin-top:6px; line-height:1.65;">Teams trigger response playbooks and feedback loops that continuously harden future detections.</p>
+                                <h3>Respond & Learn</h3>
+                                <p>Playbooks execute based on severity while feedback loops improve future classification performance.</p>
                             </div>
                         </article>
                     </div>
@@ -754,11 +722,11 @@
 
             <section id="impact">
                 <div class="container">
-                    <div class="status-strip reveal">
+                    <div class="impact-strip reveal">
                         <div>
                             <h2 style="font-family:'Plus Jakarta Sans',sans-serif; text-transform:uppercase; letter-spacing:0.4px;">Security Outcomes That Scale</h2>
-                            <p>CypherScout helps teams cut investigation time, improve verdict confidence, and protect users against constantly changing phishing tactics.</p>
-                            <div class="tiny-status">
+                            <p>CypherScout helps reduce investigation time, increase decision confidence, and lower user exposure during phishing and scam campaigns.</p>
+                            <div class="tags">
                                 <span class="ok">Faster Analyst Response</span>
                                 <span>Higher Detection Confidence</span>
                                 <span class="bad">Lower Scam Exposure</span>
@@ -773,7 +741,7 @@
         <footer class="footer">
             <div class="container" style="display:flex;justify-content:space-between;gap:10px;flex-wrap:wrap;">
                 <span>CypherScout AI Security Platform</span>
-                <span>Dark cyber UI + animated security-first motion</span>
+                <span>Dark cyber UI with security-first motion and trust-focused UX</span>
             </div>
         </footer>
     </div>
@@ -805,14 +773,9 @@
         }, { threshold: 0.16 });
         revealItems.forEach((el) => io.observe(el));
 
-        const parallaxNodes = document.querySelectorAll(".parallax");
         function onScroll() {
             const y = window.scrollY || 0;
             if (nav) nav.classList.toggle("scrolled", y > 10);
-            parallaxNodes.forEach((node, i) => {
-                const speed = i % 2 === 0 ? -0.045 : -0.07;
-                node.style.setProperty("--yoff", `${y * speed}px`);
-            });
         }
         onScroll();
         window.addEventListener("scroll", onScroll, { passive: true });
