@@ -1,12 +1,15 @@
 import base64
 import hashlib
+import ipaddress
 import math
 import os
 import socket
 import ssl
+import re
 from urllib.parse import urlparse
 
 import requests
+from werkzeug.utils import secure_filename
 
 from app.ml import neural_engine
 
@@ -27,11 +30,31 @@ SHADY_TLDS = {"sbs", "icu", "top", "xyz", "shop", "online", "tk", "ml", "ga", "c
 def normalize_url(url: str) -> str:
     if not url:
         return ""
-    url = url.strip().lower()
+    url = str(url).strip().lower()
+    if len(url) > 2048:
+        return ""
     if not url.startswith(("http://", "https://")):
         url = "https://" + url
     parsed = urlparse(url)
-    return f"{parsed.scheme}://{parsed.netloc}{parsed.path}"
+    if parsed.scheme not in {"http", "https"}:
+        return ""
+    if not parsed.netloc or parsed.username or parsed.password:
+        return ""
+    host = (parsed.hostname or "").strip().lower()
+    if not host:
+        return ""
+    try:
+        ipaddress.ip_address(host)
+        is_ip = True
+    except ValueError:
+        is_ip = False
+        if not re.fullmatch(r"[a-z0-9.-]+", host):
+            return ""
+    if not is_ip and host != "localhost" and "." not in host:
+        return ""
+    path = parsed.path or "/"
+    query = f"?{parsed.query}" if parsed.query else ""
+    return f"{parsed.scheme}://{host}{path}{query}"
 
 
 def calculate_entropy(text: str) -> float:
@@ -57,7 +80,7 @@ def calculate_byte_entropy(data: bytes) -> float:
 
 
 def deep_scan_file(file_storage) -> dict:
-    filename = (file_storage.filename or "unknown.bin").strip()
+    filename = secure_filename((file_storage.filename or "unknown.bin").strip()) or "unknown.bin"
     raw = file_storage.read() or b""
     size = len(raw)
     ext = os.path.splitext(filename.lower())[1]
