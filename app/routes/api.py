@@ -408,7 +408,11 @@ def app_governance_apps():
 
     query = (request.args.get("q") or "").strip().lower()
     category = (request.args.get("category") or "All").strip()
-    limit = min(max(int(request.args.get("limit", "400")), 1), 500)
+    try:
+        limit = int(request.args.get("limit", "400"))
+    except (TypeError, ValueError):
+        limit = 400
+    limit = min(max(limit, 1), 500)
 
     conn = get_db()
     params = [email]
@@ -478,6 +482,106 @@ def app_governance_toggle():
         push_notification(conn, email, "App Allowed", f"Real permissions restored for {app_row['display_name']}", "success")
     conn.commit()
     return jsonify({"status": "ok", "app_key": app_key, "trust_level": trust_level})
+
+
+@api_bp.route("/app-vault/apps", methods=["GET"])
+def app_vault_apps_compat():
+    """
+    Backward-compatible endpoint for legacy dashboard clients.
+    Mirrors app-governance/apps with additional fields expected by older UI code.
+    """
+    email, err = _require_email()
+    if err:
+        return err
+
+    query = (request.args.get("q") or "").strip().lower()
+    category = (request.args.get("category") or "All").strip()
+    try:
+        limit = int(request.args.get("limit", "400"))
+    except (TypeError, ValueError):
+        limit = 400
+    limit = min(max(limit, 1), 500)
+
+    conn = get_db()
+    params = [email]
+    where_clauses = []
+    if query:
+        where_clauses.append("LOWER(g.display_name) LIKE ?")
+        params.append(f"%{query}%")
+    if category and category.lower() != "all":
+        where_clauses.append("g.category = ?")
+        params.append(category)
+
+    where_sql = f"WHERE {' AND '.join(where_clauses)}" if where_clauses else ""
+    rows = conn.execute(
+        f"""
+        SELECT
+            g.app_key,
+            g.display_name,
+            g.category,
+            g.homepage,
+            COALESCE(p.trust_level, 'BLOCK') AS trust_level
+        FROM governance_apps g
+        LEFT JOIN user_app_policies p ON p.app_key = g.app_key AND p.email = ?
+        {where_sql}
+        ORDER BY g.display_name
+        LIMIT ?
+        """,
+        (*params, limit),
+    ).fetchall()
+    categories = conn.execute("SELECT DISTINCT category FROM governance_apps ORDER BY category").fetchall()
+
+    apps = []
+    for row in rows:
+        app = dict(row)
+        app["selected"] = app.get("trust_level") == "ALLOW"
+        apps.append(app)
+
+    return jsonify(
+        {
+            "apps": apps,
+            "categories": ["All", *[row["category"] for row in categories]],
+            "total_catalog": conn.execute("SELECT COUNT(*) FROM governance_apps").fetchone()[0],
+        }
+    )
+
+
+@api_bp.route("/app-vault/select", methods=["POST"])
+def app_vault_select_compat():
+    """
+    Backward-compatible endpoint for legacy dashboard clients.
+    Accepts `selected` boolean and maps to ALLOW/BLOCK trust policy.
+    """
+    email, err = _require_email()
+    if err:
+        return err
+
+    data = request.get_json(silent=True) or {}
+    app_key = (data.get("app_key") or "").strip().lower()
+    selected = bool(data.get("selected", False))
+    if not app_key:
+        return jsonify({"status": "error", "message": "Invalid app selection"}), 400
+
+    trust_level = "ALLOW" if selected else "BLOCK"
+    conn = get_db()
+    app_row = conn.execute("SELECT display_name FROM governance_apps WHERE app_key = ?", (app_key,)).fetchone()
+    if not app_row:
+        return jsonify({"status": "error", "message": "App not found"}), 404
+
+    conn.execute(
+        """
+        INSERT INTO user_app_policies (email, app_key, trust_level, updated_at)
+        VALUES (?, ?, ?, ?)
+        ON CONFLICT(email, app_key) DO UPDATE SET trust_level = excluded.trust_level, updated_at = excluded.updated_at
+        """,
+        (email, app_key, trust_level, datetime.utcnow().strftime("%Y-%m-%d %H:%M:%S")),
+    )
+    if trust_level == "BLOCK":
+        push_notification(conn, email, "App Blocked", f"Shadow Mode will trigger for {app_row['display_name']}", "danger")
+    else:
+        push_notification(conn, email, "App Allowed", f"Real permissions restored for {app_row['display_name']}", "success")
+    conn.commit()
+    return jsonify({"status": "ok", "app_key": app_key, "selected": selected, "trust_level": trust_level})
 
 
 @api_bp.route("/notifications", methods=["GET"])
