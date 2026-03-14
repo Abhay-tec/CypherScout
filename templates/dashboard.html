@@ -1405,10 +1405,16 @@
             const urlParams = new URLSearchParams(window.location.search);
             const forcedTour = urlParams.get('tour') === 'true';
             const tourDone = localStorage.getItem('cypher_tour_done');
-            if (forcedTour || !tourDone) {
+            if (!tourDone) {
                 localStorage.setItem('cypher_tour_done', 'true');
                 currentStep = 0;
                 showModal('tourChoiceModal');
+            }
+            if (forcedTour) {
+                urlParams.delete('tour');
+                const nextQuery = urlParams.toString();
+                const nextUrl = nextQuery ? `${window.location.pathname}?${nextQuery}` : window.location.pathname;
+                window.history.replaceState({}, '', nextUrl);
             }
         }
 
