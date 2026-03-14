@@ -1,6 +1,9 @@
 import sqlite3
 from contextlib import closing
 from datetime import datetime, timezone
+from pathlib import Path
+import shutil
+import os
 
 from flask import Flask, g
 
@@ -34,13 +37,43 @@ def get_db() -> sqlite3.Connection:
 
 
 def open_connection(db_path: str) -> sqlite3.Connection:
-    conn = sqlite3.connect(db_path)
-    conn.row_factory = sqlite3.Row
-    return conn
+    try:
+        conn = sqlite3.connect(db_path)
+        conn.row_factory = sqlite3.Row
+        return conn
+    except sqlite3.OperationalError:
+        # Fallback for read-only root in serverless: try a writable /tmp copy.
+        tmp_path = "/tmp/cypher.db"
+        if db_path != tmp_path:
+            try:
+                Path("/tmp").mkdir(parents=True, exist_ok=True)
+                bundled = Path(db_path)
+                if bundled.exists():
+                    shutil.copyfile(bundled, tmp_path)
+                conn = sqlite3.connect(tmp_path)
+                conn.row_factory = sqlite3.Row
+                return conn
+            except Exception:
+                pass
+        raise
 
 
 def init_database(app: Flask) -> None:
-    with closing(open_connection(app.config["DATABASE_PATH"])) as conn:
+    db_path = Path(app.config["DATABASE_PATH"])
+    # If packaged DB is read-only (e.g., /var/task on Vercel), work on a /tmp copy.
+    if not (db_path.exists() and os.access(db_path, os.W_OK)) or str(db_path).startswith("/var/task"):
+        tmp_path = Path("/tmp/cypher.db")
+        try:
+            tmp_path.parent.mkdir(parents=True, exist_ok=True)
+            if db_path.exists() and not tmp_path.exists():
+                shutil.copyfile(db_path, tmp_path)
+            app.config["DATABASE_PATH"] = str(tmp_path)
+            db_path = tmp_path
+        except Exception:
+            # If copy fails, continue with original path (may still be writable)
+            pass
+
+    with closing(open_connection(str(db_path))) as conn:
         conn.execute(
             """
             CREATE TABLE IF NOT EXISTS users (
