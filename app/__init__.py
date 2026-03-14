@@ -47,6 +47,13 @@ def create_app(config_class: type[Config] = Config) -> Flask:
     app.register_blueprint(web_bp)
     app.register_blueprint(api_bp)
 
+    # On Vercel, persist DB in the writable /tmp mount; copy seed file if bundled.
+    db_path = Path(app.config["DATABASE_PATH"])
+    if str(db_path).startswith("/tmp"):
+        bundled_db = Path(app.root_path).parent / "cypher.db"
+        if bundled_db.exists() and not db_path.exists():
+            db_path.write_bytes(bundled_db.read_bytes())
+
     init_database(app)
 
     def _shadow_metadata_payload() -> dict:
