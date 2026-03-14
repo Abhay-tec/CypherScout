@@ -6,7 +6,10 @@ class Config:
     BASE_DIR = Path(__file__).resolve().parent.parent
 
     SECRET_KEY = os.getenv("SECRET_KEY", "change-this-in-production")
-    DATABASE_PATH = os.getenv("DATABASE_PATH", str(BASE_DIR / "cypher.db"))
+    _default_db = str(BASE_DIR / "cypher.db")
+    if os.getenv("VERCEL", "").lower() == "1":
+        _default_db = "/tmp/cypher.db"
+    DATABASE_PATH = os.getenv("DATABASE_PATH", _default_db)
 
     SESSION_DAYS = int(os.getenv("SESSION_DAYS", "7"))
     ALLOW_INSECURE_OAUTH = os.getenv("ALLOW_INSECURE_OAUTH", "false").lower() == "true"
