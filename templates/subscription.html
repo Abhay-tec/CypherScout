@@ -4,18 +4,17 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Upgrade Protocol | CypherScout</title>
-    <link rel="stylesheet" href="{{ url_for('static', filename='vibe.css') }}">
     <script src="https://unpkg.com/lucide@latest"></script>
     <style>
-        @import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600&family=Syne:wght@700;800&display=swap');
+        @import url('https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@300;400;600;800&display=swap');
 
         :root { 
-            --bg: #0a0a0b; 
-            --accent: #6366f1; 
-            --surface: #111113;
-            --card-bg: rgba(17, 17, 19, 0.7); 
-            --border: #ffffff18; 
-            --text-dim: #71717a;
+            --bg: #030712; 
+            --accent: #22d3ee; 
+            --surface: #0f172a;
+            --card-bg: rgba(15, 23, 42, 0.6); 
+            --border: rgba(34, 211, 238, 0.2); 
+            --text-dim: #94a3b8;
         }
 
         * { margin: 0; padding: 0; box-sizing: border-box; }
@@ -23,7 +22,7 @@
         body {
             background: var(--bg); 
             color: white; 
-            font-family: 'Inter', sans-serif;
+            font-family: 'Plus Jakarta Sans', sans-serif;
             display: flex; 
             flex-direction: column; 
             align-items: center; 
@@ -31,13 +30,8 @@
             min-height: 100vh; 
             margin: 0; 
             padding: 20px;
-            background-image:
-                radial-gradient(circle at 18% 12%, rgba(99, 102, 241, 0.16), transparent 34%),
-                radial-gradient(circle at 82% 80%, rgba(129, 140, 248, 0.12), transparent 42%),
-                radial-gradient(circle at 50% 50%, #0f172a 0%, #0a0a0b 100%);
-            position: relative;
+            background-image: radial-gradient(circle at 50% 50%, #0f172a 0%, #030712 100%);
         }
-        body > *:not(#cs-canvas) { position: relative; z-index: 1; }
 
         .back-nav {
             position: absolute;
@@ -134,7 +128,6 @@
     </style>
 </head>
 <body>
-    <canvas id="cs-canvas" class="canvas-holder"></canvas>
 
     <a href="/dashboard" class="back-nav">
         <i data-lucide="arrow-left" size="18"></i> BACK TO BASE
@@ -148,7 +141,7 @@
     <div class="grid">
         <div class="card">
             <h3>Field Agent</h3>
-            <div class="price">₹0<span>/mo</span></div>
+            <div class="price">?0<span>/mo</span></div>
             <ul class="features">
                 <li><i data-lucide="check-circle"></i> 50 Daily Scans</li>
                 <li><i data-lucide="check-circle"></i> Basic Threat Database</li>
@@ -160,7 +153,7 @@
         <div class="card premium">
             <div class="badge-top">RECOMMENDED</div>
             <h3>Elite Operative</h3>
-            <div class="price">₹499<span>/mo</span></div>
+            <div class="price">?499<span>/mo</span></div>
             <ul class="features">
                 <li><i data-lucide="zap"></i> Unlimited Neural Scans</li>
                 <li><i data-lucide="zap"></i> Priority AI Learning</li>
@@ -184,7 +177,6 @@
             }, 1500);
         }
     </script>
-    <script src="{{ url_for('static', filename='vibe-canvas.js') }}"></script>
 <script type="text/javascript" src="https://cdn.ywxi.net/js/1.js" async></script>
 </body>
 </html>
