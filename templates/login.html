@@ -4,18 +4,19 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>CypherScout | Secure Access</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='vibe.css') }}">
     <script src="https://unpkg.com/lucide@latest"></script>
-    <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@300;400;600;800&family=Inter:wght@400;700&family=JetBrains+Mono&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600&family=Syne:wght@700;800&family=JetBrains+Mono&display=swap" rel="stylesheet">
     <style>
         :root {
-            --bg-dark: #020617;
+            --bg-dark: #0a0a0b;
             --glass: rgba(255, 255, 255, 0.03);
-            --border: rgba(255, 255, 255, 0.1);
-            --frost-line: rgba(186, 230, 253, 0.25);
-            --accent: #22d3ee;
-            --accent-ice: #bae6fd;
-            --text-white: #ffffff;
-            --text-dim: #94a3b8;
+            --border: #ffffff18;
+            --frost-line: #ffffff24;
+            --accent: #6366f1;
+            --accent-ice: #818cf8;
+            --text-white: #f4f4f5;
+            --text-dim: #71717a;
             --mx: 50%;
             --my: 50%;
         }
@@ -25,15 +26,20 @@
 
         body {
             background:
-                radial-gradient(circle at 20% 20%, rgba(56, 189, 248, 0.15), transparent 35%),
-                radial-gradient(circle at 80% 80%, rgba(34, 211, 238, 0.12), transparent 40%),
-                radial-gradient(circle at 50% 50%, #1e293b 0%, #020617 100%);
+                radial-gradient(circle at 20% 20%, rgba(99, 102, 241, 0.16), transparent 35%),
+                radial-gradient(circle at 80% 80%, rgba(129, 140, 248, 0.12), transparent 40%),
+                radial-gradient(circle at 50% 50%, #0f172a 0%, #0a0a0b 100%);
             min-height: 100vh;
             color: var(--text-white);
-            font-family: 'Plus Jakarta Sans', sans-serif;
+            font-family: 'Inter', sans-serif;
             overflow-x: hidden;
             overflow-y: auto;
             position: relative;
+        }
+        
+        body > *:not(#cs-canvas) {
+            position: relative;
+            z-index: 1;
         }
 
         .stellar-scroll {
@@ -52,10 +58,10 @@
 
         .stellar-layer.near {
             background:
-                radial-gradient(circle at 10% 20%, rgba(186, 230, 253, 0.95) 0 1px, transparent 1px),
-                radial-gradient(circle at 35% 68%, rgba(186, 230, 253, 0.82) 0 1px, transparent 1px),
-                radial-gradient(circle at 75% 40%, rgba(34, 211, 238, 0.85) 0 1px, transparent 1px),
-                radial-gradient(circle at 90% 75%, rgba(186, 230, 253, 0.84) 0 1px, transparent 1px);
+                radial-gradient(circle at 10% 20%, rgba(129, 140, 248, 0.92) 0 1px, transparent 1px),
+                radial-gradient(circle at 35% 68%, rgba(99, 102, 241, 0.86) 0 1px, transparent 1px),
+                radial-gradient(circle at 75% 40%, rgba(139, 92, 246, 0.82) 0 1px, transparent 1px),
+                radial-gradient(circle at 90% 75%, rgba(129, 140, 248, 0.84) 0 1px, transparent 1px);
             background-size: 260px 260px, 240px 240px, 300px 300px, 320px 320px;
             opacity: 0.52;
             animation: driftStarsNear 80s linear infinite;
@@ -63,9 +69,9 @@
 
         .stellar-layer.far {
             background:
-                radial-gradient(circle at 20% 60%, rgba(186, 230, 253, 0.72) 0 1px, transparent 1px),
-                radial-gradient(circle at 62% 30%, rgba(34, 211, 238, 0.72) 0 1px, transparent 1px),
-                radial-gradient(circle at 86% 88%, rgba(186, 230, 253, 0.68) 0 1px, transparent 1px);
+                radial-gradient(circle at 20% 60%, rgba(129, 140, 248, 0.62) 0 1px, transparent 1px),
+                radial-gradient(circle at 62% 30%, rgba(99, 102, 241, 0.62) 0 1px, transparent 1px),
+                radial-gradient(circle at 86% 88%, rgba(139, 92, 246, 0.62) 0 1px, transparent 1px);
             background-size: 420px 420px, 460px 460px, 380px 380px;
             opacity: 0.3;
             animation: driftStarsFar 125s linear infinite reverse;
@@ -78,9 +84,9 @@
             overflow: hidden;
             pointer-events: none;
             background:
-                radial-gradient(circle at 15% 20%, rgba(56, 189, 248, 0.2), transparent 35%),
-                radial-gradient(circle at 85% 80%, rgba(34, 211, 238, 0.16), transparent 40%),
-                linear-gradient(130deg, #020617 0%, #081327 45%, #020617 100%);
+                radial-gradient(circle at 15% 20%, rgba(99, 102, 241, 0.22), transparent 35%),
+                radial-gradient(circle at 85% 80%, rgba(129, 140, 248, 0.16), transparent 40%),
+                linear-gradient(130deg, #0a0a0b 0%, #111113 45%, #0a0a0b 100%);
         }
 
         .bg-video-wrap::after {
@@ -88,8 +94,8 @@
             position: absolute;
             inset: 0;
             background:
-                radial-gradient(560px circle at var(--mx) var(--my), rgba(186, 230, 253, 0.2), transparent 58%),
-                linear-gradient(180deg, rgba(2, 6, 23, 0.58), rgba(2, 6, 23, 0.84));
+                radial-gradient(560px circle at var(--mx) var(--my), rgba(129, 140, 248, 0.22), transparent 58%),
+                linear-gradient(180deg, rgba(10, 10, 11, 0.60), rgba(10, 10, 11, 0.88));
         }
 
         .bg-orb {
@@ -105,13 +111,13 @@
         .bg-orb.a {
             top: -14vmax;
             left: -12vmax;
-            background: radial-gradient(circle, rgba(56, 189, 248, 0.58) 0%, rgba(56, 189, 248, 0) 65%);
+            background: radial-gradient(circle, rgba(99, 102, 241, 0.58) 0%, rgba(99, 102, 241, 0) 65%);
         }
 
         .bg-orb.b {
             right: -16vmax;
             bottom: -14vmax;
-            background: radial-gradient(circle, rgba(34, 211, 238, 0.58) 0%, rgba(34, 211, 238, 0) 62%);
+            background: radial-gradient(circle, rgba(129, 140, 248, 0.58) 0%, rgba(129, 140, 248, 0) 62%);
             animation-delay: -6s;
         }
 
@@ -803,6 +809,7 @@
     </style>
 </head>
 <body>
+    <canvas id="cs-canvas" class="canvas-holder"></canvas>
     <div class="stellar-scroll" aria-hidden="true">
         <div class="stellar-layer far"></div>
         <div class="stellar-layer near"></div>
@@ -1135,6 +1142,7 @@
             panel.classList.toggle('active');
         }
     </script>
+    <script src="{{ url_for('static', filename='vibe-canvas.js') }}"></script>
 <script type="text/javascript" src="https://cdn.ywxi.net/js/1.js" async></script>
 </body>
 </html>
