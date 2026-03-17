@@ -4,23 +4,24 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>CypherScout | AI Security Platform</title>
-    <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&family=Inter:wght@400;500;600;700&family=JetBrains+Mono:wght@500;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="{{ url_for('static', filename='vibe.css') }}">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600&family=Syne:wght@700;800&family=JetBrains+Mono:wght@500;700&display=swap" rel="stylesheet">
     <script src="https://unpkg.com/lucide@latest"></script>
     <style>
         :root {
-            --bg-dark: #020617;
-            --bg-soft: #081327;
-            --surface: rgba(15, 23, 42, 0.64);
-            --surface-soft: rgba(15, 23, 42, 0.42);
-            --border: rgba(186, 230, 253, 0.22);
-            --frost-line: rgba(186, 230, 253, 0.28);
-            --accent: #22d3ee;
-            --accent-ice: #bae6fd;
-            --text-white: #f8fafc;
-            --text-dim: #94a3b8;
-            --ok: #34d399;
-            --danger: #fb7185;
-            --shadow: 0 24px 56px rgba(2, 6, 23, 0.46);
+            --bg-dark: #0a0a0b;
+            --bg-soft: #111113;
+            --surface: rgba(17, 17, 19, 0.64);
+            --surface-soft: rgba(17, 17, 19, 0.42);
+            --border: #ffffff1a;
+            --frost-line: #ffffff24;
+            --accent: #6366f1;
+            --accent-ice: #818cf8;
+            --text-white: #f4f4f5;
+            --text-dim: #71717a;
+            --ok: #22c55e;
+            --danger: #ef4444;
+            --shadow: 0 24px 56px rgba(0, 0, 0, 0.36);
         }
 
         * { box-sizing: border-box; margin: 0; padding: 0; }
@@ -31,10 +32,11 @@
             font-family: "Inter", sans-serif;
             color: var(--text-white);
             background:
-                radial-gradient(circle at 15% 10%, rgba(56, 189, 248, 0.15), transparent 34%),
-                radial-gradient(circle at 86% 86%, rgba(34, 211, 238, 0.12), transparent 40%),
-                radial-gradient(circle at 50% 50%, #1e293b 0%, var(--bg-dark) 100%);
+                radial-gradient(circle at 15% 10%, rgba(99, 102, 241, 0.16), transparent 34%),
+                radial-gradient(circle at 86% 86%, rgba(129, 140, 248, 0.12), transparent 40%),
+                radial-gradient(circle at 50% 50%, #0f172a 0%, var(--bg-dark) 100%);
         }
+        body > *:not(#cs-canvas) { position: relative; z-index: 1; }
 
         body::before {
             content: "";
@@ -43,8 +45,8 @@
             pointer-events: none;
             z-index: -1;
             background-image:
-                linear-gradient(to right, rgba(186, 230, 253, 0.03) 1px, transparent 1px),
-                linear-gradient(to bottom, rgba(186, 230, 253, 0.03) 1px, transparent 1px);
+                linear-gradient(to right, rgba(255, 255, 255, 0.05) 1px, transparent 1px),
+                linear-gradient(to bottom, rgba(255, 255, 255, 0.05) 1px, transparent 1px);
             background-size: 36px 36px;
             mask-image: radial-gradient(circle at 55% 30%, black 30%, transparent 86%);
         }
@@ -64,13 +66,13 @@
         .orb.a {
             top: -14vmax;
             left: -13vmax;
-            background: radial-gradient(circle, rgba(56, 189, 248, 0.58) 0%, rgba(56, 189, 248, 0) 65%);
+            background: radial-gradient(circle, rgba(99, 102, 241, 0.58) 0%, rgba(99, 102, 241, 0) 65%);
         }
 
         .orb.b {
             right: -15vmax;
             bottom: -16vmax;
-            background: radial-gradient(circle, rgba(34, 211, 238, 0.52) 0%, rgba(34, 211, 238, 0) 66%);
+            background: radial-gradient(circle, rgba(129, 140, 248, 0.52) 0%, rgba(129, 140, 248, 0) 66%);
             animation-delay: -7s;
         }
 
@@ -566,6 +568,7 @@
     </style>
 </head>
 <body>
+    <canvas id="cs-canvas" class="canvas-holder"></canvas>
     <div class="orb a" aria-hidden="true"></div>
     <div class="orb b" aria-hidden="true"></div>
 
@@ -780,5 +783,6 @@
         onScroll();
         window.addEventListener("scroll", onScroll, { passive: true });
     </script>
+    <script src="{{ url_for('static', filename='vibe-canvas.js') }}"></script>
 </body>
 </html>
