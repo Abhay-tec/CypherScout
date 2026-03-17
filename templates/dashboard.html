@@ -4,24 +4,25 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
     <title>CypherScout | Command Center</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='vibe.css') }}">
     <script src="https://unpkg.com/lucide@latest"></script>
     <style>
-        @import url('https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@300;400;600;800&family=JetBrains+Mono:wght@400;700&family=Inter:wght@400;700&display=swap');
+        @import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600&family=Syne:wght@700;800&family=JetBrains+Mono:wght@400;700&display=swap');
         
         :root {
-            --bg: #030712;
-            --surface: rgba(15, 23, 42, 0.58);
-            --surface-strong: rgba(15, 23, 42, 0.82);
-            --accent: #22d3ee;
-            --accent-soft: #bae6fd;
-            --border: rgba(186, 230, 253, 0.18);
-            --text-main: #f8fafc;
-            --text-dim: #94a3b8;
-            --danger: #f43f5e;
-            --success: #10b981;
-            --bg-dark: #020617;
-            --glow: rgba(34, 211, 238, 0.3);
-            --frost-line: rgba(186, 230, 253, 0.22);
+            --bg: #0a0a0b;
+            --surface: rgba(17, 17, 19, 0.72);
+            --surface-strong: rgba(17, 17, 19, 0.88);
+            --accent: #6366f1;
+            --accent-soft: #818cf8;
+            --border: #ffffff18;
+            --text-main: #f4f4f5;
+            --text-dim: #71717a;
+            --danger: #ef4444;
+            --success: #22c55e;
+            --bg-dark: #0a0a0b;
+            --glow: rgba(99, 102, 241, 0.24);
+            --frost-line: #ffffff12;
         }
 
         * { margin: 0; padding: 0; box-sizing: border-box; -webkit-tap-highlight-color: transparent; }
@@ -29,9 +30,9 @@
         body { 
             background-color: var(--bg-dark);
             background-image:
-                radial-gradient(circle at 18% 12%, rgba(56, 189, 248, 0.18), transparent 34%),
-                radial-gradient(circle at 82% 80%, rgba(34, 211, 238, 0.12), transparent 42%),
-                radial-gradient(circle at 50% 50%, #1e293b 0%, #020617 100%);
+                radial-gradient(circle at 18% 12%, rgba(99, 102, 241, 0.16), transparent 34%),
+                radial-gradient(circle at 82% 80%, rgba(129, 140, 248, 0.12), transparent 42%),
+                radial-gradient(circle at 50% 50%, #0f172a 0%, #0a0a0b 100%);
             color: var(--text-main);
             font-family: 'Inter', sans-serif;
             display: flex; height: 100vh; width: 100vw; overflow: hidden;
@@ -52,6 +53,11 @@
             );
             mix-blend-mode: soft-light;
             opacity: 0.35;
+        }
+        
+        body > *:not(#cs-canvas) {
+            position: relative;
+            z-index: 1;
         }
 
         /* --- SIDEBAR --- */
@@ -808,6 +814,7 @@
     </style>
 </head>
 <body onload="initSystem()">
+    <canvas id="cs-canvas" class="canvas-holder"></canvas>
 
     <div id="tourChoiceModal" class="cyber-modal">
         <div class="modal-card">
@@ -1466,5 +1473,6 @@
             }
         });
     </script>
+    <script src="{{ url_for('static', filename='vibe-canvas.js') }}"></script>
 </body>
 </html>
