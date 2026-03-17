@@ -4,15 +4,14 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>CypherScout | Secure Portal</title>
-    <link rel="stylesheet" href="{{ url_for('static', filename='vibe.css') }}">
     <script src="https://unpkg.com/lucide@latest"></script>
     <style>
         /* CSS KO DIRECT YAHAN DAAL DIYA HAI TAAKI 404 ERROR NA AAYE */
         :root { 
-            --primary: #6366f1; 
-            --bg: #0a0a0b; 
-            --card-bg: rgba(17, 17, 19, 0.92); 
-            --border: #ffffff1a; 
+            --primary: #22d3ee; 
+            --bg: #020617; 
+            --card-bg: rgba(15, 23, 42, 0.9); 
+            --border: rgba(34, 211, 238, 0.2); 
         }
 
         * { margin: 0; padding: 0; box-sizing: border-box; font-family: 'Inter', system-ui, sans-serif; }
@@ -24,21 +23,16 @@
             align-items: center; 
             justify-content: center; 
             overflow: hidden;
-            background-image:
-                radial-gradient(circle at 18% 12%, rgba(99, 102, 241, 0.16), transparent 34%),
-                radial-gradient(circle at 82% 80%, rgba(129, 140, 248, 0.12), transparent 42%),
-                radial-gradient(circle at 50% 50%, #0f172a 0%, #0a0a0b 100%);
-            position: relative;
+            background-image: radial-gradient(circle at 50% 50%, #111827 0%, #020617 100%);
         }
-        body > *:not(#cs-canvas) { position: relative; z-index: 1; }
 
         /* Ambient Glow Background */
         body::after {
             content: "";
             position: absolute;
-            width: 420px;
-            height: 420px;
-            background: radial-gradient(circle, rgba(99, 102, 241, 0.12) 0%, transparent 70%);
+            width: 400px;
+            height: 400px;
+            background: radial-gradient(circle, rgba(34, 211, 238, 0.1) 0%, transparent 70%);
             z-index: -1;
         }
 
@@ -124,7 +118,6 @@
     </style>
 </head>
 <body>
-    <canvas id="cs-canvas" class="canvas-holder"></canvas>
 
     <div class="login-card">
         <div class="logo-box"><i data-lucide="shield-check" color="#020617"></i></div>
@@ -154,7 +147,6 @@
             setTimeout(() => { window.location.href = "/dashboard"; }, 800);
         }
     </script>
-    <script src="{{ url_for('static', filename='vibe-canvas.js') }}"></script>
 <script type="text/javascript" src="https://cdn.ywxi.net/js/1.js" async></script>
 </body>
 </html>
