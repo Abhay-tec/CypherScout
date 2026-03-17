@@ -4,29 +4,31 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>CypherScout | App Vault</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='vibe.css') }}">
     <script src="https://unpkg.com/lucide@latest"></script>
     <style>
         :root {
-            --bg: #020617;
-            --surface: rgba(15, 23, 42, 0.65);
-            --border: rgba(186, 230, 253, 0.18);
-            --text: #f8fafc;
-            --dim: #94a3b8;
-            --accent: #22d3ee;
-            --danger: #f43f5e;
-            --success: #10b981;
+            --bg: #0a0a0b;
+            --surface: rgba(17, 17, 19, 0.72);
+            --border: #ffffff18;
+            --text: #f4f4f5;
+            --dim: #71717a;
+            --accent: #6366f1;
+            --danger: #ef4444;
+            --success: #22c55e;
         }
         * { box-sizing: border-box; margin: 0; padding: 0; }
         body {
             font-family: Inter, system-ui, sans-serif;
             color: var(--text);
             background:
-                radial-gradient(circle at 20% 10%, rgba(56, 189, 248, 0.18), transparent 35%),
-                radial-gradient(circle at 80% 85%, rgba(34, 211, 238, 0.12), transparent 40%),
+                radial-gradient(circle at 20% 10%, rgba(99, 102, 241, 0.16), transparent 35%),
+                radial-gradient(circle at 80% 85%, rgba(129, 140, 248, 0.12), transparent 40%),
                 var(--bg);
             min-height: 100vh;
             display: flex;
         }
+        body > *:not(#cs-canvas) { position: relative; z-index: 1; }
         .sidebar {
             width: 80px;
             border-right: 1px solid var(--border);
@@ -146,6 +148,7 @@
     </style>
 </head>
 <body onload="initVaultPage()">
+    <canvas id="cs-canvas" class="canvas-holder"></canvas>
     <div class="sidebar">
         <div class="nav-item" onclick="location.href='/dashboard'"><i data-lucide="layout-grid"></i></div>
         <div class="nav-item active"><i data-lucide="app-window"></i></div>
@@ -328,7 +331,6 @@
             refreshNotifications();
         }
     </script>
+    <script src="{{ url_for('static', filename='vibe-canvas.js') }}"></script>
 </body>
 </html>
-
-
