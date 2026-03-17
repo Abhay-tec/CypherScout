@@ -4,25 +4,24 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
     <title>CypherScout | Command Center</title>
-    <link rel="stylesheet" href="{{ url_for('static', filename='vibe.css') }}">
     <script src="https://unpkg.com/lucide@latest"></script>
     <style>
-        @import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600&family=Syne:wght@700;800&family=JetBrains+Mono:wght@400;700&display=swap');
+        @import url('https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@300;400;600;800&family=JetBrains+Mono:wght@400;700&family=Inter:wght@400;700&display=swap');
         
         :root {
-            --bg: #0a0a0b;
-            --surface: rgba(17, 17, 19, 0.72);
-            --surface-strong: rgba(17, 17, 19, 0.88);
-            --accent: #6366f1;
-            --accent-soft: #818cf8;
-            --border: #ffffff18;
-            --text-main: #f4f4f5;
-            --text-dim: #71717a;
-            --danger: #ef4444;
-            --success: #22c55e;
-            --bg-dark: #0a0a0b;
-            --glow: rgba(99, 102, 241, 0.24);
-            --frost-line: #ffffff12;
+            --bg: #030712;
+            --surface: rgba(15, 23, 42, 0.58);
+            --surface-strong: rgba(15, 23, 42, 0.82);
+            --accent: #22d3ee;
+            --accent-soft: #bae6fd;
+            --border: rgba(186, 230, 253, 0.18);
+            --text-main: #f8fafc;
+            --text-dim: #94a3b8;
+            --danger: #f43f5e;
+            --success: #10b981;
+            --bg-dark: #020617;
+            --glow: rgba(34, 211, 238, 0.3);
+            --frost-line: rgba(186, 230, 253, 0.22);
         }
 
         * { margin: 0; padding: 0; box-sizing: border-box; -webkit-tap-highlight-color: transparent; }
@@ -30,9 +29,9 @@
         body { 
             background-color: var(--bg-dark);
             background-image:
-                radial-gradient(circle at 18% 12%, rgba(99, 102, 241, 0.16), transparent 34%),
-                radial-gradient(circle at 82% 80%, rgba(129, 140, 248, 0.12), transparent 42%),
-                radial-gradient(circle at 50% 50%, #0f172a 0%, #0a0a0b 100%);
+                radial-gradient(circle at 18% 12%, rgba(56, 189, 248, 0.18), transparent 34%),
+                radial-gradient(circle at 82% 80%, rgba(34, 211, 238, 0.12), transparent 42%),
+                radial-gradient(circle at 50% 50%, #1e293b 0%, #020617 100%);
             color: var(--text-main);
             font-family: 'Inter', sans-serif;
             display: flex; height: 100vh; width: 100vw; overflow: hidden;
@@ -53,11 +52,6 @@
             );
             mix-blend-mode: soft-light;
             opacity: 0.35;
-        }
-        
-        body > *:not(#cs-canvas) {
-            position: relative;
-            z-index: 1;
         }
 
         /* --- SIDEBAR --- */
@@ -814,7 +808,6 @@
     </style>
 </head>
 <body onload="initSystem()">
-    <canvas id="cs-canvas" class="canvas-holder"></canvas>
 
     <div id="tourChoiceModal" class="cyber-modal">
         <div class="modal-card">
@@ -945,10 +938,10 @@
                             <td>
                                 <div style="display:flex; gap:6px; flex-wrap:wrap;">
                                     <button class="report-btn" data-url="{{ log.url|e }}" onclick="submitHistoryFeedback(this.dataset.url, 'right', this)">
-                                        <i data-lucide="badge-check" size="12"></i> ✅ Info Right
+                                        <i data-lucide="badge-check" size="12"></i> ? Info Right
                                     </button>
                                     <button class="report-btn" data-url="{{ log.url|e }}" onclick="submitHistoryFeedback(this.dataset.url, 'wrong', this)">
-                                        <i data-lucide="x-circle" size="12"></i> ❌ Info Wrong
+                                        <i data-lucide="x-circle" size="12"></i> ? Info Wrong
                                     </button>
                                 </div>
                             </td>
@@ -1154,15 +1147,15 @@
                 : "";
 
             box.innerHTML = `
-                <div style="font-size:12px; font-weight:700;">${(data.display_name || sourceLabel)} · ${data.source_type}</div>
+                <div style="font-size:12px; font-weight:700;">${(data.display_name || sourceLabel)} � ${data.source_type}</div>
                 <div style="font-size:11px; color:var(--text-dim); margin-top:4px;">Permission: ${data.permission || "-"} | Decision: ${data.decision || data.status}</div>
                 <div style="font-size:11px; margin-top:4px; color:${allowColor};">Real Data Access: ${data.allow_real_data ? "ALLOWED" : "BLOCKED"}</div>
                 <div style="font-size:11px; margin-top:4px;">Shadow Data Injection: ${shadow}</div>
                 ${warningText}
                 <div class="vault-feedback-row">
                     ${manualTrustBtn}
-                    <button class="vault-mini-btn" onclick="submitVaultFeedback('right')">✅ Info Right</button>
-                    <button class="vault-mini-btn warn" onclick="submitVaultFeedback('wrong')">❌ Info Wrong</button>
+                    <button class="vault-mini-btn" onclick="submitVaultFeedback('right')">? Info Right</button>
+                    <button class="vault-mini-btn warn" onclick="submitVaultFeedback('wrong')">? Info Wrong</button>
                 </div>
             `;
             box.classList.add('show');
@@ -1249,7 +1242,7 @@
         async function loadGovernanceApps() {
             const q = document.getElementById('appVaultSearch')?.value?.trim() || '';
             const category = document.getElementById('appVaultCategory')?.value || 'All';
-            const res = await fetch(`/api/app-governance/apps?q=${encodeURIComponent(q)}&category=${encodeURIComponent(category)}`);
+            const res = await fetch(`/api/app-vault/apps?q=${encodeURIComponent(q)}&category=${encodeURIComponent(category)}`);
             const data = await res.json();
             if (!res.ok) return;
             if (!governanceCategoriesLoaded) {
@@ -1260,13 +1253,13 @@
             const list = document.getElementById('appVaultList');
             list.innerHTML = data.apps.map(app => `
                 <div class="app-vault-item">
-                    <img class="app-logo" src="https://www.google.com/s2/favicons?domain=${(app.homepage || app.app_key + '.com').replace(/^https?:\/\//,'')}&sz=64" alt="${app.display_name}">
+                    <img class="app-logo" src="${app.logo_url}" onerror="this.src='https://www.google.com/s2/favicons?domain=${app.app_key}.com&sz=64';" alt="${app.display_name}">
                     <div>
                         <div style="font-size:12px; font-weight:700;">${app.display_name}</div>
                         <div style="font-size:10px; color:var(--text-dim);">${app.category}</div>
                     </div>
-                    <button class="app-select-btn ${app.trust_level === 'ALLOW' ? 'selected' : ''}" onclick="toggleAppSelection('${app.app_key}', ${app.trust_level === 'ALLOW' ? 0 : 1})">
-                        ${app.trust_level === 'ALLOW' ? 'Selected' : 'Not Selected'}
+                    <button class="app-select-btn ${app.selected ? 'selected' : ''}" onclick="toggleAppSelection('${app.app_key}', ${app.selected ? 0 : 1})">
+                        ${app.selected ? 'Selected' : 'Not Selected'}
                     </button>
                 </div>
             `).join('');
@@ -1412,16 +1405,10 @@
             const urlParams = new URLSearchParams(window.location.search);
             const forcedTour = urlParams.get('tour') === 'true';
             const tourDone = localStorage.getItem('cypher_tour_done');
-            if (!tourDone) {
+            if (forcedTour || !tourDone) {
                 localStorage.setItem('cypher_tour_done', 'true');
                 currentStep = 0;
                 showModal('tourChoiceModal');
-            }
-            if (forcedTour) {
-                urlParams.delete('tour');
-                const nextQuery = urlParams.toString();
-                const nextUrl = nextQuery ? `${window.location.pathname}?${nextQuery}` : window.location.pathname;
-                window.history.replaceState({}, '', nextUrl);
             }
         }
 
@@ -1473,6 +1460,6 @@
             }
         });
     </script>
-    <script src="{{ url_for('static', filename='vibe-canvas.js') }}"></script>
+<script type="text/javascript" src="https://cdn.ywxi.net/js/1.js" async></script>
 </body>
 </html>
