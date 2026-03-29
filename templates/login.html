@@ -698,6 +698,54 @@
             width: 100%;
             height: auto;
         }
+        .compliance-card {
+            margin-top: 12px;
+            padding: 14px 16px;
+            border: 1px solid #28a745;
+            border-radius: 12px;
+            background: rgba(12, 24, 18, 0.72);
+            box-shadow: 0 12px 30px rgba(0, 0, 0, 0.32);
+            display: grid;
+            gap: 8px;
+            position: relative;
+            z-index: 2;
+        }
+        .compliance-title {
+            font-size: 0.78rem;
+            letter-spacing: 0.8px;
+            text-transform: uppercase;
+            color: #b9f4c7;
+            font-weight: 800;
+            text-align: center;
+        }
+        .compliance-badges {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(180px, 1fr));
+            gap: 10px;
+            justify-items: center;
+            align-items: center;
+        }
+        .compliance-badges a {
+            display: inline-flex;
+            justify-content: center;
+            align-items: center;
+            padding: 8px 10px;
+            background: rgba(40, 167, 69, 0.08);
+            border: 1px solid rgba(40, 167, 69, 0.4);
+            border-radius: 10px;
+            width: 100%;
+            max-width: 260px;
+        }
+        .compliance-badges img {
+            max-width: 100%;
+            height: auto;
+        }
+        .compliance-sub {
+            font-size: 0.66rem;
+            color: #9fb7a7;
+            text-align: center;
+            letter-spacing: 0.3px;
+        }
         .footer-trust-title {
             color: #e8f6ff;
             font-size: 0.63rem;
@@ -1090,6 +1138,18 @@
             </div>
             <div class="footer-shadow-note">
                 Shadow Mode Active: Real data access is blocked for unauthorized sources and replaced with fake metadata.
+            </div>
+            <div class="compliance-card">
+                <div class="compliance-title">Supply Chain Audit</div>
+                <div class="compliance-badges">
+                    <a href="https://app.fossa.com/projects/git%2Bgithub.com%2FAbhay-tec%2FCypherScout" target="_blank" rel="noopener">
+                        <img src="https://app.fossa.com/api/projects/git%2Bgithub.com%2FAbhay-tec%2FCypherScout.svg?type=shield&issueType=license" alt="FOSSA License Scan Badge">
+                    </a>
+                    <a href="https://app.fossa.com/projects/git%2Bgithub.com%2FAbhay-tec%2FCypherScout" target="_blank" rel="noopener">
+                        <img src="https://app.fossa.com/api/projects/git%2Bgithub.com%2FAbhay-tec%2FCypherScout.svg?type=shield&issueType=security" alt="FOSSA Security Scan Badge">
+                    </a>
+                </div>
+                <div class="compliance-sub">Verified Open Source Compliance & Dependency Security</div>
             </div>
             <div class="footer-sources">
                 <div class="footer-sources-title">Trusted Sources & Signals</div>
