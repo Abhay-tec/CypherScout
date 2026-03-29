@@ -4,4 +4,4 @@ requests==2.32.3
 scikit-learn==1.6.1
 numpy==2.2.2
 gunicorn==23.0.0
-zipp==3.19.1
+zipp>=3.19.1
