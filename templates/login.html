@@ -651,7 +651,7 @@
         .footer-trust-badges {
             margin-top: 10px;
             display: grid;
-            grid-template-columns: repeat(3, minmax(0, 1fr));
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
             gap: 8px;
             position: relative;
             z-index: 2;
@@ -665,6 +665,38 @@
             gap: 6px;
             align-items: center;
             min-height: 48px;
+        }
+        .footer-trust-badge.snyk-badge {
+            border-color: #2ea043;
+            background: rgba(46, 160, 67, 0.08);
+            flex-direction: column;
+            align-items: flex-start;
+            justify-content: center;
+            padding: 10px 12px;
+            box-shadow: 0 10px 26px rgba(0, 0, 0, 0.28);
+        }
+        .snyk-label {
+            font-size: 0.62rem;
+            letter-spacing: 0.6px;
+            color: #9dd7ad;
+            text-transform: uppercase;
+            margin-bottom: 6px;
+        }
+        .snyk-badge-link {
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            width: 100%;
+            padding: 8px 10px;
+            border-radius: 8px;
+            background: rgba(46, 160, 67, 0.12);
+            border: 1px solid rgba(46, 160, 67, 0.45);
+            text-decoration: none;
+        }
+        .snyk-badge-link img {
+            max-width: 160px;
+            width: 100%;
+            height: auto;
         }
         .footer-trust-title {
             color: #e8f6ff;
@@ -1048,6 +1080,12 @@
                         <div class="footer-trust-title">CypherScout AI Teacher</div>
                         <div class="footer-trust-sub">Community Verified</div>
                     </div>
+                </div>
+                <div class="footer-trust-badge snyk-badge">
+                    <div class="snyk-label">Vulnerability Scan: Verified by Snyk</div>
+                    <a class="snyk-badge-link" href="https://snyk.io/test/github/Abhay-tec/CypherScout" target="_blank" rel="noopener">
+                        <img src="https://snyk.io/test/github/Abhay-tec/CypherScout/badge.svg" alt="Snyk Security Status Badge">
+                    </a>
                 </div>
             </div>
             <div class="footer-shadow-note">
