@@ -1,11 +1,7 @@
-# Forced Security Patches
 zipp==3.19.1
 importlib-metadata==7.0.0
-
-# Core Engine
 flask==3.1.0
-Authlib==1.3.2
 requests==2.32.3
 scikit-learn==1.6.1
-numpy==2.2.2
+numpy==2.2.3
 gunicorn==23.0.0
