@@ -1,4 +1,6 @@
 # CypherScout
+[![FOSSA Status](https://app.fossa.com/api/projects/git%2Bgithub.com%2FAbhay-tec%2FCypherScout.svg?type=shield)](https://app.fossa.com/projects/git%2Bgithub.com%2FAbhay-tec%2FCypherScout?ref=badge_shield)
+
 
 CypherScout is a Flask-based URL and file security analysis platform with:
 - URL risk analysis (VirusTotal + heuristics + ML score)
@@ -100,3 +102,7 @@ Use a WSGI server (Gunicorn) with `wsgi:app`.
 - Use HTTPS in production for OAuth callbacks.
 - Rotate `SECRET_KEY` and API keys before going live.
 - For Gmail SMTP, use App Passwords instead of regular account password.
+
+
+## License
+[![FOSSA Status](https://app.fossa.com/api/projects/git%2Bgithub.com%2FAbhay-tec%2FCypherScout.svg?type=large)](https://app.fossa.com/projects/git%2Bgithub.com%2FAbhay-tec%2FCypherScout?ref=badge_large)
