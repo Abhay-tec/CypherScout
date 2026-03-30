@@ -128,95 +128,37 @@
         }
 
         .page { position: relative; z-index: 10; width: 100%; }
-        .hero-screen {
-            min-height: 100vh;
+
+        .intro-visual {
+            margin: 22px auto 18px;
+            max-width: 1080px;
+            border-radius: 24px;
+            overflow: hidden;
+            border: 1px solid var(--border);
+            box-shadow: 0 32px 80px rgba(0, 0, 0, 0.36);
+            background: var(--glass);
+        }
+        .intro-video {
+            width: 100%;
+            display: block;
+            max-height: 520px;
+            object-fit: cover;
+        }
+
+        .auth-section {
             display: flex;
-            align-items: center;
             justify-content: center;
-            padding: 20px;
-            position: relative;
+            padding: 0 20px 24px;
         }
 
         .login-wrapper {
-            width: min(1000px, calc(100vw - 40px));
-            display: flex;
+            width: min(720px, calc(100vw - 40px));
             background: var(--glass);
             border-radius: 24px;
             border: 1px solid var(--border);
             overflow: hidden;
-            box-shadow: 0 40px 100px rgba(0, 0, 0, 0.4);
+            box-shadow: 0 32px 90px rgba(0, 0, 0, 0.4);
             backdrop-filter: blur(24px);
-        }
-
-        .side-visual {
-            flex: 1.2;
-            padding: 34px;
-            background:
-                linear-gradient(135deg, rgba(2, 6, 23, 0.35), rgba(2, 6, 23, 0.76)),
-                url("/static/register-login.gif");
-            background-size: cover;
-            background-position: center;
-            background-repeat: no-repeat;
-            display: flex;
-            flex-direction: column;
-            justify-content: space-between;
-            border-right: 1px solid var(--border);
-            position: relative;
-            overflow: hidden;
-        }
-
-        .side-visual::before {
-            content: "";
-            position: absolute;
-            inset: 0;
-            background:
-                linear-gradient(to top, rgba(2, 6, 23, 0.82), transparent 44%),
-                linear-gradient(to right, rgba(186, 230, 253, 0.04) 1px, transparent 1px);
-            background-size: 100% 100%, 24px 24px;
-            pointer-events: none;
-            z-index: 1;
-        }
-
-        .side-visual > * {
-            position: relative;
-            z-index: 2;
-        }
-
-        .logo-text { font-weight: 800; font-size: 1.5rem; letter-spacing: 2px; }
-        .hero-heading {
-            font-size: clamp(2.2rem, 4vw, 2.9rem);
-            font-weight: 800;
-            line-height: 0.9;
-            letter-spacing: -2px;
-            text-transform: uppercase;
-            text-shadow: 0 10px 25px rgba(2, 6, 23, 0.8);
-        }
-        .hero-meta {
-            margin-top: 10px;
-            font-size: 0.66rem;
-            line-height: 1.4;
-            max-width: 85%;
-            color: rgba(255, 255, 255, 0.76);
-        }
-        .hero-tags { display: flex; gap: 8px; margin-top: 14px; flex-wrap: wrap; }
-        .hero-tag {
-            border: 1px solid var(--frost-line);
-            color: var(--accent-ice);
-            padding: 5px 10px;
-            border-radius: 999px;
-            font-size: 0.6rem;
-            letter-spacing: 1px;
-            text-transform: uppercase;
-            background: rgba(15, 23, 42, 0.45);
-        }
-        .protocol-line {
-            font-size: 0.58rem;
-            font-weight: 600;
-            letter-spacing: 1px;
-            color: rgba(186, 230, 253, 0.9);
-            border-top: 1px solid var(--frost-line);
-            padding-top: 14px;
-            max-width: 92%;
         }
 
         .form-container {
@@ -872,7 +814,6 @@
         }
 
         @media (max-width: 768px) {
-            .side-visual { display: none; }
             .login-wrapper { width: calc(100vw - 28px); }
             .form-container { padding: 34px 24px; }
             .intel-section { margin: 0 14px 18px; padding: 24px 18px; }
@@ -896,23 +837,12 @@
     <div class="bg-branding">CYPHERSCOUT</div>
 
     <main class="page">
-        <section class="hero-screen">
-            <div class="login-wrapper">
-                <div class="side-visual">
-                    <div class="logo-text">CypherScout</div>
-                    <div>
-                        <div class="section-tag" style="color:#fff;opacity:0.85;">AI Security Core / Threat Defense</div>
-                        <h1 class="hero-heading">CYPHER<br>SCOUT AI</h1>
-                        <p class="hero-meta">&copy; 2026 CYPHERSCOUT // URL VERDICTS WITH VIRUSTOTAL, HEURISTICS, AND FEEDBACK-TRAINED ML</p>
-                        <div class="hero-tags">
-                            <span class="hero-tag">VirusTotal Engines</span>
-                            <span class="hero-tag">Heuristic Signals</span>
-                            <span class="hero-tag">Feedback Learning</span>
-                        </div>
-                    </div>
-                    <div class="protocol-line">PROTOCOL: ON-DEMAND LINK VERIFICATION // STATUS: ANALYZER READY</div>
-                </div>
+        <section class="intro-visual">
+            <video class="intro-video" src="{{ url_for('static', filename='intro.mp4') }}" autoplay muted loop playsinline></video>
+        </section>
 
+        <section class="auth-section">
+            <div class="login-wrapper">
                 <div class="form-container">
                     <div class="section-tag">Handshake</div>
                     <h2>Identity Verification</h2>
