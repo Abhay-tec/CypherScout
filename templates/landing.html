@@ -252,10 +252,10 @@
             position: absolute;
             inset: 0;
             background: linear-gradient(90deg,
-                rgba(2, 6, 23, 0.62) 0%,
-                rgba(2, 6, 23, 0.34) 32%,
-                rgba(2, 6, 23, 0.12) 55%,
-                rgba(2, 6, 23, 0.04) 72%,
+                rgba(2, 6, 23, 0.52) 0%,
+                rgba(2, 6, 23, 0.24) 32%,
+                rgba(2, 6, 23, 0.08) 55%,
+                rgba(2, 6, 23, 0.02) 72%,
                 transparent 92%);
             z-index: 1;
             pointer-events: none;
@@ -280,7 +280,7 @@
             position: relative;
             z-index: 2;
             width: 100%;
-            padding: 0 32px;
+            padding: 0 42px;
         }
 
         .entry {
@@ -319,13 +319,13 @@
 
         h1 {
             font-family: "Space Grotesk", "Plus Jakarta Sans", sans-serif;
-            font-weight: 700;
-            line-height: 1.02;
-            letter-spacing: -1px;
+            font-weight: 600;
+            line-height: 1.04;
+            letter-spacing: -0.6px;
             text-transform: uppercase;
             font-size: clamp(2.5rem, 5vw, 4.2rem);
-            margin-bottom: 10px;
-            text-shadow: 0 8px 20px rgba(2, 6, 23, 0.55);
+            margin-bottom: 12px;
+            text-shadow: 0 6px 16px rgba(2, 6, 23, 0.5);
         }
 
         .type-line {
@@ -350,9 +350,9 @@
 
         .hero-copy {
             color: var(--text-dim);
-            line-height: 1.55;
-            max-width: 40ch;
-            margin-bottom: 12px;
+            line-height: 1.6;
+            max-width: 34ch;
+            margin-bottom: 18px;
         }
 
         .cta-row {
@@ -363,47 +363,24 @@
             margin-bottom: 6px;
         }
 
-
-        .hero-stats-panel {
+        .hero-menu {
             justify-self: end;
             align-self: center;
-            position: relative;
-            width: clamp(280px, 34vw, 480px);
-            border: 1px solid rgba(186, 230, 253, 0.28);
-            border-radius: 14px;
-            background: rgba(2, 6, 23, 0.62);
-            box-shadow: 0 24px 60px rgba(2, 6, 23, 0.52);
-            padding: 14px;
-            backdrop-filter: blur(8px);
-            z-index: 3;
-        }
-
-        .hero-stats {
             display: grid;
-            grid-template-columns: repeat(3, minmax(0, 1fr));
             gap: 10px;
-        }
-
-        .hero-stat {
-            border: 1px solid rgba(186, 230, 253, 0.24);
-            border-radius: 12px;
-            background: rgba(2, 6, 23, 0.7);
-            padding: 12px 10px;
-            text-align: center;
-        }
-
-        .hero-stat strong {
-            display: block;
-            color: #e0f7ff;
-            font-size: 1rem;
-            font-family: "JetBrains Mono", monospace;
-        }
-
-        .hero-stat span {
-            color: var(--text-dim);
-            font-size: 0.7rem;
-            text-transform: uppercase;
+            color: #f1f5f9;
+            font-size: 0.95rem;
             letter-spacing: 0.4px;
+            text-transform: uppercase;
+            text-align: left;
+        }
+
+        .hero-menu span {
+            display: inline-block;
+            padding: 6px 10px;
+            border-radius: 999px;
+            background: rgba(2, 6, 23, 0.55);
+            border: 1px solid rgba(186, 230, 253, 0.22);
         }
 
         .divider-wave {
@@ -644,21 +621,11 @@
                         </div>
                     </div>
 
-                    <div class="hero-stats-panel parallax entry delay">
-                        <div class="hero-stats">
-                            <div class="hero-stat">
-                                <strong>250K+</strong>
-                                <span>Threat Signals</span>
-                            </div>
-                            <div class="hero-stat">
-                                <strong>99.2%</strong>
-                                <span>Detection Precision</span>
-                            </div>
-                            <div class="hero-stat">
-                                <strong>&lt;2s</strong>
-                                <span>Response Latency</span>
-                            </div>
-                        </div>
+                    <div class="hero-menu">
+                        <span>Runway Characters</span>
+                        <span>Media and Entertainment</span>
+                        <span>Robotics and Autonomy</span>
+                        <span>General World Models</span>
                     </div>
                 </div>
             </section>
