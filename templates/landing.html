@@ -247,6 +247,21 @@
             overflow: hidden;
         }
 
+        .hero::after {
+            content: "";
+            position: absolute;
+            inset: 0;
+            background: linear-gradient(90deg,
+                rgba(2, 6, 23, 0.82) 0%,
+                rgba(2, 6, 23, 0.66) 28%,
+                rgba(2, 6, 23, 0.42) 48%,
+                rgba(2, 6, 23, 0.22) 65%,
+                rgba(2, 6, 23, 0.08) 78%,
+                transparent 90%);
+            z-index: 1;
+            pointer-events: none;
+        }
+
         .hero-bg {
             position: absolute;
             inset: 0;
@@ -263,7 +278,7 @@
             gap: 24px;
             align-items: center;
             position: relative;
-            z-index: 1;
+            z-index: 2;
         }
 
         .entry {
@@ -327,7 +342,7 @@
         .hero-copy {
             color: var(--text-dim);
             line-height: 1.75;
-            max-width: 58ch;
+            max-width: 54ch;
             margin-bottom: 22px;
         }
 
@@ -357,12 +372,17 @@
         }
 
         .hero-stats-panel {
-            border: 1px solid rgba(186, 230, 253, 0.28);
+            position: absolute;
+            right: clamp(16px, 4vw, 42px);
+            bottom: clamp(16px, 4vw, 42px);
+            width: clamp(320px, 42vw, 560px);
+            border: 1px solid rgba(186, 230, 253, 0.32);
             border-radius: 18px;
-            background: rgba(2, 6, 23, 0.6);
-            box-shadow: 0 20px 50px rgba(2, 6, 23, 0.55);
+            background: rgba(2, 6, 23, 0.72);
+            box-shadow: 0 28px 70px rgba(2, 6, 23, 0.6);
             padding: 18px;
             backdrop-filter: blur(10px);
+            z-index: 3;
         }
 
         .hero-stats {
