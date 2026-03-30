@@ -700,13 +700,13 @@
         }
         .compliance-card {
             margin-top: 12px;
-            padding: 14px 16px;
+            padding: 16px 18px;
             border: 1px solid #28a745;
             border-radius: 12px;
-            background: rgba(12, 24, 18, 0.72);
-            box-shadow: 0 12px 30px rgba(0, 0, 0, 0.32);
+            background: #0d1117;
+            box-shadow: 0 0 10px rgba(40, 167, 69, 0.2);
             display: grid;
-            gap: 8px;
+            gap: 10px;
             position: relative;
             z-index: 2;
         }
@@ -714,35 +714,37 @@
             font-size: 0.78rem;
             letter-spacing: 0.8px;
             text-transform: uppercase;
-            color: #b9f4c7;
+            color: #8ef0b0;
             font-weight: 800;
             text-align: center;
         }
         .compliance-badges {
-            display: grid;
-            grid-template-columns: repeat(auto-fit, minmax(180px, 1fr));
-            gap: 10px;
-            justify-items: center;
+            display: flex;
+            justify-content: center;
             align-items: center;
+            gap: 12px;
+            flex-wrap: wrap;
         }
         .compliance-badges a {
             display: inline-flex;
             justify-content: center;
             align-items: center;
-            padding: 8px 10px;
-            background: rgba(40, 167, 69, 0.08);
-            border: 1px solid rgba(40, 167, 69, 0.4);
+            gap: 10px;
+            padding: 10px 12px;
+            background: linear-gradient(120deg, rgba(16, 185, 129, 0.12), rgba(59, 130, 246, 0.08));
+            border: 1px solid rgba(40, 167, 69, 0.45);
             border-radius: 10px;
-            width: 100%;
-            max-width: 260px;
+            text-decoration: none;
+            width: min(100%, 520px);
         }
         .compliance-badges img {
-            max-width: 100%;
-            height: auto;
+            max-height: 24px;
+            width: auto;
+            flex: 1 1 auto;
         }
         .compliance-sub {
             font-size: 0.66rem;
-            color: #9fb7a7;
+            color: #9ad6b6;
             text-align: center;
             letter-spacing: 0.3px;
         }
@@ -1138,18 +1140,6 @@
             </div>
             <div class="footer-shadow-note">
                 Shadow Mode Active: Real data access is blocked for unauthorized sources and replaced with fake metadata.
-            </div>
-            <div class="compliance-card">
-                <div class="compliance-title">Supply Chain Audit</div>
-                <div class="compliance-badges">
-                    <a href="https://app.fossa.com/projects/git%2Bgithub.com%2FAbhay-tec%2FCypherScout" target="_blank" rel="noopener">
-                        <img src="https://app.fossa.com/api/projects/git%2Bgithub.com%2FAbhay-tec%2FCypherScout.svg?type=shield&issueType=license" alt="FOSSA License Scan Badge">
-                    </a>
-                    <a href="https://app.fossa.com/projects/git%2Bgithub.com%2FAbhay-tec%2FCypherScout" target="_blank" rel="noopener">
-                        <img src="https://app.fossa.com/api/projects/git%2Bgithub.com%2FAbhay-tec%2FCypherScout.svg?type=shield&issueType=security" alt="FOSSA Security Scan Badge">
-                    </a>
-                </div>
-                <div class="compliance-sub">Verified Open Source Compliance & Dependency Security</div>
             </div>
             <div class="footer-sources">
                 <div class="footer-sources-title">Trusted Sources & Signals</div>
