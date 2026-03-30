@@ -128,37 +128,95 @@
         }
 
         .page { position: relative; z-index: 10; width: 100%; }
-
-        .intro-visual {
-            margin: 22px auto 18px;
-            max-width: 1080px;
-            border-radius: 24px;
-            overflow: hidden;
-            border: 1px solid var(--border);
-            box-shadow: 0 32px 80px rgba(0, 0, 0, 0.36);
-            background: var(--glass);
-        }
-        .intro-video {
-            width: 100%;
-            display: block;
-            max-height: 520px;
-            object-fit: cover;
-        }
-
-        .auth-section {
+        .hero-screen {
+            min-height: 100vh;
             display: flex;
+            align-items: center;
             justify-content: center;
-            padding: 0 20px 24px;
+            padding: 20px;
+            position: relative;
         }
 
         .login-wrapper {
-            width: min(720px, calc(100vw - 40px));
+            width: min(1000px, calc(100vw - 40px));
+            display: flex;
             background: var(--glass);
             border-radius: 24px;
             border: 1px solid var(--border);
             overflow: hidden;
-            box-shadow: 0 32px 90px rgba(0, 0, 0, 0.4);
+            box-shadow: 0 40px 100px rgba(0, 0, 0, 0.4);
             backdrop-filter: blur(24px);
+        }
+
+        .side-visual {
+            flex: 1.2;
+            padding: 34px;
+            background:
+                linear-gradient(135deg, rgba(2, 6, 23, 0.35), rgba(2, 6, 23, 0.76)),
+                url("/static/register-login.gif");
+            background-size: cover;
+            background-position: center;
+            background-repeat: no-repeat;
+            display: flex;
+            flex-direction: column;
+            justify-content: space-between;
+            border-right: 1px solid var(--border);
+            position: relative;
+            overflow: hidden;
+        }
+
+        .side-visual::before {
+            content: "";
+            position: absolute;
+            inset: 0;
+            background:
+                linear-gradient(to top, rgba(2, 6, 23, 0.82), transparent 44%),
+                linear-gradient(to right, rgba(186, 230, 253, 0.04) 1px, transparent 1px);
+            background-size: 100% 100%, 24px 24px;
+            pointer-events: none;
+            z-index: 1;
+        }
+
+        .side-visual > * {
+            position: relative;
+            z-index: 2;
+        }
+
+        .logo-text { font-weight: 800; font-size: 1.5rem; letter-spacing: 2px; }
+        .hero-heading {
+            font-size: clamp(2.2rem, 4vw, 2.9rem);
+            font-weight: 800;
+            line-height: 0.9;
+            letter-spacing: -2px;
+            text-transform: uppercase;
+            text-shadow: 0 10px 25px rgba(2, 6, 23, 0.8);
+        }
+        .hero-meta {
+            margin-top: 10px;
+            font-size: 0.66rem;
+            line-height: 1.4;
+            max-width: 85%;
+            color: rgba(255, 255, 255, 0.76);
+        }
+        .hero-tags { display: flex; gap: 8px; margin-top: 14px; flex-wrap: wrap; }
+        .hero-tag {
+            border: 1px solid var(--frost-line);
+            color: var(--accent-ice);
+            padding: 5px 10px;
+            border-radius: 999px;
+            font-size: 0.6rem;
+            letter-spacing: 1px;
+            text-transform: uppercase;
+            background: rgba(15, 23, 42, 0.45);
+        }
+        .protocol-line {
+            font-size: 0.58rem;
+            font-weight: 600;
+            letter-spacing: 1px;
+            color: rgba(186, 230, 253, 0.9);
+            border-top: 1px solid var(--frost-line);
+            padding-top: 14px;
+            max-width: 92%;
         }
 
         .form-container {
@@ -593,7 +651,7 @@
         .footer-trust-badges {
             margin-top: 10px;
             display: grid;
-            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            grid-template-columns: repeat(3, minmax(0, 1fr));
             gap: 8px;
             position: relative;
             z-index: 2;
@@ -607,88 +665,6 @@
             gap: 6px;
             align-items: center;
             min-height: 48px;
-        }
-        .footer-trust-badge.snyk-badge {
-            border-color: #2ea043;
-            background: rgba(46, 160, 67, 0.08);
-            flex-direction: column;
-            align-items: flex-start;
-            justify-content: center;
-            padding: 10px 12px;
-            box-shadow: 0 10px 26px rgba(0, 0, 0, 0.28);
-        }
-        .snyk-label {
-            font-size: 0.62rem;
-            letter-spacing: 0.6px;
-            color: #9dd7ad;
-            text-transform: uppercase;
-            margin-bottom: 6px;
-        }
-        .snyk-badge-link {
-            display: inline-flex;
-            align-items: center;
-            justify-content: center;
-            width: 100%;
-            padding: 8px 10px;
-            border-radius: 8px;
-            background: rgba(46, 160, 67, 0.12);
-            border: 1px solid rgba(46, 160, 67, 0.45);
-            text-decoration: none;
-        }
-        .snyk-badge-link img {
-            max-width: 160px;
-            width: 100%;
-            height: auto;
-        }
-        .compliance-card {
-            margin-top: 12px;
-            padding: 16px 18px;
-            border: 1px solid #28a745;
-            border-radius: 12px;
-            background: #0d1117;
-            box-shadow: 0 0 10px rgba(40, 167, 69, 0.2);
-            display: grid;
-            gap: 10px;
-            position: relative;
-            z-index: 2;
-        }
-        .compliance-title {
-            font-size: 0.78rem;
-            letter-spacing: 0.8px;
-            text-transform: uppercase;
-            color: #8ef0b0;
-            font-weight: 800;
-            text-align: center;
-        }
-        .compliance-badges {
-            display: flex;
-            justify-content: center;
-            align-items: center;
-            gap: 12px;
-            flex-wrap: wrap;
-        }
-        .compliance-badges a {
-            display: inline-flex;
-            justify-content: center;
-            align-items: center;
-            gap: 10px;
-            padding: 10px 12px;
-            background: linear-gradient(120deg, rgba(16, 185, 129, 0.12), rgba(59, 130, 246, 0.08));
-            border: 1px solid rgba(40, 167, 69, 0.45);
-            border-radius: 10px;
-            text-decoration: none;
-            width: min(100%, 520px);
-        }
-        .compliance-badges img {
-            max-height: 24px;
-            width: auto;
-            flex: 1 1 auto;
-        }
-        .compliance-sub {
-            font-size: 0.66rem;
-            color: #9ad6b6;
-            text-align: center;
-            letter-spacing: 0.3px;
         }
         .footer-trust-title {
             color: #e8f6ff;
@@ -814,6 +790,7 @@
         }
 
         @media (max-width: 768px) {
+            .side-visual { display: none; }
             .login-wrapper { width: calc(100vw - 28px); }
             .form-container { padding: 34px 24px; }
             .intel-section { margin: 0 14px 18px; padding: 24px 18px; }
@@ -837,12 +814,23 @@
     <div class="bg-branding">CYPHERSCOUT</div>
 
     <main class="page">
-        <section class="intro-visual">
-            <video class="intro-video" src="{{ url_for('static', filename='Gen-4 Turbo - Cinematic pixel art animation with a completely stable, locked-off camera angle Insid.mp4') }}" autoplay muted loop playsinline></video>
-        </section>
-
-        <section class="auth-section">
+        <section class="hero-screen">
             <div class="login-wrapper">
+                <div class="side-visual">
+                    <div class="logo-text">CypherScout</div>
+                    <div>
+                        <div class="section-tag" style="color:#fff;opacity:0.85;">AI Security Core / Threat Defense</div>
+                        <h1 class="hero-heading">CYPHER<br>SCOUT AI</h1>
+                        <p class="hero-meta">&copy; 2026 CYPHERSCOUT // URL VERDICTS WITH VIRUSTOTAL, HEURISTICS, AND FEEDBACK-TRAINED ML</p>
+                        <div class="hero-tags">
+                            <span class="hero-tag">VirusTotal Engines</span>
+                            <span class="hero-tag">Heuristic Signals</span>
+                            <span class="hero-tag">Feedback Learning</span>
+                        </div>
+                    </div>
+                    <div class="protocol-line">PROTOCOL: ON-DEMAND LINK VERIFICATION // STATUS: ANALYZER READY</div>
+                </div>
+
                 <div class="form-container">
                     <div class="section-tag">Handshake</div>
                     <h2>Identity Verification</h2>
@@ -1060,12 +1048,6 @@
                         <div class="footer-trust-title">CypherScout AI Teacher</div>
                         <div class="footer-trust-sub">Community Verified</div>
                     </div>
-                </div>
-                <div class="footer-trust-badge snyk-badge">
-                    <div class="snyk-label">Vulnerability Scan: Verified by Snyk</div>
-                    <a class="snyk-badge-link" href="https://snyk.io/test/github/Abhay-tec/CypherScout" target="_blank" rel="noopener">
-                        <img src="https://snyk.io/test/github/Abhay-tec/CypherScout/badge.svg" alt="Snyk Security Status Badge">
-                    </a>
                 </div>
             </div>
             <div class="footer-shadow-note">
