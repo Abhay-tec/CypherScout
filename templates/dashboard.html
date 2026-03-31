@@ -805,6 +805,106 @@
 
         body.mobile-ui .tour-tooltip { display: none !important; }
         body.mobile-ui .tour-highlight { box-shadow: none !important; }
+
+        /* --- GET HELP ASSISTANT (Dashboard) --- */
+        #help-launcher {
+            position: fixed;
+            right: 20px;
+            bottom: 20px;
+            z-index: 1201;
+            display: inline-flex;
+            align-items: center;
+            gap: 10px;
+            padding: 12px 16px;
+            border-radius: 999px;
+            background: linear-gradient(145deg, #28a745, #3be46b);
+            color: #0d1117;
+            font-weight: 800;
+            cursor: pointer;
+            box-shadow: 0 10px 30px rgba(40, 167, 69, 0.35);
+            transition: transform 160ms ease, box-shadow 160ms ease;
+            font-size: 14px;
+        }
+        #help-launcher:hover { transform: translateY(-2px); box-shadow: 0 14px 38px rgba(40, 167, 69, 0.45); }
+        #help-launcher .help-icon {
+            width: 26px; height: 26px; border-radius: 999px;
+            background: #0d1117; color: #28a745;
+            display: grid; place-items: center; font-weight: 900;
+            box-shadow: inset 0 0 0 1px rgba(40, 167, 69, 0.5);
+        }
+
+        #help-panel {
+            position: fixed;
+            right: 16px;
+            bottom: 92px;
+            width: 350px;
+            max-width: 94vw;
+            height: 450px;
+            display: none;
+            flex-direction: column;
+            gap: 10px;
+            padding: 14px;
+            background: rgba(13, 17, 23, 0.78);
+            border: 1px solid rgba(40, 167, 69, 0.35);
+            border-radius: 18px;
+            backdrop-filter: blur(14px);
+            box-shadow: 0 24px 56px rgba(0, 0, 0, 0.5);
+            color: #e6f6ea;
+            z-index: 1202;
+            transform: translateY(14px);
+            opacity: 0;
+            transition: transform 240ms ease, opacity 240ms ease;
+        }
+        #help-panel.open { display: flex; transform: translateY(0); opacity: 1; }
+
+        .help-header { display: flex; justify-content: space-between; gap: 12px; }
+        .help-title { font-weight: 800; letter-spacing: 0.3px; }
+        .help-sub { font-size: 0.84rem; color: #a5d7b2; }
+        #help-close { background: transparent; border: 1px solid rgba(40, 167, 69, 0.35); color: #e6f6ea; border-radius: 10px; padding: 4px 10px; cursor: pointer; }
+
+        .help-quick { display: flex; flex-wrap: wrap; gap: 8px; }
+        .help-chip {
+            background: rgba(40, 167, 69, 0.14);
+            color: #28a745;
+            border: 1px solid rgba(40, 167, 69, 0.35);
+            border-radius: 999px;
+            padding: 6px 12px;
+            font-size: 0.82rem;
+            cursor: pointer;
+        }
+        .help-chip:hover { background: rgba(40, 167, 69, 0.22); }
+
+        #help-messages { flex: 1; min-height: 140px; overflow-y: auto; display: flex; flex-direction: column; gap: 10px; padding-right: 4px; }
+        .help-msg { padding: 10px 12px; border-radius: 12px; font-size: 0.9rem; line-height: 1.45; max-width: 92%; }
+        .help-msg.bot { background: rgba(40, 167, 69, 0.08); border: 1px solid rgba(40, 167, 69, 0.35); }
+        .help-msg.user { background: rgba(13, 17, 23, 0.8); border: 1px solid rgba(255, 255, 255, 0.08); margin-left: auto; }
+
+        .help-feedback { display: flex; align-items: center; gap: 8px; font-size: 0.85rem; color: #c7e7cf; }
+        .help-tick { background: rgba(40, 167, 69, 0.18); border: 1px solid rgba(40, 167, 69, 0.35); color: #e6f6ea; border-radius: 8px; padding: 4px 10px; cursor: pointer; }
+        .help-tick.bad { background: rgba(255, 80, 80, 0.18); border-color: rgba(255, 80, 80, 0.35); }
+
+        #help-form { display: grid; grid-template-columns: 1fr auto; gap: 8px; }
+        #help-input {
+            background: rgba(13, 17, 23, 0.8);
+            border: 1px solid rgba(40, 167, 69, 0.35);
+            color: #e6f6ea;
+            padding: 10px 12px;
+            border-radius: 12px;
+        }
+        #help-form button {
+            background: linear-gradient(145deg, #28a745, #3be46b);
+            border: none;
+            color: #0d1117;
+            font-weight: 800;
+            border-radius: 12px;
+            padding: 10px 14px;
+            cursor: pointer;
+            box-shadow: 0 6px 16px rgba(40, 167, 69, 0.35);
+        }
+        @media (max-width: 540px) {
+            #help-panel { right: 10px; bottom: 80px; height: 420px; }
+            #help-launcher { right: 12px; bottom: 12px; }
+        }
     </style>
 </head>
 <body onload="initSystem()">
@@ -1459,6 +1559,107 @@
                 showStep();
             }
         });
+    </script>
+
+    <!-- Get Help Floating Assistant -->
+    <div id="help-launcher">
+        <span class="help-icon">?</span>
+        <span>Get Help</span>
+    </div>
+
+    <div id="help-panel" role="dialog" aria-modal="false" aria-label="CypherScout Digital Guardian">
+        <div class="help-header">
+            <div>
+                <div class="help-title">CypherScout Digital Guardian</div>
+                <div class="help-sub">Hello Agent! I am your CypherScout Digital Guardian. How can I protect you today?</div>
+            </div>
+            <button id="help-close" aria-label="Close help">×</button>
+        </div>
+
+        <div class="help-quick">
+            <button class="help-chip" data-msg="Analyze a suspicious link">Analyze a suspicious link</button>
+            <button class="help-chip" data-msg="I think I was scammed">I think I was scammed</button>
+            <button class="help-chip" data-msg="Daily Security Tip">Daily Security Tip</button>
+        </div>
+
+        <div id="help-messages" role="log" aria-live="polite">
+            <div class="help-msg bot">Hello Agent! I am your CypherScout Digital Guardian. How can I protect you today?</div>
+        </div>
+
+        <div class="help-feedback">
+            <span>Mark response:</span>
+            <button class="help-tick" data-tick="good" title="Mark correct">✔</button>
+            <button class="help-tick bad" data-tick="bad" title="Mark incorrect">✖</button>
+        </div>
+
+        <form id="help-form">
+            <input id="help-input" placeholder="Type your question or describe the issue…" autocomplete="off" />
+            <button type="submit">Send</button>
+        </form>
+    </div>
+
+    <script>
+        (() => {
+            const launcher = document.getElementById("help-launcher");
+            const panel = document.getElementById("help-panel");
+            const closeBtn = document.getElementById("help-close");
+            const chips = document.querySelectorAll(".help-chip");
+            const form = document.getElementById("help-form");
+            const input = document.getElementById("help-input");
+            const log = document.getElementById("help-messages");
+            const ticks = document.querySelectorAll(".help-tick");
+
+            const neuralHook = "I have logged this pattern. My AI bot will now learn from this mistake to improve future shield accuracy.";
+
+            function toggle(open) {
+                panel.classList.toggle("open", open);
+                if (open) setTimeout(() => input.focus(), 50);
+            }
+            launcher.onclick = () => toggle(true);
+            closeBtn.onclick = () => toggle(false);
+
+            chips.forEach(ch => ch.onclick = () => {
+                input.value = ch.dataset.msg;
+                input.focus();
+            });
+
+            function push(text, who = "bot") {
+                const div = document.createElement("div");
+                div.className = `help-msg ${who}`;
+                div.textContent = text;
+                log.appendChild(div);
+                log.scrollTop = log.scrollHeight;
+            }
+
+            function reply(text) {
+                const lower = text.toLowerCase();
+                if (lower.includes("scam") || lower.includes("wrong") || lower.includes("false")) {
+                    push(neuralHook, "bot");
+                }
+                if (lower.includes("link")) {
+                    push("Scan checklist: 1) Check domain spelling & HTTPS. 2) Hover to view real URL. 3) Avoid shortened links. 4) If unsure, open in an isolated browser.", "bot");
+                } else if (lower.includes("scammed")) {
+                    push("Immediate steps: freeze cards/accounts, change passwords, enable MFA, and file a report at cybercrime.gov.in.", "bot");
+                } else if (lower.includes("daily security tip")) {
+                    push("Daily Tip: Never reuse passwords—use a manager and MFA for all financial/log-in accounts.", "bot");
+                } else {
+                    push("Got it. I’ll assess this and guide you. Share details or paste the suspicious link.", "bot");
+                }
+            }
+
+            form.onsubmit = (e) => {
+                e.preventDefault();
+                const text = input.value.trim();
+                if (!text) return;
+                push(text, "user");
+                input.value = "";
+                setTimeout(() => reply(text), 200);
+            };
+
+            ticks.forEach(btn => btn.onclick = () => {
+                push(btn.dataset.tick === "bad" ? "Marked as incorrect. Logging for retraining." : "Marked as correct. Pattern reinforced.", "bot");
+            });
+        })();
     </script>
 <script type="text/javascript" src="https://cdn.ywxi.net/js/1.js" async></script>
 </body>
