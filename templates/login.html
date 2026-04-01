@@ -651,7 +651,7 @@
         .footer-trust-badges {
             margin-top: 10px;
             display: grid;
-            grid-template-columns: repeat(3, minmax(0, 1fr));
+            grid-template-columns: repeat(auto-fit, minmax(180px, 1fr));
             gap: 8px;
             position: relative;
             z-index: 2;
@@ -665,6 +665,7 @@
             gap: 6px;
             align-items: center;
             min-height: 48px;
+            text-decoration: none;
         }
         .footer-trust-title {
             color: #e8f6ff;
@@ -677,6 +678,19 @@
             color: var(--text-dim);
             font-size: 0.58rem;
             margin-top: 1px;
+        }
+        .snyk-mark {
+            width: 36px;
+            height: 36px;
+            border-radius: 10px;
+            background: linear-gradient(135deg, #5a2a82, #7c3aed);
+            display: grid;
+            place-items: center;
+            color: #fff;
+            font-weight: 800;
+            font-size: 0.72rem;
+            flex-shrink: 0;
+            box-shadow: 0 4px 12px rgba(90, 42, 130, 0.35);
         }
         .footer-shadow-note {
             position: relative;
@@ -1042,6 +1056,13 @@
                         <div class="footer-trust-sub">Site Verified</div>
                     </div>
                 </div>
+                <a class="footer-trust-badge" href="https://snyk.io" target="_blank" rel="noopener" aria-label="Snyk security badge">
+                    <div class="snyk-mark">S</div>
+                    <div>
+                        <div class="footer-trust-title">Snyk Security</div>
+                        <div class="footer-trust-sub">Dependencies scanned for vulns</div>
+                    </div>
+                </a>
                 <div class="footer-trust-badge">
                     <i data-lucide="graduation-cap" size="14"></i>
                     <div>
