@@ -1623,49 +1623,73 @@
                 const lower = text.toLowerCase();
                 const is = (pattern) => pattern.test(lower);
 
-                if (is(/tip|daily security tip/)) {
-                    push("Daily Tip: Use a password manager, enable MFA everywhere, and keep separate emails for banking vs sign-ups.", "bot");
+                const intents = [
+                    {
+                        match: /(hello|hi|hey|hola|namaste)/,
+                        response: "Hey Agent! Tell me your security issue—links, accounts, malware, payments, Wi-Fi, anything shady."
+                    },
+                    {
+                        match: /\bssl\b|\btls\b|https|certificate/,
+                        response: "SSL/TLS encrypts traffic between your browser and a site. Quick check: look for https and a lock, click it to view a valid certificate, avoid mixed-content warnings, and never enter credentials on http pages."
+                    },
+                    {
+                        match: /\b2fa\b|\bmfa\b|two[-\s]?factor|authenticator|otp/,
+                        response: "Two-factor auth = password + a second proof. Turn on app-based or hardware key MFA (avoid SMS when possible), store recovery codes safely, and add MFA to email, banking, and social accounts first."
+                    },
+                    {
+                        match: /(secure|protect|harden|safe).*(account|acc)|account security|make .*account secure/,
+                        response: "Account hardening: 1) Unique 14+ char passwords in a manager. 2) MFA on email/bank/social. 3) Up-to-date recovery email/phone. 4) Remove old sessions/devices. 5) Phishing filter—never click login links from messages; type the site directly."
+                    },
+                    {
+                        match: /link|url|website|domain|shorten|qr code/,
+                        response: "Link safety: hover to preview the real URL, watch for look-alike domains, avoid shortened/QR links you cannot verify, and open suspicious ones only in an isolated or sandboxed browser profile."
+                    },
+                    {
+                        match: /phish|scam|fraud|spoof|gift card|lottery|otp scam|vishing|smishing|caller id/,
+                        response: "Scam response: stop engaging, do not pay or share codes, capture screenshots, contact your bank to freeze cards, and report at reportfraud.ftc.gov or ic3.gov. Expect follow-up attempts—block numbers and change passwords from a clean device."
+                    },
+                    {
+                        match: /password|passcode|pin(?!g)|credential/,
+                        response: "Password hygiene: use a manager, 14+ chars, no reuse. Rotate any password exposed in a breach, prefer app or security-key MFA over SMS, and disable password reuse in browser sync."
+                    },
+                    {
+                        match: /malware|virus|ransom|trojan|spyware|keylog|payload/,
+                        response: "Possible malware: disconnect from Wi-Fi, run a full AV/EDR scan, boot safe mode if needed, and change critical passwords from a clean device. For ransomware, isolate the machine and restore only from known-clean backups."
+                    },
+                    {
+                        match: /account|hacked|unauthorized|breach|session|takeover|compromised/,
+                        response: "Account takeover steps: change the password from a clean device, revoke active sessions, enable MFA, verify recovery email/phone, and review recent login activity for unknown devices or IPs."
+                    },
+                    {
+                        match: /wifi|wi-?fi|network|hotspot|bluetooth|router/,
+                        response: "Network safety: avoid sensitive actions on open Wi-Fi, use a trusted VPN, disable auto-join, and keep your router on WPA3/WPA2 with firmware updates and a strong admin password."
+                    },
+                    {
+                        match: /vpn/,
+                        response: "VPN tips: use a reputable, no-log provider, enable kill-switch, and keep it on when using public or semi-trusted networks. Still avoid risky downloads—VPN is not an antivirus."
+                    },
+                    {
+                        match: /firewall/,
+                        response: "Firewall basics: keep OS firewall on, block unsolicited inbound traffic, and allow apps only when needed. For home routers, disable remote admin and use UPnP sparingly."
+                    },
+                    {
+                        match: /report|complain|ftc|ic3|police|authority/,
+                        response: "To report in the US: use reportfraud.ftc.gov for consumer scams and ic3.gov for cybercrime. Also notify your bank/card issuer and local police if money moved."
+                    },
+                    {
+                        match: /tip|daily security tip/,
+                        response: "Daily Tip: use a password manager, enable MFA everywhere, separate email for banking vs sign-ups, and keep browsers/extensions minimal and updated."
+                    }
+                ];
+
+                const hit = intents.find(({ match }) => is(match));
+                if (hit) {
+                    push(hit.response, "bot");
                     return;
                 }
 
-                if (is(/link|url|website|domain|shorten/)) {
-                    push("Link safety: hover to preview the real URL, watch for look-alike domains, avoid shortened links, and open suspicious ones only in an isolated or sandboxed browser.", "bot");
-                    return;
-                }
-
-                if (is(/phish|scam|fraud|otp|one time|sms code|caller|spoof|gift card/)) {
-                    push(neuralHook, "bot");
-                    push("Scam response: stop engaging, do not pay or share codes, capture screenshots, contact your bank to freeze cards, and report at reportfraud.ftc.gov or ic3.gov.", "bot");
-                    return;
-                }
-
-                if (is(/password|passcode|pin|2fa|mfa|authenticator|otp/)) {
-                    push("Password hygiene: use 14+ character unique passwords in a manager, turn on app or security-key MFA (avoid SMS when possible), and rotate any password exposed in breaches.", "bot");
-                    return;
-                }
-
-                if (is(/malware|virus|ransom|trojan|spyware|keylog|payload/)) {
-                    push("Possible malware: disconnect from Wi-Fi, run a full AV/EDR scan, boot in safe mode if needed, and change critical passwords from a clean device. If ransomware, isolate systems and restore only from clean backups.", "bot");
-                    return;
-                }
-
-                if (is(/account|hacked|login|unauthorized|breach|session|takeover/)) {
-                    push("Account takeover steps: change the password from a clean device, revoke active sessions, enable MFA, verify recovery email/phone, and review recent login activity for unknown devices.", "bot");
-                    return;
-                }
-
-                if (is(/wifi|wi-fi|network|hotspot|bluetooth/)) {
-                    push("Network safety: avoid sensitive actions on open Wi-Fi, use a trusted VPN, disable auto-join, and keep router firmware updated with WPA3/WPA2 and a strong admin password.", "bot");
-                    return;
-                }
-
-                if (is(/report|complain|ftc|police|authority/)) {
-                    push("To report in the US: use reportfraud.ftc.gov for consumer scams and ic3.gov for cybercrime. Also notify your bank or card issuer and local authorities if money moved.", "bot");
-                    return;
-                }
-
-                // Default: keep it security-focused even if the question is broad.
-                push("I'm focused on security. Is this about a link, account, device, payment, or data? First steps: pause clicks, change passwords and enable MFA, scan the device, and contact your bank if money is at risk.", "bot");
+                // Default: keep it security-focused but still helpful.
+                push("I answer only security topics. Tell me if this is about a link, account, device, payment, or data. First steps: pause clicks, change passwords and enable MFA, scan the device, and contact your bank if money is at risk.", "bot");
             }
 
             form.onsubmit = (e) => {
