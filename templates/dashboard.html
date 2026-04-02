@@ -879,10 +879,6 @@
         .help-msg.bot { background: rgba(40, 167, 69, 0.08); border: 1px solid rgba(40, 167, 69, 0.35); }
         .help-msg.user { background: rgba(13, 17, 23, 0.8); border: 1px solid rgba(255, 255, 255, 0.08); margin-left: auto; }
 
-        .help-feedback { display: flex; align-items: center; gap: 8px; font-size: 0.85rem; color: #c7e7cf; }
-        .help-tick { background: rgba(40, 167, 69, 0.18); border: 1px solid rgba(40, 167, 69, 0.35); color: #e6f6ea; border-radius: 8px; padding: 4px 10px; cursor: pointer; }
-        .help-tick.bad { background: rgba(255, 80, 80, 0.18); border-color: rgba(255, 80, 80, 0.35); }
-
         #help-form { display: grid; grid-template-columns: 1fr auto; gap: 8px; }
         #help-input {
             background: rgba(13, 17, 23, 0.8);
@@ -1586,14 +1582,8 @@
             <div class="help-msg bot">Hello Agent! I am your CypherScout Digital Guardian. How can I protect you today?</div>
         </div>
 
-        <div class="help-feedback">
-            <span>Mark response:</span>
-            <button class="help-tick" data-tick="good" title="Mark correct">✔</button>
-            <button class="help-tick bad" data-tick="bad" title="Mark incorrect">✖</button>
-        </div>
-
         <form id="help-form">
-            <input id="help-input" placeholder="Type your question or describe the issue…" autocomplete="off" />
+            <input id="help-input" placeholder="Type your question or describe the issue..." autocomplete="off" />
             <button type="submit">Send</button>
         </form>
     </div>
@@ -1607,9 +1597,7 @@
             const form = document.getElementById("help-form");
             const input = document.getElementById("help-input");
             const log = document.getElementById("help-messages");
-            const ticks = document.querySelectorAll(".help-tick");
-
-            const neuralHook = "I have logged this pattern. My AI bot will now learn from this mistake to improve future shield accuracy.";
+            const neuralHook = "Got it. Logging this pattern to harden CypherScout's shields.";
 
             function toggle(open) {
                 panel.classList.toggle("open", open);
@@ -1633,18 +1621,51 @@
 
             function reply(text) {
                 const lower = text.toLowerCase();
-                if (lower.includes("scam") || lower.includes("wrong") || lower.includes("false")) {
+                const is = (pattern) => pattern.test(lower);
+
+                if (is(/tip|daily security tip/)) {
+                    push("Daily Tip: Use a password manager, enable MFA everywhere, and keep separate emails for banking vs sign-ups.", "bot");
+                    return;
+                }
+
+                if (is(/link|url|website|domain|shorten/)) {
+                    push("Link safety: hover to preview the real URL, watch for look-alike domains, avoid shortened links, and open suspicious ones only in an isolated or sandboxed browser.", "bot");
+                    return;
+                }
+
+                if (is(/phish|scam|fraud|otp|one time|sms code|caller|spoof|gift card/)) {
                     push(neuralHook, "bot");
+                    push("Scam response: stop engaging, do not pay or share codes, capture screenshots, contact your bank to freeze cards, and report at reportfraud.ftc.gov or ic3.gov.", "bot");
+                    return;
                 }
-                if (lower.includes("link")) {
-                    push("Scan checklist: 1) Check domain spelling & HTTPS. 2) Hover to view real URL. 3) Avoid shortened links. 4) If unsure, open in an isolated browser.", "bot");
-                } else if (lower.includes("scammed")) {
-                    push("Immediate steps: freeze cards/accounts, change passwords, enable MFA, and file a report at cybercrime.gov.in.", "bot");
-                } else if (lower.includes("daily security tip")) {
-                    push("Daily Tip: Never reuse passwords—use a manager and MFA for all financial/log-in accounts.", "bot");
-                } else {
-                    push("Got it. I’ll assess this and guide you. Share details or paste the suspicious link.", "bot");
+
+                if (is(/password|passcode|pin|2fa|mfa|authenticator|otp/)) {
+                    push("Password hygiene: use 14+ character unique passwords in a manager, turn on app or security-key MFA (avoid SMS when possible), and rotate any password exposed in breaches.", "bot");
+                    return;
                 }
+
+                if (is(/malware|virus|ransom|trojan|spyware|keylog|payload/)) {
+                    push("Possible malware: disconnect from Wi-Fi, run a full AV/EDR scan, boot in safe mode if needed, and change critical passwords from a clean device. If ransomware, isolate systems and restore only from clean backups.", "bot");
+                    return;
+                }
+
+                if (is(/account|hacked|login|unauthorized|breach|session|takeover/)) {
+                    push("Account takeover steps: change the password from a clean device, revoke active sessions, enable MFA, verify recovery email/phone, and review recent login activity for unknown devices.", "bot");
+                    return;
+                }
+
+                if (is(/wifi|wi-fi|network|hotspot|bluetooth/)) {
+                    push("Network safety: avoid sensitive actions on open Wi-Fi, use a trusted VPN, disable auto-join, and keep router firmware updated with WPA3/WPA2 and a strong admin password.", "bot");
+                    return;
+                }
+
+                if (is(/report|complain|ftc|police|authority/)) {
+                    push("To report in the US: use reportfraud.ftc.gov for consumer scams and ic3.gov for cybercrime. Also notify your bank or card issuer and local authorities if money moved.", "bot");
+                    return;
+                }
+
+                // Default: keep it security-focused even if the question is broad.
+                push("I'm focused on security. Is this about a link, account, device, payment, or data? First steps: pause clicks, change passwords and enable MFA, scan the device, and contact your bank if money is at risk.", "bot");
             }
 
             form.onsubmit = (e) => {
@@ -1655,10 +1676,6 @@
                 input.value = "";
                 setTimeout(() => reply(text), 200);
             };
-
-            ticks.forEach(btn => btn.onclick = () => {
-                push(btn.dataset.tick === "bad" ? "Marked as incorrect. Logging for retraining." : "Marked as correct. Pattern reinforced.", "bot");
-            });
         })();
     </script>
 <script type="text/javascript" src="https://cdn.ywxi.net/js/1.js" async></script>
