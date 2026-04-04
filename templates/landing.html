@@ -336,14 +336,21 @@
             background: rgba(255,255,255,0.15);
         }
         
-        .glass-panel video {
+        .video-wrapper {
             width: 100%;
             border-radius: 12px;
+            overflow: hidden;
+            box-shadow: 0 8px 32px rgba(0,0,0,0.4);
+        }
+        
+        .glass-panel video {
+            width: 100%;
             display: block;
             opacity: 0.9;
             mix-blend-mode: screen;
             background: #050505;
-            box-shadow: 0 8px 32px rgba(0,0,0,0.4);
+            transform: scale(1.08); /* Scales video to crop edges and watermarks */
+            transform-origin: center center;
         }
 
         /* ---------------- Features / Grid ---------------- */
@@ -565,9 +572,11 @@
                     <div class="panel-btn" style="background:#F59E0B"></div>
                     <div class="panel-btn" style="background:#10B981"></div>
                 </div>
-                <video autoplay muted loop playsinline class="demo-vid">
-                    <source src="{{ url_for('static', filename='mainscreen.mp4') }}" type="video/mp4">
-                </video>
+                <div class="video-wrapper">
+                    <video autoplay muted loop playsinline class="demo-vid">
+                        <source src="{{ url_for('static', filename='mainscreen.mp4') }}" type="video/mp4">
+                    </video>
+                </div>
             </div>
         </section>
 
