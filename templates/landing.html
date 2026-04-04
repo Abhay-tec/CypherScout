@@ -273,6 +273,7 @@
             background: linear-gradient(90deg, #60A5FA, #A78BFA, #34D399);
             background-size: 200% auto;
             -webkit-background-clip: text;
+            background-clip: text;
             -webkit-text-fill-color: transparent;
             animation: text-shine 6s linear infinite;
         }
@@ -349,7 +350,7 @@
             opacity: 0.9;
             mix-blend-mode: screen;
             background: #050505;
-            transform: scale(1.08); /* Scales video to crop edges and watermarks */
+            transform: scale(1.16) translate(1%, 1%); /* Increased scale & shifted to fully crop bottom-right watermark */
             transform-origin: center center;
         }
 
