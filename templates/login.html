@@ -3,35 +3,38 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>CypherScout | Command Center Lock</title>
+    <title>CypherScout | Secure Auth</title>
     <script src="https://unpkg.com/lucide@latest"></script>
-    <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@300;400;600;800&family=Inter:wght@400;700&family=JetBrains+Mono&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@300;400;500;600;800&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
     <style>
         :root {
             --bg-dark: #020617;
-            --glass: rgba(255, 255, 255, 0.03);
-            --border: rgba(255, 255, 255, 0.1);
-            --frost-line: rgba(186, 230, 253, 0.25);
             --accent: #22d3ee;
-            --accent-ice: #bae6fd;
-            --text-white: #ffffff;
+            --accent-glow: rgba(34, 211, 238, 0.4);
+            --border: rgba(255, 255, 255, 0.1);
+            --border-hov: rgba(255, 255, 255, 0.2);
+            --glass: rgba(10, 15, 28, 0.6);
+            --text-main: #ffffff;
             --text-dim: #94a3b8;
         }
 
         * { margin: 0; padding: 0; box-sizing: border-box; }
-        html, body { min-height: 100%; scroll-behavior: smooth; }
+        html, body { height: 100%; }
 
         body {
             background-color: #030303;
-            color: var(--text-white);
+            color: var(--text-main);
             font-family: 'Plus Jakarta Sans', sans-serif;
-            overflow-x: hidden;
-            position: relative;
+            overflow: hidden; /* No scrolling for lock screen */
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
         }
 
-        /* ---------------- Fluid Gradient Background ---------------- */
+        /* ---------------- Background ---------------- */
         .ambient-bg {
-            position: fixed;
+            position: absolute;
             top: 0; left: 0; width: 100vw; height: 100vh;
             z-index: -2;
             overflow: hidden;
@@ -69,13 +72,12 @@
 
         @keyframes orbFloat {
             0% { transform: translate(0, 0) scale(1); }
-            50% { transform: translate(8%, 12%) scale(1.05); }
-            100% { transform: translate(-6%, -8%) scale(0.95); }
+            50% { transform: translate(6%, 8%) scale(1.05); }
+            100% { transform: translate(-4%, -5%) scale(0.95); }
         }
 
-        /* Fine noise texture overlay for realism */
         .ambient-noise {
-            position: fixed;
+            position: absolute;
             top: 0; left: 0; width: 100vw; height: 100vh;
             z-index: -1;
             opacity: 0.05;
@@ -83,308 +85,217 @@
             background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 200 200' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='noiseFilter'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.8' numOctaves='3' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23noiseFilter)'/%3E%3C/svg%3E");
         }
 
-        /* ---------------- Brand New Split-Screen Layout ---------------- */
-        .dashboard-lock {
-            display: flex;
-            width: 100vw;
-            height: 100vh;
-            padding: 20px;
-            gap: 20px;
+        /* ---------------- Center Masterpiece (Auth Card) ---------------- */
+        .auth-container {
             position: relative;
             z-index: 10;
+            width: 100%;
+            max-width: 440px;
+            perspective: 1000px;
+            padding: 20px;
         }
 
-        /* --- Left Side: Intel & Badges Collage --- */
-        .intel-pane {
-            flex: 1.5;
-            display: flex;
-            flex-direction: column;
-            background: rgba(3, 7, 18, 0.45);
-            border: 1px solid rgba(255, 255, 255, 0.08);
-            border-radius: 32px;
-            backdrop-filter: blur(28px);
-            -webkit-backdrop-filter: blur(28px);
-            padding: 40px;
-            position: relative;
-            overflow: hidden;
-        }
-        
-        /* Ambient internal glow */
-        .intel-pane::before {
-            content: '';
-            position: absolute;
-            inset: 0;
-            background: radial-gradient(800px circle at 0% 0%, rgba(56, 189, 248, 0.15), transparent 60%);
-            pointer-events: none;
+        .auth-card {
+            background: var(--glass);
+            border-radius: 28px;
+            border: 1px solid var(--border);
+            padding: 44px 38px;
+            backdrop-filter: blur(48px);
+            -webkit-backdrop-filter: blur(48px);
+            box-shadow: 
+                0 40px 100px rgba(0, 0, 0, 0.85), 
+                0 0 60px rgba(34, 211, 238, 0.08), 
+                inset 0 1px 1px rgba(255, 255, 255, 0.15);
+            transform-style: preserve-3d;
+            animation: cardEntrance 1s cubic-bezier(0.16, 1, 0.3, 1) forwards;
         }
 
-        .intel-header {
-            display: flex;
-            justify-content: space-between;
-            align-items: flex-start;
-            position: relative;
-            z-index: 2;
+        @keyframes cardEntrance {
+            from { opacity: 0; transform: translateY(40px) scale(0.95); }
+            to { opacity: 1; transform: translateY(0) scale(1); }
         }
 
-        .hero-heading {
-            font-size: clamp(3rem, 5vw, 4.2rem);
+        .auth-header {
+            text-align: center;
+            margin-bottom: 32px;
+        }
+
+        .logo-box {
+            width: 60px; height: 60px;
+            margin: 0 auto 20px;
+            border-radius: 18px;
+            background: linear-gradient(135deg, rgba(34, 211, 238, 0.15), rgba(59, 130, 246, 0.15));
+            border: 1px solid rgba(34, 211, 238, 0.4);
+            display: flex; align-items: center; justify-content: center;
+            box-shadow: 0 0 24px rgba(34, 211, 238, 0.3);
+        }
+
+        .auth-title {
+            font-size: 1.6rem;
             font-weight: 800;
-            line-height: 0.9;
-            letter-spacing: -2px;
-            text-transform: uppercase;
-            background: linear-gradient(90deg, #60A5FA, #A78BFA, #34D399);
-            background-size: 200% auto;
-            -webkit-background-clip: text;
-            background-clip: text;
-            -webkit-text-fill-color: transparent;
-            animation: text-shine 6s linear infinite;
-        }
-        @keyframes text-shine { to { background-position: 200% center; } }
-        
-        .trust-badges-grid {
-            margin-top: 32px;
-            display: grid;
-            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
-            gap: 14px;
-            position: relative;
-            z-index: 2;
+            letter-spacing: -0.5px;
+            margin-bottom: 4px;
+            color: #fff;
         }
 
-        .trust-badge-card {
-            border: 1px solid rgba(186, 230, 253, 0.2);
-            border-radius: 16px;
-            padding: 16px;
-            background: rgba(8, 13, 22, 0.6);
-            backdrop-filter: blur(10px);
-            display: flex;
-            align-items: center;
-            gap: 12px;
+        .auth-subtitle {
+            font-size: 0.75rem;
+            color: var(--text-dim);
+            text-transform: uppercase;
+            letter-spacing: 1.5px;
+        }
+
+        /* Forms */
+        .flash-stack { display: grid; gap: 8px; margin-bottom: 20px; }
+        .flash-msg {
+            border: 1px solid var(--border-hov);
+            border-radius: 10px; padding: 10px 14px;
+            font-size: 0.75rem; color: #dff5ff;
+            background: rgba(2, 6, 23, 0.5);
+            text-align: center;
+        }
+        .flash-msg.error { border-color: rgba(244, 63, 94, 0.4); color: #fecdd3; background: rgba(127, 29, 29, 0.3); }
+        .flash-msg.success { border-color: rgba(16, 185, 129, 0.4); color: #d1fae5; background: rgba(6, 78, 59, 0.3); }
+
+        .input-group {
+            margin-bottom: 18px;
+            position: relative;
+        }
+
+        .auth-input {
+            width: 100%;
+            padding: 16px 18px 16px 44px;
+            background: rgba(0, 0, 0, 0.35);
+            border: 1px solid var(--border);
+            border-radius: 14px;
+            color: #fff;
+            font-size: 0.95rem;
+            font-family: inherit;
+            outline: none;
             transition: all 0.3s ease;
         }
 
-        .trust-badge-card:hover {
-            background: rgba(186, 230, 253, 0.08);
-            border-color: rgba(186, 230, 253, 0.5);
-            transform: translateY(-2px);
-        }
-
-        .badge-icon-box {
-            width: 40px; height: 40px;
-            border-radius: 12px;
-            background: linear-gradient(135deg, rgba(34, 211, 238, 0.15), rgba(59, 130, 246, 0.15)); 
-            border: 1px solid rgba(34, 211, 238, 0.4);
-            display: grid;
-            place-items: center;
-        }
-
-        .trust-title { color: #e8f6ff; font-size: 0.85rem; font-weight: 800; letter-spacing: 0.5px; text-transform: uppercase; }
-        .trust-sub { color: var(--text-dim); font-size: 0.7rem; margin-top: 2px; }
-
-        .intel-cards-masonry {
-            margin-top: auto;
-            position: relative;
-            z-index: 2;
-            display: grid;
-            grid-template-columns: repeat(auto-fit, minmax(180px, 1fr));
-            gap: 12px;
-        }
-
-        /* Re-use exact logic but smaller for dash-lock */
-        .intel-tilt-card {
-            position: relative;
-            height: 180px;
-            border-radius: 16px;
-            perspective: 900px;
-        }
-        .intel-tilt-canvas {
+        .input-icon {
             position: absolute;
-            inset: 0;
-            display: grid;
-            grid-template-columns: repeat(5, 1fr);
-            grid-template-rows: repeat(5, 1fr);
-            z-index: 3;
-        }
-        .intel-tilt-tracker { display: block; }
-        .intel-tilt-shell {
-            position: absolute;
-            inset: 0;
-            border-radius: 16px;
-            transform-style: preserve-3d;
-            --rx: 0deg;
-            --ry: 0deg;
-            transform: rotateX(0deg) rotateY(0deg);
-            transition: transform 180ms ease, box-shadow 220ms ease, filter 220ms ease;
-            box-shadow: 0 10px 24px rgba(2, 6, 23, 0.42);
-            pointer-events: none;
-        }
-        .intel-tilt-tracker:hover ~ .intel-tilt-shell {
-            transform: rotateX(var(--rx)) rotateY(var(--ry));
-            filter: brightness(1.15);
-            box-shadow: 0 18px 34px rgba(2, 6, 23, 0.58);
-        }
-        .intel-face {
-            position: absolute;
-            inset: 0;
-            border-radius: 16px;
-            border: 1px solid rgba(255, 255, 255, 0.16);
-            backface-visibility: hidden;
-            -webkit-backface-visibility: hidden;
-            overflow: hidden;
-            display: flex;
-            align-items: flex-end;
-            padding: 14px;
-            transition: transform 240ms ease, visibility 120ms ease, opacity 120ms ease;
-        }
-        .intel-face.front {
-            z-index: 2;
-            transform: rotateY(0deg);
-            color: #fff;
-            font-size: 0.85rem;
-            font-weight: 800;
-            text-transform: uppercase;
-            letter-spacing: 0.8px;
-            background-size: 180% 180%;
-            animation: intelGradientFlow 7s ease infinite;
-        }
-        .intel-face.front::after {
-            content: "";
-            position: absolute;
-            inset: 0;
-            background: linear-gradient(160deg, transparent 10%, rgba(2, 6, 23, 0.6) 100%);
-            pointer-events: none;
-        }
-        .intel-face.front span { position: relative; z-index: 2; }
-        
-        .intel-face.back {
-            z-index: 3;
-            transform: rotateY(-180deg);
-            background: linear-gradient(180deg, rgba(7, 14, 29, 0.97), rgba(2, 6, 23, 0.98));
-            color: #dbeafe;
-            align-items: flex-start;
-            padding: 12px;
-            visibility: hidden;
-            opacity: 0;
-            border: 1px solid rgba(186, 230, 253, 0.3);
-        }
-        .intel-tilt-tracker:hover ~ .intel-tilt-shell .intel-face.front { transform: rotateY(180deg); visibility: hidden; opacity: 0; }
-        .intel-tilt-tracker:hover ~ .intel-tilt-shell .intel-face.back { transform: rotateY(0deg); visibility: visible; opacity: 1; }
-        
-        .intel-back-title { font-size: 0.72rem; text-transform: uppercase; letter-spacing: 1px; color: #a5f3fc; margin-bottom: 6px; font-weight: 700; }
-        .intel-back-list { margin: 0; padding-left: 14px; display: grid; gap: 5px; font-size: 0.62rem; line-height: 1.4; }
-        
-        .intel-tilt-card.tone-1 .intel-face.front { background-image: linear-gradient(43deg, #4158d0 0%, #c850c0 46%, #ffcc70 100%); }
-        .intel-tilt-card.tone-2 .intel-face.front { background-image: linear-gradient(43deg, #2563eb 0%, #0ea5e9 48%, #22d3ee 100%); }
-        .intel-tilt-card.tone-3 .intel-face.front { background-image: linear-gradient(43deg, #0f766e 0%, #4f46e5 50%, #7c3aed 100%); }
-        .intel-tilt-card.tone-4 .intel-face.front { background-image: linear-gradient(43deg, #be123c 0%, #7c3aed 52%, #2563eb 100%); }
-        .intel-tilt-card.tone-5 .intel-face.front { background-image: linear-gradient(43deg, #0ea5e9 0%, #2563eb 45%, #9333ea 100%); }
-        
-        @keyframes intelGradientFlow { 0% { background-position: 0% 50%; } 50% { background-position: 100% 50%; } 100% { background-position: 0% 50%; } }
-        /* 5x5 Tilt tracking exactly preserved */
-        .intel-tilt-tracker:nth-child(1):hover ~ .intel-tilt-shell { --rx: 10deg; --ry: -10deg; } .intel-tilt-tracker:nth-child(2):hover ~ .intel-tilt-shell { --rx: 10deg; --ry: -5deg; } .intel-tilt-tracker:nth-child(3):hover ~ .intel-tilt-shell { --rx: 10deg; --ry: 0deg; } .intel-tilt-tracker:nth-child(4):hover ~ .intel-tilt-shell { --rx: 10deg; --ry: 5deg; } .intel-tilt-tracker:nth-child(5):hover ~ .intel-tilt-shell { --rx: 10deg; --ry: 10deg; } .intel-tilt-tracker:nth-child(6):hover ~ .intel-tilt-shell { --rx: 5deg; --ry: -10deg; } .intel-tilt-tracker:nth-child(7):hover ~ .intel-tilt-shell { --rx: 5deg; --ry: -5deg; } .intel-tilt-tracker:nth-child(8):hover ~ .intel-tilt-shell { --rx: 5deg; --ry: 0deg; } .intel-tilt-tracker:nth-child(9):hover ~ .intel-tilt-shell { --rx: 5deg; --ry: 5deg; } .intel-tilt-tracker:nth-child(10):hover ~ .intel-tilt-shell { --rx: 5deg; --ry: 10deg; } .intel-tilt-tracker:nth-child(11):hover ~ .intel-tilt-shell { --rx: 0deg; --ry: -10deg; } .intel-tilt-tracker:nth-child(12):hover ~ .intel-tilt-shell { --rx: 0deg; --ry: -5deg; } .intel-tilt-tracker:nth-child(13):hover ~ .intel-tilt-shell { --rx: 0deg; --ry: 0deg; } .intel-tilt-tracker:nth-child(14):hover ~ .intel-tilt-shell { --rx: 0deg; --ry: 5deg; } .intel-tilt-tracker:nth-child(15):hover ~ .intel-tilt-shell { --rx: 0deg; --ry: 10deg; } .intel-tilt-tracker:nth-child(16):hover ~ .intel-tilt-shell { --rx: -5deg; --ry: -10deg; } .intel-tilt-tracker:nth-child(17):hover ~ .intel-tilt-shell { --rx: -5deg; --ry: -5deg; } .intel-tilt-tracker:nth-child(18):hover ~ .intel-tilt-shell { --rx: -5deg; --ry: 0deg; } .intel-tilt-tracker:nth-child(19):hover ~ .intel-tilt-shell { --rx: -5deg; --ry: 5deg; } .intel-tilt-tracker:nth-child(20):hover ~ .intel-tilt-shell { --rx: -5deg; --ry: 10deg; } .intel-tilt-tracker:nth-child(21):hover ~ .intel-tilt-shell { --rx: -10deg; --ry: -10deg; } .intel-tilt-tracker:nth-child(22):hover ~ .intel-tilt-shell { --rx: -10deg; --ry: -5deg; } .intel-tilt-tracker:nth-child(23):hover ~ .intel-tilt-shell { --rx: -10deg; --ry: 0deg; } .intel-tilt-tracker:nth-child(24):hover ~ .intel-tilt-shell { --rx: -10deg; --ry: 5deg; } .intel-tilt-tracker:nth-child(25):hover ~ .intel-tilt-shell { --rx: -10deg; --ry: 10deg; }
-
-
-        /* --- Right Side: Auth Console --- */
-        .auth-pane {
-            flex: 1;
-            background: linear-gradient(155deg, rgba(15, 23, 42, 0.4), rgba(2, 6, 23, 0.7));
-            border-radius: 32px;
-            border: 1px solid rgba(255, 255, 255, 0.12);
-            backdrop-filter: blur(40px);
-            -webkit-backdrop-filter: blur(40px);
-            box-shadow: 0 40px 100px rgba(0, 0, 0, 0.8), inset 0 2px 20px rgba(255, 255, 255, 0.05);
-            display: flex;
-            flex-direction: column;
-            justify-content: center;
-            padding: 46px;
-            position: relative;
-            overflow: hidden;
-        }
-
-        .auth-pane::before {
-            content: '';
-            position: absolute;
-            top: -50%; left: -50%;
-            width: 200%; height: 200%;
-            background: conic-gradient(from 0deg, transparent 70%, rgba(56, 189, 248, 0.3) 80%, transparent 100%);
-            animation: spinBg 8s linear infinite;
-            z-index: 0;
-            pointer-events: none;
-        }
-        @keyframes spinBg { 100% { transform: rotate(360deg); } }
-
-        .auth-content {
-            position: relative;
-            z-index: 2;
-            background: rgba(3, 7, 18, 0.65);
-            padding: 34px;
-            border-radius: 24px;
-            border: 1px solid rgba(255,255,255,0.05);
-        }
-
-        .section-tag { font-size: 0.72rem; font-weight: 800; color: var(--accent); text-transform: uppercase; letter-spacing: 2px; margin-bottom: 10px; }
-        .auth-content h2 { font-size: 1.6rem; margin-bottom: 24px; font-weight: 400; }
-
-        .flash-stack { display: grid; gap: 8px; margin-bottom: 16px; }
-        .flash-msg { border: 1px solid var(--frost-line); border-radius: 8px; padding: 10px 12px; font-size: 0.75rem; color: #dff5ff; background: rgba(2, 6, 23, 0.46); }
-        .flash-msg.error { border-color: rgba(244, 63, 94, 0.35); color: #fecdd3; background: rgba(127, 29, 29, 0.22); }
-        .flash-msg.success { border-color: rgba(16, 185, 129, 0.35); color: #d1fae5; background: rgba(6, 78, 59, 0.24); }
-        
-        .google-auth {
-            display: flex; align-items: center; justify-content: center; gap: 12px;
-            padding: 14px; background: #fff; color: #000; border-radius: 12px;
-            font-weight: 700; text-decoration: none; font-size: 0.85rem; text-transform: uppercase;
-            margin-bottom: 32px; border: 1px solid rgba(255, 255, 255, 0.8); transition: 0.3s;
-        }
-        .google-auth:hover { transform: translateY(-2px); box-shadow: 0 15px 30px rgba(2, 6, 23, 0.35); }
-
-        .input-box { position: relative; margin-bottom: 16px; }
-        input {
-            width: 100%; padding: 15px 16px;
-            background: rgba(15, 23, 42, 0.4);
-            border: 1px solid var(--border); border-radius: 12px;
-            color: #fff; font-size: 0.9rem; outline: none; transition: 0.3s ease;
-        }
-        input::placeholder { color: rgba(148, 163, 184, 0.75); letter-spacing: 0.8px; font-size: 0.8rem; }
-        input:focus { border-color: var(--accent); background: rgba(15, 23, 42, 0.8); box-shadow: 0 0 12px rgba(34, 211, 238, 0.1); }
-
-        .strength-dots { display: flex; gap: 5px; margin-top: 10px; }
-        .dot { width: 25%; height: 2px; background: var(--border); transition: 0.3s; }
-        .active-dot { background: var(--accent); }
-
-        .login-btn {
-            width: 100%; margin-top: 18px; padding: 15px; border-radius: 12px;
-            background: linear-gradient(120deg, rgba(186, 230, 253, 0.18), rgba(34, 211, 238, 0.25));
-            color: #e0f2fe; border: 1px solid rgba(186, 230, 253, 0.75);
-            font-weight: 800; cursor: pointer; text-transform: uppercase; letter-spacing: 2px; font-size: 0.85rem; transition: 0.3s;
-        }
-        .login-btn:hover { transform: translateY(-2px); box-shadow: 0 0 24px rgba(34, 211, 238, 0.35); }
-
-        .mini-links { margin-top: 14px; display: flex; justify-content: space-between; align-items: center; font-size: 0.75rem; }
-        .mini-links button { background: none; border: none; color: var(--accent-ice); cursor: pointer; font-size: 0.75rem; text-decoration: underline; }
-
-        .forgot-panel {
-            margin-top: 16px; border: 1px solid var(--frost-line); border-radius: 16px;
-            padding: 18px; background: rgba(2, 6, 23, 0.35); display: none;
-        }
-        .forgot-panel.active { display: block; }
-        .forgot-title { font-size: 0.75rem; text-transform: uppercase; letter-spacing: 1.1px; color: var(--accent-ice); margin-bottom: 12px; font-weight: 700; }
-        .forgot-panel form + form { margin-top: 14px; padding-top: 14px; border-top: 1px solid rgba(186, 230, 253, 0.16); }
-        
-        .footer-shadow-note {
-            margin-top: 12px;
-            font-size: 0.65rem;
+            left: 16px; top: 50%;
+            transform: translateY(-50%);
             color: var(--text-dim);
-            line-height: 1.5;
+            transition: 0.3s ease;
+            pointer-events: none;
         }
 
-        @media (max-width: 1024px) {
-            .dashboard-lock { flex-direction: column; overflow-y: auto; height: auto; }
-            .intel-pane, .auth-pane { flex: none; width: 100%; border-radius: 20px; }
-            .auth-pane { min-height: 700px; }
+        .auth-input:focus {
+            border-color: var(--accent);
+            background: rgba(15, 23, 42, 0.6);
+            box-shadow: 0 0 16px var(--accent-glow);
+        }
+        .auth-input:focus + .input-icon { color: var(--accent); }
+        
+        .auth-input::placeholder { color: rgba(148, 163, 184, 0.6); }
+
+        .strength-bar {
+            display: flex; gap: 4px; margin-top: 8px; padding: 0 8px;
+        }
+        .str-dot { flex: 1; height: 3px; background: rgba(255,255,255,0.1); border-radius: 4px; transition: 0.3s; }
+        .str-active { background: var(--accent); box-shadow: 0 0 8px var(--accent-glow); }
+
+        .auth-btn {
+            width: 100%; margin-top: 10px;
+            padding: 16px; border-radius: 14px;
+            background: #fff; color: #000;
+            border: none; font-weight: 800;
+            font-size: 0.9rem; letter-spacing: 0.5px;
+            cursor: pointer; transition: 0.3s ease;
+        }
+
+        .auth-btn:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 10px 24px rgba(255, 255, 255, 0.2);
+        }
+
+        .google-auth {
+            display: flex; align-items: center; justify-content: center; gap: 10px;
+            width: 100%; padding: 14px; margin-top: 16px;
+            background: rgba(255, 255, 255, 0.05);
+            border: 1px solid var(--border); border-radius: 14px;
+            color: #fff; font-size: 0.85rem; font-weight: 600;
+            text-decoration: none; transition: 0.3s ease;
+        }
+
+        .google-auth:hover {
+            background: rgba(255, 255, 255, 0.1);
+            border-color: rgba(255, 255, 255, 0.3);
+        }
+
+        .auth-footer {
+            display: flex; justify-content: space-between; align-items: center;
+            margin-top: 24px; padding-top: 18px;
+            border-top: 1px solid var(--border);
+        }
+
+        .auth-link {
+            background: none; border: none;
+            color: var(--text-dim); font-size: 0.75rem;
+            cursor: pointer; transition: 0.3s;
+        }
+        .auth-link:hover { color: #fff; }
+
+        /* Forgot Password Override */
+        #forgotPanel { display: none; margin-top: 20px; }
+        #forgotPanel.active { display: block; animation: fadeDown 0.3s forwards; }
+        @keyframes fadeDown { from{opacity:0; transform:translateY(-10px);} to{opacity:1; transform:translateY(0);} }
+
+        /* ---------------- Bottom Trust Dock ---------------- */
+        .trust-dock-wrapper {
+            position: absolute;
+            bottom: 40px;
+            left: 0; width: 100vw;
+            display: flex; justify-content: center;
+            z-index: 5;
+            animation: cardEntrance 1s 0.3s cubic-bezier(0.16, 1, 0.3, 1) both;
+        }
+
+        .trust-dock {
+            display: flex;
+            align-items: center;
+            gap: 24px;
+            background: rgba(3, 7, 18, 0.55);
+            border: 1px solid var(--border);
+            border-radius: 100px;
+            padding: 12px 32px;
+            backdrop-filter: blur(20px);
+            -webkit-backdrop-filter: blur(20px);
+            box-shadow: 0 20px 40px rgba(0,0,0,0.5);
+        }
+
+        .trust-item {
+            display: flex; align-items: center; gap: 8px;
+            opacity: 0.8; transition: 0.3s;
+        }
+        .trust-item:hover { opacity: 1; transform: translateY(-2px); }
+
+        .trust-icon { color: var(--accent); }
+        .trust-text {
+            display: flex; flex-direction: column;
+        }
+        .trust-main { font-size: 0.72rem; font-weight: 700; color: #fff; letter-spacing: 0.5px; }
+        .trust-sub { font-size: 0.6rem; color: var(--text-dim); }
+
+        /* Snyk Custom Styling in Dock */
+        .trust-snyk .trust-icon { color: #60A5FA; }
+
+        @media (max-width: 640px) {
+            .trust-dock-wrapper { bottom: 20px; }
+            .trust-dock { flex-direction: column; border-radius: 20px; padding: 20px; gap: 16px; }
+            .auth-card { padding: 34px 24px; }
+            body { overflow: auto; justify-content: flex-start; padding: 40px 0 180px; }
+            .ambient-bg, .ambient-noise { position: fixed; }
         }
     </style>
 </head>
 <body>
+    
+    <!-- Background -->
     <div class="ambient-bg">
         <div class="orb orb-1"></div>
         <div class="orb orb-2"></div>
@@ -392,248 +303,167 @@
     </div>
     <div class="ambient-noise"></div>
 
-    <main class="dashboard-lock">
-        
-        <!-- LEFT: INTEL & BADGES WALL -->
-        <div class="intel-pane">
-            <div class="intel-header">
-                <div>
-                    <div class="section-tag" style="color:#fff;opacity:0.85;">AI Security Core / Threat Defense</div>
-                    <h1 class="hero-heading">CYPHER<br>SCOUT AI</h1>
-                    <div style="margin-top: 10px; font-size: 0.7rem; color: var(--text-dim); text-transform: uppercase;">Protocol: On-Demand Link Verification</div>
-                </div>
-                <div class="badge-icon-box" style="width:54px; height:54px; border-radius:16px;">
-                    <i data-lucide="shield" color="#22d3ee" size="28"></i>
-                </div>
-            </div>
-
-            <div class="trust-badges-grid">
-                <div class="trust-badge-card">
-                    <div class="badge-icon-box">
-                        <i data-lucide="lock-keyhole" color="#22d3ee" size="18"></i>
-                    </div>
-                    <div>
-                        <div class="trust-title">SSL Secure Seal</div>
-                        <div class="trust-sub">256-bit Encryption Active</div>
-                    </div>
-                </div>
-                <div class="trust-badge-card">
-                    <div class="badge-icon-box">
-                        <i data-lucide="shield-check" color="#22d3ee" size="18"></i>
-                    </div>
-                    <div>
-                        <div class="trust-title">McAfee SECURE</div>
-                        <div class="trust-sub">URL Status: Verified</div>
-                    </div>
-                </div>
-                <div class="trust-badge-card">
-                    <div class="badge-icon-box">
-                        <i data-lucide="scan-line" color="#22d3ee" size="18"></i>
-                    </div>
-                    <div>
-                        <div class="trust-title">VirusTotal API</div>
-                        <div class="trust-sub">Engine Consensus Active</div>
-                    </div>
-                </div>
-                <div class="trust-badge-card">
-                    <div class="badge-icon-box">
-                        <i data-lucide="graduation-cap" color="#22d3ee" size="18"></i>
-                    </div>
-                    <div>
-                        <div class="trust-title">Adaptive Feedback Loop</div>
-                        <div class="trust-sub">Community Trained Model</div>
-                    </div>
-                </div>
-            </div>
-
-            <!-- The Tilt Cards Matrix -->
-            <div class="intel-cards-masonry">
-                <article class="intel-tilt-card tone-1">
-                    <div class="intel-tilt-canvas">
-                        <span class="intel-tilt-tracker"></span><span class="intel-tilt-tracker"></span><span class="intel-tilt-tracker"></span><span class="intel-tilt-tracker"></span><span class="intel-tilt-tracker"></span>
-                        <span class="intel-tilt-tracker"></span><span class="intel-tilt-tracker"></span><span class="intel-tilt-tracker"></span><span class="intel-tilt-tracker"></span><span class="intel-tilt-tracker"></span>
-                        <span class="intel-tilt-tracker"></span><span class="intel-tilt-tracker"></span><span class="intel-tilt-tracker"></span><span class="intel-tilt-tracker"></span><span class="intel-tilt-tracker"></span>
-                        <span class="intel-tilt-tracker"></span><span class="intel-tilt-tracker"></span><span class="intel-tilt-tracker"></span><span class="intel-tilt-tracker"></span><span class="intel-tilt-tracker"></span>
-                        <span class="intel-tilt-tracker"></span><span class="intel-tilt-tracker"></span><span class="intel-tilt-tracker"></span><span class="intel-tilt-tracker"></span><span class="intel-tilt-tracker"></span>
-                        <div class="intel-tilt-shell">
-                            <div class="intel-face front"><span>Signal<br>Capture</span></div>
-                            <div class="intel-face back">
-                                <div>
-                                    <div class="intel-back-title">Signal Capture</div>
-                                    <ul class="intel-back-list">
-                                        <li>Normalizes URL format.</li>
-                                        <li>Flags risky TLDs.</li>
-                                        <li>Domain entropy analysis.</li>
-                                    </ul>
-                                </div>
-                            </div>
-                        </div>
-                    </div>
-                </article>
-                <article class="intel-tilt-card tone-2">
-                    <div class="intel-tilt-canvas">
-                        <span class="intel-tilt-tracker"></span><span class="intel-tilt-tracker"></span><span class="intel-tilt-tracker"></span><span class="intel-tilt-tracker"></span><span class="intel-tilt-tracker"></span>
-                        <span class="intel-tilt-tracker"></span><span class="intel-tilt-tracker"></span><span class="intel-tilt-tracker"></span><span class="intel-tilt-tracker"></span><span class="intel-tilt-tracker"></span>
-                        <span class="intel-tilt-tracker"></span><span class="intel-tilt-tracker"></span><span class="intel-tilt-tracker"></span><span class="intel-tilt-tracker"></span><span class="intel-tilt-tracker"></span>
-                        <span class="intel-tilt-tracker"></span><span class="intel-tilt-tracker"></span><span class="intel-tilt-tracker"></span><span class="intel-tilt-tracker"></span><span class="intel-tilt-tracker"></span>
-                        <span class="intel-tilt-tracker"></span><span class="intel-tilt-tracker"></span><span class="intel-tilt-tracker"></span><span class="intel-tilt-tracker"></span><span class="intel-tilt-tracker"></span>
-                        <div class="intel-tilt-shell">
-                            <div class="intel-face front"><span>Context<br>Fusion</span></div>
-                            <div class="intel-face back">
-                                <div>
-                                    <div class="intel-back-title">Context Fusion</div>
-                                    <ul class="intel-back-list">
-                                        <li>VirusTotal sync.</li>
-                                        <li>SSL/TLS checks.</li>
-                                        <li>Holistic risk scoring.</li>
-                                    </ul>
-                                </div>
-                            </div>
-                        </div>
-                    </div>
-                </article>
-                <article class="intel-tilt-card tone-3">
-                    <div class="intel-tilt-canvas">
-                        <span class="intel-tilt-tracker"></span><span class="intel-tilt-tracker"></span><span class="intel-tilt-tracker"></span><span class="intel-tilt-tracker"></span><span class="intel-tilt-tracker"></span>
-                        <span class="intel-tilt-tracker"></span><span class="intel-tilt-tracker"></span><span class="intel-tilt-tracker"></span><span class="intel-tilt-tracker"></span><span class="intel-tilt-tracker"></span>
-                        <span class="intel-tilt-tracker"></span><span class="intel-tilt-tracker"></span><span class="intel-tilt-tracker"></span><span class="intel-tilt-tracker"></span><span class="intel-tilt-tracker"></span>
-                        <span class="intel-tilt-tracker"></span><span class="intel-tilt-tracker"></span><span class="intel-tilt-tracker"></span><span class="intel-tilt-tracker"></span><span class="intel-tilt-tracker"></span>
-                        <span class="intel-tilt-tracker"></span><span class="intel-tilt-tracker"></span><span class="intel-tilt-tracker"></span><span class="intel-tilt-tracker"></span><span class="intel-tilt-tracker"></span>
-                        <div class="intel-tilt-shell">
-                            <div class="intel-face front"><span>Adaptive<br>AI</span></div>
-                            <div class="intel-face back">
-                                <div>
-                                    <div class="intel-back-title">Adaptive AI</div>
-                                    <ul class="intel-back-list">
-                                        <li>Stores user corrections.</li>
-                                        <li>Random Forest rules.</li>
-                                        <li>Continuous ML tuning.</li>
-                                    </ul>
-                                </div>
-                            </div>
-                        </div>
-                    </div>
-                </article>
-                <article class="intel-tilt-card tone-4">
-                    <div class="intel-tilt-canvas">
-                        <span class="intel-tilt-tracker"></span><span class="intel-tilt-tracker"></span><span class="intel-tilt-tracker"></span><span class="intel-tilt-tracker"></span><span class="intel-tilt-tracker"></span>
-                        <span class="intel-tilt-tracker"></span><span class="intel-tilt-tracker"></span><span class="intel-tilt-tracker"></span><span class="intel-tilt-tracker"></span><span class="intel-tilt-tracker"></span>
-                        <span class="intel-tilt-tracker"></span><span class="intel-tilt-tracker"></span><span class="intel-tilt-tracker"></span><span class="intel-tilt-tracker"></span><span class="intel-tilt-tracker"></span>
-                        <span class="intel-tilt-tracker"></span><span class="intel-tilt-tracker"></span><span class="intel-tilt-tracker"></span><span class="intel-tilt-tracker"></span><span class="intel-tilt-tracker"></span>
-                        <span class="intel-tilt-tracker"></span><span class="intel-tilt-tracker"></span><span class="intel-tilt-tracker"></span><span class="intel-tilt-tracker"></span><span class="intel-tilt-tracker"></span>
-                        <div class="intel-tilt-shell">
-                            <div class="intel-face front"><span>Actionable<br>Verdict</span></div>
-                            <div class="intel-face back">
-                                <div>
-                                    <div class="intel-back-title">Actionable Verdict</div>
-                                    <ul class="intel-back-list">
-                                        <li>Clean/Suspicious tags.</li>
-                                        <li>Exposed API logic.</li>
-                                        <li>Instant analytics.</li>
-                                    </ul>
-                                </div>
-                            </div>
-                        </div>
-                    </div>
-                </article>
-            </div>
+    <!-- Main Auth Container -->
+    <div class="auth-container">
+        <div class="auth-card">
             
-            <div class="footer-shadow-note">
-                Security Sandbox Active: Malicious outbound payload execution is automatically sandboxed internally.
-            </div>
-        </div>
-
-        <!-- RIGHT: AUTH CONSOLE -->
-        <div class="auth-pane">
-            <div class="auth-content">
-                <div class="section-tag">Handshake</div>
-                <h2>Identity Verification</h2>
-                
-                {% with messages = get_flashed_messages(with_categories=true) %}
-                {% if messages %}
-                <div class="flash-stack">
-                    {% for category, message in messages %}
-                    <div class="flash-msg {{ category }}">{{ message }}</div>
-                    {% endfor %}
+            <div class="auth-header">
+                <div class="logo-box">
+                    <i data-lucide="shield-check" color="#22d3ee" size="30"></i>
                 </div>
-                {% endif %}
-                {% endwith %}
+                <h1 class="auth-title">CypherScout</h1>
+                <div class="auth-subtitle">Command Center Access</div>
+            </div>
 
-                <a href="/google-login" class="google-auth">
-                    <img src="https://fonts.gstatic.com/s/i/productlogos/googleg/v6/24px.svg" width="16" alt="Google logo">
-                    Continue with Google
-                </a>
+            {% with messages = get_flashed_messages(with_categories=true) %}
+            {% if messages %}
+            <div class="flash-stack">
+                {% for category, message in messages %}
+                <div class="flash-msg {{ category }}">{{ message }}</div>
+                {% endfor %}
+            </div>
+            {% endif %}
+            {% endwith %}
 
+            <!-- Default Login Form -->
+            <div id="loginPanel">
                 <form action="/login" method="POST">
-                    <div class="input-box">
-                        <input type="email" name="email" placeholder="AGENT ID (EMAIL)" required>
+                    <div class="input-group">
+                        <input type="email" name="email" class="auth-input" placeholder="Agent ID (Email)" required>
+                        <i data-lucide="user" class="input-icon" size="18"></i>
                     </div>
-                    <div class="input-box">
-                        <input type="password" name="password" id="passInput" placeholder="PASSCODE" required oninput="handleStrength(this.value)">
-                        <div class="strength-dots" id="strengthDots">
-                            <div class="dot"></div><div class="dot"></div><div class="dot"></div><div class="dot"></div>
+                    
+                    <div class="input-group">
+                        <input type="password" name="password" id="passInput" class="auth-input" placeholder="Passcode" required oninput="handleStrength(this.value)">
+                        <i data-lucide="key-round" class="input-icon" size="18"></i>
+                        <div class="strength-bar" id="strengthDots">
+                            <div class="str-dot"></div><div class="str-dot"></div><div class="str-dot"></div><div class="str-dot"></div>
                         </div>
                     </div>
-                    <div style="display:flex;justify-content:space-between;align-items:center;margin-top:10px;">
-                        <span id="sText" style="font-size:10px;text-transform:uppercase;color:var(--text-dim);">Security: Locked</span>
-                    </div>
-                    <button type="submit" class="login-btn">Initialize Access</button>
+
+                    <button type="submit" class="auth-btn">Initialize Connection</button>
                 </form>
 
-                <div class="mini-links">
-                    <span style="color:var(--text-dim);">OAuth Protected Session</span>
-                    <button type="button" onclick="toggleForgotPanel()">Forgot Password?</button>
-                </div>
-
-                <div class="forgot-panel" id="forgotPanel">
-                    <div class="forgot-title">Reset Passcode</div>
-                    <form action="/forgot-password/request" method="POST">
-                        <div class="input-box">
-                            <input type="email" name="email" placeholder="REGISTERED EMAIL" required>
-                        </div>
-                        <button type="submit" class="login-btn" style="padding:12px;">Send Code</button>
-                    </form>
-                    <form action="/forgot-password/verify" method="POST">
-                        <div class="input-box">
-                            <input type="email" name="email" placeholder="REGISTERED EMAIL" required>
-                        </div>
-                        <div class="input-box">
-                            <input type="text" name="code" placeholder="6-DIGIT CODE" pattern="[0-9]{6}" maxlength="6" required>
-                        </div>
-                        <div class="input-box">
-                            <input type="password" name="new_password" placeholder="NEW PASSCODE (MIN 8)" minlength="8" required>
-                        </div>
-                        <button type="submit" class="login-btn" style="padding:12px; background:linear-gradient(120deg, rgba(34,211,238,0.2), rgba(16,185,129,0.2)); border-color:rgba(16,185,129,0.5);">Update Password</button>
-                    </form>
-                </div>
-
+                <a href="/google-login" class="google-auth">
+                    <img src="https://fonts.gstatic.com/s/i/productlogos/googleg/v6/24px.svg" width="18" alt="Google">
+                    Continue with Google
+                </a>
             </div>
+
+            <!-- Forgot Password Panel (Hidden by default) -->
+            <div id="forgotPanel">
+                <div style="font-size: 0.8rem; color: #fff; margin-bottom: 12px; font-weight: 600;">Recover Passcode</div>
+                <form action="/forgot-password/request" method="POST">
+                    <div class="input-group" style="margin-bottom:10px;">
+                        <input type="email" name="email" class="auth-input" placeholder="Registered Email" required>
+                        <i data-lucide="mail" class="input-icon" size="18"></i>
+                    </div>
+                    <button type="submit" class="auth-btn" style="background: rgba(34,211,238,0.15); color: #fff; border: 1px solid rgba(34,211,238,0.4);">Send Code</button>
+                </form>
+                
+                <hr style="border:0; border-top: 1px solid rgba(255,255,255,0.1); margin: 16px 0;">
+                
+                <form action="/forgot-password/verify" method="POST">
+                    <div class="input-group" style="margin-bottom:10px;">
+                        <input type="email" name="email" class="auth-input" placeholder="Confirm Email" required>
+                        <i data-lucide="mail" class="input-icon" size="18"></i>
+                    </div>
+                    <div class="input-group" style="margin-bottom:10px;">
+                        <input type="text" name="code" class="auth-input" placeholder="6-Digit Reset Code" pattern="[0-9]{6}" maxlength="6" required>
+                        <i data-lucide="hash" class="input-icon" size="18"></i>
+                    </div>
+                    <div class="input-group" style="margin-bottom:10px;">
+                        <input type="password" name="new_password" class="auth-input" placeholder="New Passcode (Min 8)" minlength="8" required>
+                        <i data-lucide="lock" class="input-icon" size="18"></i>
+                    </div>
+                    <button type="submit" class="auth-btn" style="background: #fff; color: #000;">Confirm Reset</button>
+                </form>
+            </div>
+
+            <!-- Footer Links -->
+            <div class="auth-footer">
+                <span style="font-size:0.7rem; color:var(--text-dim);">Shadow Mode Network</span>
+                <button type="button" class="auth-link" onclick="toggleForgot()">Forgot Passcode?</button>
+            </div>
+            
         </div>
-    </main>
+    </div>
+
+    <!-- Trust Badge Dock -->
+    <div class="trust-dock-wrapper">
+        <div class="trust-dock">
+            
+            <!-- Snyk Badge explicitly prominent -->
+            <div class="trust-item trust-snyk">
+                <i data-lucide="shield-alert" class="trust-icon" size="22"></i>
+                <div class="trust-text">
+                    <span class="trust-main">Snyk Verified</span>
+                    <span class="trust-sub">Vulnerability Scanned</span>
+                </div>
+            </div>
+
+            <!-- McAfee Badge -->
+            <div class="trust-item">
+                <i data-lucide="shield-check" class="trust-icon" size="22"></i>
+                <div class="trust-text">
+                    <span class="trust-main">McAfee SECURE</span>
+                    <span class="trust-sub">Site Certified</span>
+                </div>
+            </div>
+
+            <!-- VirusTotal Badge -->
+            <div class="trust-item">
+                <i data-lucide="scan-face" class="trust-icon" size="22"></i>
+                <div class="trust-text">
+                    <span class="trust-main">VirusTotal Engine</span>
+                    <span class="trust-sub">Threat Intel Active</span>
+                </div>
+            </div>
+
+            <!-- SSL Badge -->
+            <div class="trust-item">
+                <i data-lucide="lock-keyhole" class="trust-icon" size="22"></i>
+                <div class="trust-text">
+                    <span class="trust-main">SSL Secured</span>
+                    <span class="trust-sub">256-bit Encryption</span>
+                </div>
+            </div>
+
+        </div>
+    </div>
 
     <script>
         lucide.createIcons();
-        if ('scrollRestoration' in history) history.scrollRestoration = 'manual';
 
         function handleStrength(val) {
-            const dots = document.querySelectorAll('.dot');
-            const text = document.getElementById('sText');
+            const dots = document.querySelectorAll('.str-dot');
             let strength = 0;
             if (val.length >= 8) strength++;
             if (/[A-Z]/.test(val)) strength++;
             if (/[0-9]/.test(val)) strength++;
             if (/[^A-Za-z0-9]/.test(val)) strength++;
-            dots.forEach((dot, index) => dot.classList.toggle('active-dot', index < strength));
-            const status = ['Locked', 'Weak', 'Fair', 'Strong', 'Elite'];
-            text.innerText = 'Security: ' + status[strength];
-            text.style.color = strength >= 3 ? 'var(--accent)' : 'var(--text-dim)';
+            
+            dots.forEach((dot, index) => {
+                if (index < strength) {
+                    dot.classList.add('str-active');
+                } else {
+                    dot.classList.remove('str-active');
+                }
+            });
         }
 
-        function toggleForgotPanel() {
-            const panel = document.getElementById('forgotPanel');
-            if (panel) panel.classList.toggle('active');
+        function toggleForgot() {
+            const lPanel = document.getElementById('loginPanel');
+            const fPanel = document.getElementById('forgotPanel');
+            if (fPanel.style.display === 'block') {
+                fPanel.style.display = 'none';
+                lPanel.style.display = 'block';
+            } else {
+                fPanel.style.display = 'block';
+                lPanel.style.display = 'none';
+            }
         }
     </script>
-<script type="text/javascript" src="https://cdn.ywxi.net/js/1.js" async></script>
+    <script type="text/javascript" src="https://cdn.ywxi.net/js/1.js" async></script>
 </body>
 </html>
