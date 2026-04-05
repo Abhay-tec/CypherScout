@@ -3,38 +3,31 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>CypherScout | Secure Auth</title>
+    <title>CypherScout | Authenticate</title>
     <script src="https://unpkg.com/lucide@latest"></script>
-    <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@300;400;500;600;800&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@300;400;500;600;700;800&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
     <style>
         :root {
             --bg-dark: #020617;
             --accent: #22d3ee;
             --accent-glow: rgba(34, 211, 238, 0.4);
             --border: rgba(255, 255, 255, 0.1);
-            --border-hov: rgba(255, 255, 255, 0.2);
-            --glass: rgba(10, 15, 28, 0.6);
             --text-main: #ffffff;
             --text-dim: #94a3b8;
         }
 
         * { margin: 0; padding: 0; box-sizing: border-box; }
-        html, body { height: 100%; }
-
-        body {
+        html, body {
             background-color: #030303;
             color: var(--text-main);
             font-family: 'Plus Jakarta Sans', sans-serif;
-            overflow: hidden; /* No scrolling for lock screen */
-            display: flex;
-            flex-direction: column;
-            align-items: center;
-            justify-content: center;
+            overflow-x: hidden;
+            scroll-behavior: smooth;
         }
 
         /* ---------------- Background ---------------- */
         .ambient-bg {
-            position: absolute;
+            position: fixed;
             top: 0; left: 0; width: 100vw; height: 100vh;
             z-index: -2;
             overflow: hidden;
@@ -49,26 +42,9 @@
             animation: orbFloat 25s infinite ease-in-out alternate;
         }
 
-        .orb-1 { 
-            width: 70vw; height: 70vw; 
-            background: radial-gradient(circle, #3B82F6 0%, transparent 70%);
-            top: -20%; left: -15%; 
-            animation-duration: 25s; 
-        }
-        .orb-2 { 
-            width: 60vw; height: 60vw; 
-            background: radial-gradient(circle, #8B5CF6 0%, transparent 70%);
-            bottom: -20%; right: -10%; 
-            animation-duration: 22s; animation-direction: alternate-reverse; 
-            opacity: 0.35;
-        }
-        .orb-3 { 
-            width: 50vw; height: 50vw; 
-            background: radial-gradient(circle, #06B6D4 0%, transparent 70%);
-            top: 20%; left: 30%; 
-            animation-duration: 30s; 
-            opacity: 0.25;
-        }
+        .orb-1 { width: 70vw; height: 70vw; background: radial-gradient(circle, #3B82F6 0%, transparent 70%); top: -20%; left: -15%; animation-duration: 25s; }
+        .orb-2 { width: 60vw; height: 60vw; background: radial-gradient(circle, #8B5CF6 0%, transparent 70%); bottom: -20%; right: -10%; animation-duration: 22s; animation-direction: alternate-reverse; opacity: 0.35; }
+        .orb-3 { width: 50vw; height: 50vw; background: radial-gradient(circle, #06B6D4 0%, transparent 70%); top: 20%; left: 30%; animation-duration: 30s; opacity: 0.25; }
 
         @keyframes orbFloat {
             0% { transform: translate(0, 0) scale(1); }
@@ -77,7 +53,7 @@
         }
 
         .ambient-noise {
-            position: absolute;
+            position: fixed;
             top: 0; left: 0; width: 100vw; height: 100vh;
             z-index: -1;
             opacity: 0.05;
@@ -85,217 +61,228 @@
             background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 200 200' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='noiseFilter'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.8' numOctaves='3' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23noiseFilter)'/%3E%3C/svg%3E");
         }
 
-        /* ---------------- Center Masterpiece (Auth Card) ---------------- */
-        .auth-container {
-            position: relative;
-            z-index: 10;
+        /* ---------------- Scroll Reveal Animation Class ---------------- */
+        .reveal-node {
+            opacity: 0;
+            transform: translateY(40px) scale(0.98);
+            transition: opacity 0.8s cubic-bezier(0.16, 1, 0.3, 1), transform 0.8s cubic-bezier(0.16, 1, 0.3, 1);
+            will-change: opacity, transform;
+        }
+        .reveal-node.active {
+            opacity: 1;
+            transform: translateY(0) scale(1);
+        }
+
+        /* ---------------- Section 1: Hero Split ---------------- */
+        .hero-section {
+            min-height: 100vh;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            padding: 40px 20px;
+        }
+
+        .auth-wrapper {
             width: 100%;
-            max-width: 440px;
-            perspective: 1000px;
-            padding: 20px;
-        }
-
-        .auth-card {
-            background: var(--glass);
-            border-radius: 28px;
+            max-width: 1100px;
+            display: flex;
+            background: linear-gradient(155deg, rgba(8, 14, 26, 0.5), rgba(3, 7, 18, 0.7));
+            border-radius: 32px;
             border: 1px solid var(--border);
-            padding: 44px 38px;
-            backdrop-filter: blur(48px);
-            -webkit-backdrop-filter: blur(48px);
-            box-shadow: 
-                0 40px 100px rgba(0, 0, 0, 0.85), 
-                0 0 60px rgba(34, 211, 238, 0.08), 
-                inset 0 1px 1px rgba(255, 255, 255, 0.15);
-            transform-style: preserve-3d;
-            animation: cardEntrance 1s cubic-bezier(0.16, 1, 0.3, 1) forwards;
-        }
-
-        @keyframes cardEntrance {
-            from { opacity: 0; transform: translateY(40px) scale(0.95); }
-            to { opacity: 1; transform: translateY(0) scale(1); }
-        }
-
-        .auth-header {
-            text-align: center;
-            margin-bottom: 32px;
-        }
-
-        .logo-box {
-            width: 60px; height: 60px;
-            margin: 0 auto 20px;
-            border-radius: 18px;
-            background: linear-gradient(135deg, rgba(34, 211, 238, 0.15), rgba(59, 130, 246, 0.15));
-            border: 1px solid rgba(34, 211, 238, 0.4);
-            display: flex; align-items: center; justify-content: center;
-            box-shadow: 0 0 24px rgba(34, 211, 238, 0.3);
-        }
-
-        .auth-title {
-            font-size: 1.6rem;
-            font-weight: 800;
-            letter-spacing: -0.5px;
-            margin-bottom: 4px;
-            color: #fff;
-        }
-
-        .auth-subtitle {
-            font-size: 0.75rem;
-            color: var(--text-dim);
-            text-transform: uppercase;
-            letter-spacing: 1.5px;
-        }
-
-        /* Forms */
-        .flash-stack { display: grid; gap: 8px; margin-bottom: 20px; }
-        .flash-msg {
-            border: 1px solid var(--border-hov);
-            border-radius: 10px; padding: 10px 14px;
-            font-size: 0.75rem; color: #dff5ff;
-            background: rgba(2, 6, 23, 0.5);
-            text-align: center;
-        }
-        .flash-msg.error { border-color: rgba(244, 63, 94, 0.4); color: #fecdd3; background: rgba(127, 29, 29, 0.3); }
-        .flash-msg.success { border-color: rgba(16, 185, 129, 0.4); color: #d1fae5; background: rgba(6, 78, 59, 0.3); }
-
-        .input-group {
-            margin-bottom: 18px;
+            backdrop-filter: blur(40px);
+            -webkit-backdrop-filter: blur(40px);
+            box-shadow: 0 40px 100px rgba(0, 0, 0, 0.8), inset 0 2px 20px rgba(255, 255, 255, 0.05);
+            overflow: hidden;
             position: relative;
         }
 
-        .auth-input {
-            width: 100%;
-            padding: 16px 18px 16px 44px;
-            background: rgba(0, 0, 0, 0.35);
-            border: 1px solid var(--border);
-            border-radius: 14px;
-            color: #fff;
-            font-size: 0.95rem;
-            font-family: inherit;
-            outline: none;
-            transition: all 0.3s ease;
+        /* Ambient rotating border logic beneath the container */
+        .auth-wrapper::before {
+            content: ''; position: absolute; top: -50%; left: -50%; width: 200%; height: 200%;
+            background: conic-gradient(from 0deg, transparent 70%, rgba(56, 189, 248, 0.15) 80%, transparent 100%);
+            animation: spinBg 10s linear infinite; z-index: 0; pointer-events: none;
+        }
+        @keyframes spinBg { 100% { transform: rotate(360deg); } }
+
+        /* Left Side: The Animated GIF Container */
+        .gif-pane {
+            flex: 1.2;
+            padding: 24px;
+            position: relative;
+            z-index: 2;
+            display: flex;
+            flex-direction: column;
         }
 
-        .input-icon {
-            position: absolute;
-            left: 16px; top: 50%;
-            transform: translateY(-50%);
-            color: var(--text-dim);
-            transition: 0.3s ease;
+        .gif-frame {
+            flex: 1;
+            width: 100%;
+            border-radius: 20px;
+            /* Completely 100% bright, visible GIF. No dark filters. */
+            background-image: url("/static/register-login.gif");
+            background-size: cover;
+            background-position: center;
+            background-repeat: no-repeat;
+            position: relative;
+            overflow: hidden;
+            box-shadow: inset 0 0 10px rgba(0,0,0,0.5), 0 10px 40px rgba(0,0,0,0.6);
+            border: 1px solid rgba(255, 255, 255, 0.1);
+        }
+
+        /* Minimal cyber overlay inside the frame corners just for aesthetics */
+        .gif-frame::after {
+            content: '';
+            position: absolute; inset: 0;
+            background: linear-gradient(to top, rgba(0,0,0,0.6) 0%, transparent 30%);
             pointer-events: none;
         }
 
-        .auth-input:focus {
-            border-color: var(--accent);
-            background: rgba(15, 23, 42, 0.6);
-            box-shadow: 0 0 16px var(--accent-glow);
+        .gif-overlay-text {
+            position: absolute; bottom: 20px; left: 24px; z-index: 3;
         }
-        .auth-input:focus + .input-icon { color: var(--accent); }
-        
-        .auth-input::placeholder { color: rgba(148, 163, 184, 0.6); }
+        .gif-overlay-text h2 { font-size: 1.8rem; font-weight: 800; letter-spacing: -0.5px; text-transform: uppercase; line-height: 1.1; }
+        .gif-overlay-text p { font-size: 0.75rem; color: #bae6fd; font-family: 'JetBrains Mono', monospace; text-transform: uppercase; margin-top: 5px; }
 
-        .strength-bar {
-            display: flex; gap: 4px; margin-top: 8px; padding: 0 8px;
-        }
-        .str-dot { flex: 1; height: 3px; background: rgba(255,255,255,0.1); border-radius: 4px; transition: 0.3s; }
-        .str-active { background: var(--accent); box-shadow: 0 0 8px var(--accent-glow); }
-
-        .auth-btn {
-            width: 100%; margin-top: 10px;
-            padding: 16px; border-radius: 14px;
-            background: #fff; color: #000;
-            border: none; font-weight: 800;
-            font-size: 0.9rem; letter-spacing: 0.5px;
-            cursor: pointer; transition: 0.3s ease;
+        /* Right Side: The Form */
+        .form-pane {
+            flex: 1;
+            padding: 50px 40px;
+            position: relative;
+            z-index: 2;
+            background: rgba(3, 7, 18, 0.85); /* Slightly darker for contrast */
+            border-left: 1px solid rgba(255,255,255,0.05);
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
         }
 
-        .auth-btn:hover {
-            transform: translateY(-2px);
-            box-shadow: 0 10px 24px rgba(255, 255, 255, 0.2);
-        }
+        .section-tag { font-size: 0.72rem; font-weight: 800; color: var(--accent); text-transform: uppercase; letter-spacing: 2px; margin-bottom: 10px; }
+        .form-pane h1 { font-size: 1.8rem; margin-bottom: 24px; font-weight: 400; }
+
+        .flash-stack { display: grid; gap: 8px; margin-bottom: 16px; }
+        .flash-msg { border: 1px solid var(--border); border-radius: 8px; padding: 10px; font-size: 0.75rem; color: #dff5ff; background: rgba(2, 6, 23, 0.46); }
+        .flash-msg.error { border-color: rgba(244, 63, 94, 0.35); color: #fecdd3; background: rgba(127, 29, 29, 0.22); }
+        .flash-msg.success { border-color: rgba(16, 185, 129, 0.35); color: #d1fae5; background: rgba(6, 78, 59, 0.24); }
 
         .google-auth {
-            display: flex; align-items: center; justify-content: center; gap: 10px;
-            width: 100%; padding: 14px; margin-top: 16px;
-            background: rgba(255, 255, 255, 0.05);
-            border: 1px solid var(--border); border-radius: 14px;
-            color: #fff; font-size: 0.85rem; font-weight: 600;
-            text-decoration: none; transition: 0.3s ease;
+            display: flex; align-items: center; justify-content: center; gap: 12px;
+            padding: 14px; background: #fff; color: #000; border-radius: 12px;
+            font-weight: 700; text-decoration: none; font-size: 0.85rem; text-transform: uppercase;
+            margin-bottom: 28px; transition: 0.3s;
         }
+        .google-auth:hover { transform: translateY(-2px); box-shadow: 0 10px 20px rgba(0,0,0,0.4); }
 
-        .google-auth:hover {
-            background: rgba(255, 255, 255, 0.1);
-            border-color: rgba(255, 255, 255, 0.3);
+        .form-group { position: relative; margin-bottom: 16px; }
+        .auth-input {
+            width: 100%; padding: 16px 16px 16px 44px;
+            background: rgba(15, 23, 42, 0.4);
+            border: 1px solid var(--border); border-radius: 12px;
+            color: #fff; font-size: 0.9rem; outline: none; transition: 0.3s ease;
         }
+        .input-icon { position: absolute; left: 16px; top: 16px; color: var(--text-dim); transition: 0.3s; }
+        .auth-input:focus { border-color: var(--accent); background: rgba(15, 23, 42, 0.8); box-shadow: 0 0 12px var(--accent-glow); }
+        .auth-input:focus + .input-icon { color: var(--accent); }
 
-        .auth-footer {
-            display: flex; justify-content: space-between; align-items: center;
-            margin-top: 24px; padding-top: 18px;
-            border-top: 1px solid var(--border);
+        .strength-bar { display: flex; gap: 4px; margin-top: 8px; }
+        .str-dot { flex: 1; height: 3px; background: var(--border); border-radius: 4px; transition: 0.3s; }
+        .str-active { background: var(--accent); box-shadow: 0 0 8px var(--accent-glow); }
+
+        .login-btn {
+            width: 100%; margin-top: 14px; padding: 16px; border-radius: 12px;
+            background: linear-gradient(120deg, rgba(186, 230, 253, 0.18), rgba(34, 211, 238, 0.25));
+            color: #e0f2fe; border: 1px solid rgba(186, 230, 253, 0.75);
+            font-weight: 800; cursor: pointer; text-transform: uppercase; letter-spacing: 2px; font-size: 0.85rem; transition: 0.3s;
         }
+        .login-btn:hover { transform: translateY(-2px); box-shadow: 0 0 24px rgba(34, 211, 238, 0.35); }
 
-        .auth-link {
-            background: none; border: none;
-            color: var(--text-dim); font-size: 0.75rem;
-            cursor: pointer; transition: 0.3s;
-        }
-        .auth-link:hover { color: #fff; }
+        .mini-links { margin-top: 16px; display: flex; justify-content: space-between; font-size: 0.75rem; }
+        .mini-links button { background: none; border: none; color: #bae6fd; cursor: pointer; font-size: 0.75rem; text-decoration: underline; }
 
-        /* Forgot Password Override */
-        #forgotPanel { display: none; margin-top: 20px; }
-        #forgotPanel.active { display: block; animation: fadeDown 0.3s forwards; }
+        .forgot-panel { margin-top: 16px; border: 1px solid var(--border); border-radius: 16px; padding: 18px; background: rgba(2, 6, 23, 0.4); display: none; }
+        .forgot-panel.active { display: block; animation: fadeDown 0.3s forwards; }
         @keyframes fadeDown { from{opacity:0; transform:translateY(-10px);} to{opacity:1; transform:translateY(0);} }
 
-        /* ---------------- Bottom Trust Dock ---------------- */
-        .trust-dock-wrapper {
-            position: absolute;
-            bottom: 40px;
-            left: 0; width: 100vw;
-            display: flex; justify-content: center;
-            z-index: 5;
-            animation: cardEntrance 1s 0.3s cubic-bezier(0.16, 1, 0.3, 1) both;
-        }
-
-        .trust-dock {
+        /* ---------------- Section 2: Trust Badges (Scroll) ---------------- */
+        .trust-section {
+            padding: 60px 20px;
             display: flex;
-            align-items: center;
-            gap: 24px;
-            background: rgba(3, 7, 18, 0.55);
+            justify-content: center;
+        }
+        .trust-band {
+            display: flex;
+            flex-wrap: wrap;
+            justify-content: center;
+            gap: 20px;
+            background: rgba(3, 7, 18, 0.45);
             border: 1px solid var(--border);
-            border-radius: 100px;
-            padding: 12px 32px;
+            border-radius: 20px;
+            padding: 24px 40px;
             backdrop-filter: blur(20px);
-            -webkit-backdrop-filter: blur(20px);
-            box-shadow: 0 20px 40px rgba(0,0,0,0.5);
+            max-width: 1100px;
+            width: 100%;
         }
-
         .trust-item {
-            display: flex; align-items: center; gap: 8px;
-            opacity: 0.8; transition: 0.3s;
+            display: flex; align-items: center; gap: 12px;
+            padding: 12px 24px; border-radius: 14px;
+            background: rgba(255, 255, 255, 0.03); border: 1px solid rgba(255, 255, 255, 0.05);
+            transition: 0.3s ease;
+            flex: 1; min-width: 220px;
         }
-        .trust-item:hover { opacity: 1; transform: translateY(-2px); }
-
-        .trust-icon { color: var(--accent); }
-        .trust-text {
-            display: flex; flex-direction: column;
+        .trust-item:hover { transform: translateY(-3px); background: rgba(56, 189, 248, 0.08); border-color: rgba(56, 189, 248, 0.3); }
+        .trust-icon-box {
+            width: 44px; height: 44px; border-radius: 12px;
+            background: linear-gradient(135deg, rgba(34, 211, 238, 0.1), rgba(59, 130, 246, 0.1));
+            display: grid; place-items: center; border: 1px solid rgba(34, 211, 238, 0.2);
         }
-        .trust-main { font-size: 0.72rem; font-weight: 700; color: #fff; letter-spacing: 0.5px; }
-        .trust-sub { font-size: 0.6rem; color: var(--text-dim); }
+        .trust-title { font-size: 0.8rem; font-weight: 800; color: #fff; text-transform: uppercase; letter-spacing: 0.5px; }
+        .trust-desc { font-size: 0.65rem; color: var(--text-dim); margin-top: 2px; }
+        .snyk-accent { color: #60A5FA; }
 
-        /* Snyk Custom Styling in Dock */
-        .trust-snyk .trust-icon { color: #60A5FA; }
+        /* ---------------- Section 3: Related Info (Scroll) ---------------- */
+        .info-section {
+            padding: 80px 20px 120px;
+            max-width: 1100px;
+            margin: 0 auto;
+        }
 
-        @media (max-width: 640px) {
-            .trust-dock-wrapper { bottom: 20px; }
-            .trust-dock { flex-direction: column; border-radius: 20px; padding: 20px; gap: 16px; }
-            .auth-card { padding: 34px 24px; }
-            body { overflow: auto; justify-content: flex-start; padding: 40px 0 180px; }
-            .ambient-bg, .ambient-noise { position: fixed; }
+        .info-grid {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 40px;
+            align-items: center;
+        }
+
+        .info-content h2 {
+            font-size: clamp(2rem, 4vw, 3rem);
+            font-weight: 800; line-height: 1.1; margin-bottom: 20px;
+            background: linear-gradient(90deg, #fff, #94a3b8);
+            -webkit-background-clip: text; -webkit-text-fill-color: transparent;
+        }
+        .info-content p { color: var(--text-dim); font-size: 1.05rem; line-height: 1.7; margin-bottom: 30px; }
+        
+        .info-cards { display: grid; gap: 16px; }
+        .info-card {
+            background: rgba(15, 23, 42, 0.4);
+            border: 1px solid var(--border);
+            border-radius: 16px; padding: 24px;
+            backdrop-filter: blur(20px);
+            transition: 0.4s ease;
+        }
+        .info-card:hover { transform: translateX(10px); background: rgba(15, 23, 42, 0.7); border-color: var(--accent); }
+        .info-card-header { display: flex; align-items: center; gap: 12px; margin-bottom: 12px; }
+        .info-card h3 { font-size: 1.1rem; color: #e0f2fe; }
+        .info-card p { font-size: 0.85rem; color: #94a3b8; line-height: 1.5; margin: 0; }
+
+        @media (max-width: 980px) {
+            .auth-wrapper { flex-direction: column; }
+            .gif-pane { height: 350px; }
+            .info-grid { grid-template-columns: 1fr; }
         }
     </style>
 </head>
 <body>
-    
-    <!-- Background -->
+
+    <!-- Fluid Background -->
     <div class="ambient-bg">
         <div class="orb orb-1"></div>
         <div class="orb orb-2"></div>
@@ -303,138 +290,160 @@
     </div>
     <div class="ambient-noise"></div>
 
-    <!-- Main Auth Container -->
-    <div class="auth-container">
-        <div class="auth-card">
+    <!-- 1. Hero Split Login Box -->
+    <header class="hero-section reveal-node">
+        <div class="auth-wrapper">
             
-            <div class="auth-header">
-                <div class="logo-box">
-                    <i data-lucide="shield-check" color="#22d3ee" size="30"></i>
+            <!-- Left Pane: Bright GIF entirely visible -->
+            <div class="gif-pane">
+                <div class="gif-frame">
+                    <div class="gif-overlay-text">
+                        <h2>Threat Defense</h2>
+                        <p>Visualizing URL Sandboxing</p>
+                    </div>
                 </div>
-                <h1 class="auth-title">CypherScout</h1>
-                <div class="auth-subtitle">Command Center Access</div>
             </div>
 
-            {% with messages = get_flashed_messages(with_categories=true) %}
-            {% if messages %}
-            <div class="flash-stack">
-                {% for category, message in messages %}
-                <div class="flash-msg {{ category }}">{{ message }}</div>
-                {% endfor %}
-            </div>
-            {% endif %}
-            {% endwith %}
+            <!-- Right Pane: Flawless Form -->
+            <div class="form-pane">
+                <div class="section-tag">Secure Handshake</div>
+                <h1>Identity Verification</h1>
 
-            <!-- Default Login Form -->
-            <div id="loginPanel">
-                <form action="/login" method="POST">
-                    <div class="input-group">
-                        <input type="email" name="email" class="auth-input" placeholder="Agent ID (Email)" required>
-                        <i data-lucide="user" class="input-icon" size="18"></i>
-                    </div>
-                    
-                    <div class="input-group">
-                        <input type="password" name="password" id="passInput" class="auth-input" placeholder="Passcode" required oninput="handleStrength(this.value)">
-                        <i data-lucide="key-round" class="input-icon" size="18"></i>
-                        <div class="strength-bar" id="strengthDots">
-                            <div class="str-dot"></div><div class="str-dot"></div><div class="str-dot"></div><div class="str-dot"></div>
-                        </div>
-                    </div>
-
-                    <button type="submit" class="auth-btn">Initialize Connection</button>
-                </form>
+                {% with messages = get_flashed_messages(with_categories=true) %}
+                {% if messages %}
+                <div class="flash-stack">
+                    {% for category, message in messages %}
+                    <div class="flash-msg {{ category }}">{{ message }}</div>
+                    {% endfor %}
+                </div>
+                {% endif %}
+                {% endwith %}
 
                 <a href="/google-login" class="google-auth">
                     <img src="https://fonts.gstatic.com/s/i/productlogos/googleg/v6/24px.svg" width="18" alt="Google">
                     Continue with Google
                 </a>
-            </div>
 
-            <!-- Forgot Password Panel (Hidden by default) -->
-            <div id="forgotPanel">
-                <div style="font-size: 0.8rem; color: #fff; margin-bottom: 12px; font-weight: 600;">Recover Passcode</div>
-                <form action="/forgot-password/request" method="POST">
-                    <div class="input-group" style="margin-bottom:10px;">
-                        <input type="email" name="email" class="auth-input" placeholder="Registered Email" required>
-                        <i data-lucide="mail" class="input-icon" size="18"></i>
-                    </div>
-                    <button type="submit" class="auth-btn" style="background: rgba(34,211,238,0.15); color: #fff; border: 1px solid rgba(34,211,238,0.4);">Send Code</button>
-                </form>
-                
-                <hr style="border:0; border-top: 1px solid rgba(255,255,255,0.1); margin: 16px 0;">
-                
-                <form action="/forgot-password/verify" method="POST">
-                    <div class="input-group" style="margin-bottom:10px;">
-                        <input type="email" name="email" class="auth-input" placeholder="Confirm Email" required>
-                        <i data-lucide="mail" class="input-icon" size="18"></i>
-                    </div>
-                    <div class="input-group" style="margin-bottom:10px;">
-                        <input type="text" name="code" class="auth-input" placeholder="6-Digit Reset Code" pattern="[0-9]{6}" maxlength="6" required>
-                        <i data-lucide="hash" class="input-icon" size="18"></i>
-                    </div>
-                    <div class="input-group" style="margin-bottom:10px;">
-                        <input type="password" name="new_password" class="auth-input" placeholder="New Passcode (Min 8)" minlength="8" required>
-                        <i data-lucide="lock" class="input-icon" size="18"></i>
-                    </div>
-                    <button type="submit" class="auth-btn" style="background: #fff; color: #000;">Confirm Reset</button>
-                </form>
-            </div>
+                <div id="loginWrap">
+                    <form action="/login" method="POST">
+                        <div class="form-group">
+                            <i data-lucide="mail" class="input-icon" size="18"></i>
+                            <input type="email" name="email" class="auth-input" placeholder="Agent ID (Email)" required>
+                        </div>
+                        <div class="form-group">
+                            <i data-lucide="key" class="input-icon" size="18"></i>
+                            <input type="password" name="password" id="passInput" class="auth-input" placeholder="Passcode" required oninput="handleStrength(this.value)">
+                            <div class="strength-bar" id="strengthDots">
+                                <div class="str-dot"></div><div class="str-dot"></div><div class="str-dot"></div><div class="str-dot"></div>
+                            </div>
+                        </div>
+                        <button type="submit" class="login-btn">Initialize Connection</button>
+                    </form>
+                </div>
 
-            <!-- Footer Links -->
-            <div class="auth-footer">
-                <span style="font-size:0.7rem; color:var(--text-dim);">Shadow Mode Network</span>
-                <button type="button" class="auth-link" onclick="toggleForgot()">Forgot Passcode?</button>
+                <div class="mini-links">
+                    <span style="color:var(--text-dim);">Shadow Mode Network</span>
+                    <button type="button" onclick="toggleForgot()">Forgot Passcode?</button>
+                </div>
+
+                <div class="forgot-panel" id="forgotPanel">
+                    <span style="display:block; font-size:0.8rem; font-weight:700; color:#bae6fd; margin-bottom:12px;">Reset System</span>
+                    <form action="/forgot-password/request" method="POST" style="margin-bottom:14px; border-bottom:1px solid rgba(255,255,255,0.1); padding-bottom:14px;">
+                        <input type="email" name="email" class="auth-input" placeholder="Registered Email" style="padding:12px; margin-bottom:8px;" required>
+                        <button type="submit" class="login-btn" style="padding:10px; margin-top:0;">Request Code</button>
+                    </form>
+                    <form action="/forgot-password/verify" method="POST">
+                        <input type="email" name="email" class="auth-input" placeholder="Verify Email" style="padding:12px; margin-bottom:8px;" required>
+                        <input type="text" name="code" class="auth-input" placeholder="6-Digit Reset Code" pattern="[0-9]{6}" maxlength="6" style="padding:12px; margin-bottom:8px;" required>
+                        <input type="password" name="new_password" class="auth-input" placeholder="New Passcode (Min 8)" minlength="8" style="padding:12px; margin-bottom:8px;" required>
+                        <button type="submit" class="login-btn" style="padding:10px; margin-top:0; background:rgba(16,185,129,0.15); border-color:rgba(16,185,129,0.4);">Confirm Setup</button>
+                    </form>
+                </div>
+
             </div>
-            
         </div>
-    </div>
+    </header>
 
-    <!-- Trust Badge Dock -->
-    <div class="trust-dock-wrapper">
-        <div class="trust-dock">
-            
-            <!-- Snyk Badge explicitly prominent -->
-            <div class="trust-item trust-snyk">
-                <i data-lucide="shield-alert" class="trust-icon" size="22"></i>
-                <div class="trust-text">
-                    <span class="trust-main">Snyk Verified</span>
-                    <span class="trust-sub">Vulnerability Scanned</span>
-                </div>
-            </div>
-
-            <!-- McAfee Badge -->
+    <!-- 2. Trust Badges Band -->
+    <section class="trust-section reveal-node">
+        <div class="trust-band">
+            <!-- Snyk -->
             <div class="trust-item">
-                <i data-lucide="shield-check" class="trust-icon" size="22"></i>
-                <div class="trust-text">
-                    <span class="trust-main">McAfee SECURE</span>
-                    <span class="trust-sub">Site Certified</span>
+                <div class="trust-icon-box"><i data-lucide="shield-alert" class="snyk-accent" size="20"></i></div>
+                <div>
+                    <div class="trust-title">Snyk Verified</div>
+                    <div class="trust-desc">Code Vulnerability Checked</div>
                 </div>
             </div>
-
-            <!-- VirusTotal Badge -->
+            <!-- McAfee -->
             <div class="trust-item">
-                <i data-lucide="scan-face" class="trust-icon" size="22"></i>
-                <div class="trust-text">
-                    <span class="trust-main">VirusTotal Engine</span>
-                    <span class="trust-sub">Threat Intel Active</span>
+                <div class="trust-icon-box"><i data-lucide="shield-check" color="#22d3ee" size="20"></i></div>
+                <div>
+                    <div class="trust-title">McAfee SECURE</div>
+                    <div class="trust-desc">Status: Certified</div>
                 </div>
             </div>
-
-            <!-- SSL Badge -->
+            <!-- VirusTotal -->
             <div class="trust-item">
-                <i data-lucide="lock-keyhole" class="trust-icon" size="22"></i>
-                <div class="trust-text">
-                    <span class="trust-main">SSL Secured</span>
-                    <span class="trust-sub">256-bit Encryption</span>
+                <div class="trust-icon-box"><i data-lucide="activity" color="#22d3ee" size="20"></i></div>
+                <div>
+                    <div class="trust-title">VirusTotal Engine</div>
+                    <div class="trust-desc">Consensus Logic</div>
                 </div>
             </div>
-
+            <!-- SSL -->
+            <div class="trust-item">
+                <div class="trust-icon-box"><i data-lucide="lock-keyhole" color="#22d3ee" size="20"></i></div>
+                <div>
+                    <div class="trust-title">SSL Encrypted</div>
+                    <div class="trust-desc">256-bit Secure Session</div>
+                </div>
+            </div>
         </div>
-    </div>
+    </section>
 
+    <!-- 3. Related Website Info Blocks -->
+    <section class="info-section reveal-node">
+        <div class="info-grid">
+            <div class="info-content">
+                <h2>CypherScout Security Protocol</h2>
+                <p>We believe in transparent, robust security. CypherScout combines multiple threat intelligence streams to provide a definitive verdict on malicious URLs before you interact with them.</p>
+                <div style="border-left: 2px solid var(--accent); padding-left: 16px; margin-bottom: 24px;">
+                    <i data-lucide="quote" size="16" color="#94a3b8" style="margin-bottom:8px;"></i>
+                    <p style="font-size:0.9rem; font-style:italic;">"Built on modern heuristical models and verified by community behavior."</p>
+                </div>
+            </div>
+            <div class="info-cards">
+                <div class="info-card reveal-node">
+                    <div class="info-card-header">
+                        <i data-lucide="cpu" color="#22d3ee"></i>
+                        <h3>Neural Machine Learning</h3>
+                    </div>
+                    <p>Our backend continuously learns from flagged domains using a RandomForest algorithm trained on URL entropy and n-gram patterns.</p>
+                </div>
+                <div class="info-card reveal-node" style="transition-delay: 0.1s;">
+                    <div class="info-card-header">
+                        <i data-lucide="network" color="#8B5CF6"></i>
+                        <h3>API Consensus</h3>
+                    </div>
+                    <p>Instead of relying on one source, we cross-reference domains against VirusTotal's 70+ vendor engines for high-confidence verdicts.</p>
+                </div>
+                <div class="info-card reveal-node" style="transition-delay: 0.2s;">
+                    <div class="info-card-header">
+                        <i data-lucide="repeat" color="#10B981"></i>
+                        <h3>Community Driven</h3>
+                    </div>
+                    <p>Your inputs matter. Disputed results trigger secondary manual and automated pipeline scans to retrain local ML models.</p>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Scripting -->
     <script>
         lucide.createIcons();
 
+        // Passcode Strength
         function handleStrength(val) {
             const dots = document.querySelectorAll('.str-dot');
             let strength = 0;
@@ -452,8 +461,9 @@
             });
         }
 
+        // Toggle Forgot Panel
         function toggleForgot() {
-            const lPanel = document.getElementById('loginPanel');
+            const lPanel = document.getElementById('loginWrap');
             const fPanel = document.getElementById('forgotPanel');
             if (fPanel.style.display === 'block') {
                 fPanel.style.display = 'none';
@@ -463,6 +473,18 @@
                 lPanel.style.display = 'none';
             }
         }
+
+        // Scroll Intersection Observer animations
+        const revealElements = document.querySelectorAll('.reveal-node');
+        const observer = new IntersectionObserver((entries) => {
+            entries.forEach(entry => {
+                if (entry.isIntersecting) {
+                    entry.target.classList.add('active');
+                }
+            });
+        }, { threshold: 0.15, rootMargin: "0px 0px -50px 0px" });
+
+        revealElements.forEach(el => observer.observe(el));
     </script>
     <script type="text/javascript" src="https://cdn.ywxi.net/js/1.js" async></script>
 </body>
