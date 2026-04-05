@@ -28,14 +28,51 @@
 
         body { 
             background-color: var(--bg-dark);
-            background-image:
-                radial-gradient(circle at 18% 12%, rgba(56, 189, 248, 0.18), transparent 34%),
-                radial-gradient(circle at 82% 80%, rgba(34, 211, 238, 0.12), transparent 42%),
-                radial-gradient(circle at 50% 50%, #1e293b 0%, #020617 100%);
             color: var(--text-main);
             font-family: 'Inter', sans-serif;
             display: flex; height: 100vh; width: 100vw; overflow: hidden;
             position: relative;
+        }
+
+        .ambient-bg {
+            position: fixed;
+            top: 0; left: 0; width: 100vw; height: 100vh;
+            z-index: -2;
+            overflow: hidden;
+            background: #030712;
+            pointer-events: none;
+        }
+
+        .orb {
+            position: absolute;
+            border-radius: 50%;
+            filter: blur(140px);
+            opacity: 0.38;
+            animation: float 25s infinite ease-in-out alternate;
+        }
+
+        .orb-1 { 
+            width: 60vw; height: 60vw; 
+            background: radial-gradient(circle, rgba(59, 130, 246, 0.5) 0%, transparent 70%);
+            top: -20%; left: -15%; 
+        }
+        .orb-2 { 
+            width: 50vw; height: 50vw; 
+            background: radial-gradient(circle, rgba(139, 92, 246, 0.4) 0%, transparent 70%);
+            bottom: -20%; right: -10%; 
+            animation-duration: 22s; animation-direction: alternate-reverse; 
+        }
+        .orb-3 { 
+            width: 45vw; height: 45vw; 
+            background: radial-gradient(circle, rgba(6, 182, 212, 0.35) 0%, transparent 70%);
+            top: 20%; left: 30%; 
+            animation-duration: 30s; 
+        }
+
+        @keyframes float {
+            0% { transform: translate(0, 0) scale(1); }
+            50% { transform: translate(8%, 12%) scale(1.05); }
+            100% { transform: translate(-6%, -8%) scale(0.95); }
         }
 
         body::before {
@@ -56,13 +93,16 @@
 
         /* --- SIDEBAR --- */
         .sidebar { 
-            width: 80px;
-            background: linear-gradient(180deg, rgba(10, 15, 30, 0.9), rgba(8, 12, 24, 0.72));
-            border-right: 1px solid var(--border);
-            backdrop-filter: blur(10px);
-            display: flex; flex-direction: column; align-items: center; padding: 30px 0; flex-shrink: 0; 
+            width: 72px;
+            background: rgba(10, 15, 30, 0.45);
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            backdrop-filter: blur(28px);
+            -webkit-backdrop-filter: blur(28px);
+            display: flex; flex-direction: column; align-items: center; padding: 25px 0; flex-shrink: 0; 
             z-index: 100;
-            box-shadow: 8px 0 30px rgba(2, 6, 23, 0.35);
+            box-shadow: 0 20px 40px rgba(0,0,0, 0.5), inset 0 2px 10px rgba(255,255,255,0.05);
+            margin: 20px 0 20px 20px;
+            border-radius: 24px;
         }
 
         .nav-item {
@@ -100,12 +140,15 @@
         .header { margin-bottom: 25px; display: flex; justify-content: space-between; align-items: center; flex-shrink: 0; }
 
         .frost-panel {
-            background: linear-gradient(160deg, rgba(15, 23, 42, 0.66), rgba(15, 23, 42, 0.46));
-            border: 1px solid var(--border);
-            box-shadow: inset 0 1px 0 rgba(186, 230, 253, 0.1), 0 16px 40px rgba(2, 6, 23, 0.35);
-            backdrop-filter: blur(12px);
+            background: rgba(15, 23, 42, 0.4);
+            border: 1px solid rgba(255, 255, 255, 0.08);
+            box-shadow: 0 20px 50px rgba(0, 0, 0, 0.3), inset 0 2px 15px rgba(255, 255, 255, 0.02);
+            backdrop-filter: blur(28px);
+            -webkit-backdrop-filter: blur(28px);
+            border-radius: 20px;
             position: relative;
             overflow: hidden;
+            transition: all 0.4s ease;
         }
 
         /* --- BANNER --- */
@@ -904,6 +947,11 @@
     </style>
 </head>
 <body onload="initSystem()">
+    <div class="ambient-bg">
+        <div class="orb orb-1"></div>
+        <div class="orb orb-2"></div>
+        <div class="orb orb-3"></div>
+    </div>
 
     <div id="tourChoiceModal" class="cyber-modal">
         <div class="modal-card">
@@ -1637,8 +1685,16 @@
                         response: "Two-factor auth = password + a second proof. Turn on app-based or hardware key MFA (avoid SMS when possible), store recovery codes safely, and add MFA to email, banking, and social accounts first."
                     },
                     {
-                        match: /(secure|protect|harden|safe).*(account|acc)|account security|make .*account secure/,
+                        match: /(secure|protect|harden|safe).*(account|acc)|(account|acc).*(secure|protect|safe)|account security|make .*account secure/,
                         response: "Account hardening: 1) Unique 14+ char passwords in a manager. 2) MFA on email/bank/social. 3) Up-to-date recovery email/phone. 4) Remove old sessions/devices. 5) Phishing filter—never click login links from messages; type the site directly."
+                    },
+                    {
+                        match: /(insta|instagram|facebook|meta|social).*(secure|hack|protect|safety)/,
+                        response: "Lock your social: enable app-based MFA, review active sessions/devices and log out unknown ones, revoke third-party app access, set login alerts, hide email/phone from public, and use a unique strong password."
+                    },
+                    {
+                        match: /leak|pwned|breach|compromised.*password|dark web/,
+                        response: "Breach check: use haveibeenpwned.com (email) and your password manager’s breach monitor. If hit, change that password everywhere it was reused, turn on MFA, and refresh recovery info."
                     },
                     {
                         match: /link|url|website|domain|shorten|qr code/,
@@ -1688,8 +1744,8 @@
                     return;
                 }
 
-                // Default: keep it security-focused but still helpful.
-                push("I answer only security topics. Tell me if this is about a link, account, device, payment, or data. First steps: pause clicks, change passwords and enable MFA, scan the device, and contact your bank if money is at risk.", "bot");
+                // Default: concise starter pack so users still get value.
+                push("Security starter: 1) Strong unique passwords in a manager. 2) MFA on email/bank/social. 3) Update OS/browser; remove sketchy extensions. 4) Be suspicious of links/attachments; verify senders. 5) If money risk: call bank from official number. Ask me any security question for specifics.", "bot");
             }
 
             form.onsubmit = (e) => {
