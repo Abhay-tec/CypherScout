@@ -75,22 +75,6 @@
             100% { transform: translate(-6%, -8%) scale(0.95); }
         }
 
-        body::before {
-            content: "";
-            position: absolute;
-            inset: 0;
-            pointer-events: none;
-            background-image: repeating-linear-gradient(
-                to bottom,
-                rgba(255, 255, 255, 0.018) 0,
-                rgba(255, 255, 255, 0.018) 1px,
-                transparent 1px,
-                transparent 4px
-            );
-            mix-blend-mode: soft-light;
-            opacity: 0.35;
-        }
-
         /* --- SIDEBAR --- */
         .sidebar { 
             width: 72px;
@@ -952,6 +936,7 @@
         <div class="orb orb-2"></div>
         <div class="orb orb-3"></div>
     </div>
+    <div class="ambient-noise"></div>
 
     <div id="tourChoiceModal" class="cyber-modal">
         <div class="modal-card">
