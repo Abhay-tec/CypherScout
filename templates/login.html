@@ -36,103 +36,58 @@
             position: relative;
         }
 
-        .stellar-scroll {
+        /* ---------------- Fluid Gradient Background ---------------- */
+        .ambient-bg {
             position: fixed;
-            inset: 0;
-            z-index: 1;
-            pointer-events: none;
+            top: 0; left: 0; width: 100vw; height: 100vh;
+            z-index: -2;
             overflow: hidden;
+            background: #030303;
         }
 
-        .stellar-layer {
+        .orb {
             position: absolute;
-            inset: -20%;
-            will-change: transform;
-        }
-
-        .stellar-layer.near {
-            background:
-                radial-gradient(circle at 10% 20%, rgba(186, 230, 253, 0.95) 0 1px, transparent 1px),
-                radial-gradient(circle at 35% 68%, rgba(186, 230, 253, 0.82) 0 1px, transparent 1px),
-                radial-gradient(circle at 75% 40%, rgba(34, 211, 238, 0.85) 0 1px, transparent 1px),
-                radial-gradient(circle at 90% 75%, rgba(186, 230, 253, 0.84) 0 1px, transparent 1px);
-            background-size: 260px 260px, 240px 240px, 300px 300px, 320px 320px;
-            opacity: 0.52;
-            animation: driftStarsNear 80s linear infinite;
-        }
-
-        .stellar-layer.far {
-            background:
-                radial-gradient(circle at 20% 60%, rgba(186, 230, 253, 0.72) 0 1px, transparent 1px),
-                radial-gradient(circle at 62% 30%, rgba(34, 211, 238, 0.72) 0 1px, transparent 1px),
-                radial-gradient(circle at 86% 88%, rgba(186, 230, 253, 0.68) 0 1px, transparent 1px);
-            background-size: 420px 420px, 460px 460px, 380px 380px;
-            opacity: 0.3;
-            animation: driftStarsFar 125s linear infinite reverse;
-        }
-
-        .bg-video-wrap {
-            position: fixed;
-            inset: 0;
-            z-index: 0;
-            overflow: hidden;
-            pointer-events: none;
-            background:
-                radial-gradient(circle at 15% 20%, rgba(56, 189, 248, 0.2), transparent 35%),
-                radial-gradient(circle at 85% 80%, rgba(34, 211, 238, 0.16), transparent 40%),
-                linear-gradient(130deg, #020617 0%, #081327 45%, #020617 100%);
-        }
-
-        .bg-video-wrap::after {
-            content: "";
-            position: absolute;
-            inset: 0;
-            background:
-                radial-gradient(560px circle at var(--mx) var(--my), rgba(186, 230, 253, 0.2), transparent 58%),
-                linear-gradient(180deg, rgba(2, 6, 23, 0.58), rgba(2, 6, 23, 0.84));
-        }
-
-        .bg-orb {
-            position: absolute;
-            width: 45vmax;
-            height: 45vmax;
-            border-radius: 999px;
-            filter: blur(90px);
+            border-radius: 50%;
+            filter: blur(140px);
             opacity: 0.45;
-            animation: orbFloat 25s ease-in-out infinite alternate;
+            animation: orbFloat 25s infinite ease-in-out alternate;
         }
 
-        .bg-orb.a {
-            top: -10vmax;
-            left: -10vmax;
-            background: radial-gradient(circle, rgba(59, 130, 246, 0.8) 0%, transparent 65%);
+        .orb-1 { 
+            width: 70vw; height: 70vw; 
+            background: radial-gradient(circle, #3B82F6 0%, transparent 70%);
+            top: -20%; left: -15%; 
+            animation-duration: 25s; 
+        }
+        .orb-2 { 
+            width: 60vw; height: 60vw; 
+            background: radial-gradient(circle, #8B5CF6 0%, transparent 70%);
+            bottom: -20%; right: -10%; 
+            animation-duration: 22s; animation-direction: alternate-reverse; 
+            opacity: 0.35;
+        }
+        .orb-3 { 
+            width: 50vw; height: 50vw; 
+            background: radial-gradient(circle, #06B6D4 0%, transparent 70%);
+            top: 20%; left: 30%; 
+            animation-duration: 30s; 
+            opacity: 0.25;
         }
 
-        .bg-orb.b {
-            right: -10vmax;
-            bottom: -10vmax;
-            background: radial-gradient(circle, rgba(139, 92, 246, 0.6) 0%, transparent 62%);
-            animation-delay: -8s;
-            animation-direction: alternate-reverse;
-        }
-        
-        .bg-orb.c {
-            top: 25%;
-            left: 25%;
-            background: radial-gradient(circle, rgba(6, 182, 212, 0.5) 0%, transparent 60%);
-            animation-duration: 30s;
+        @keyframes orbFloat {
+            0% { transform: translate(0, 0) scale(1); }
+            50% { transform: translate(8%, 12%) scale(1.05); }
+            100% { transform: translate(-6%, -8%) scale(0.95); }
         }
 
-        .bg-branding {
+        /* Fine noise texture overlay for realism */
+        .ambient-noise {
             position: fixed;
-            bottom: 5%;
-            left: 5%;
-            font-size: 8rem;
-            font-weight: 800;
-            letter-spacing: -5px;
-            opacity: 0.04;
-            z-index: 1;
+            top: 0; left: 0; width: 100vw; height: 100vh;
+            z-index: -1;
+            opacity: 0.05;
             pointer-events: none;
+            background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 200 200' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='noiseFilter'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.8' numOctaves='3' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23noiseFilter)'/%3E%3C/svg%3E");
         }
 
         .page { position: relative; z-index: 10; width: 100%; }
@@ -146,7 +101,7 @@
         }
 
         .login-wrapper {
-            width: min(460px, calc(100vw - 40px));
+            width: min(1000px, calc(100vw - 40px));
             display: flex;
             background: linear-gradient(155deg, rgba(15, 23, 42, 0.4), rgba(2, 6, 23, 0.6));
             border-radius: 28px;
@@ -165,6 +120,43 @@
             0% { transform: translateY(0) rotateX(0deg); }
             100% { transform: translateY(-10px) rotateX(2deg); }
         }
+
+        .side-visual {
+            flex: 1.2;
+            padding: 40px;
+            background:
+                linear-gradient(135deg, rgba(2, 6, 23, 0.35), rgba(2, 6, 23, 0.85)),
+                url("/static/register-login.gif");
+            background-size: cover;
+            background-position: center;
+            background-repeat: no-repeat;
+            display: flex;
+            flex-direction: column;
+            justify-content: space-between;
+            border-right: 1px solid rgba(255,255,255,0.05);
+            position: relative;
+            overflow: hidden;
+            z-index: 2;
+        }
+
+        .side-visual::before {
+            content: "";
+            position: absolute;
+            inset: 0;
+            background:
+                linear-gradient(to top, rgba(2, 6, 23, 0.95), transparent 45%),
+                linear-gradient(to right, rgba(34, 211, 238, 0.04) 1px, transparent 1px);
+            background-size: 100% 100%, 24px 24px;
+            pointer-events: none;
+            z-index: 1;
+        }
+
+        .side-visual > * {
+            position: relative;
+            z-index: 2;
+        }
+
+        .logo-text { font-weight: 800; font-size: 1.5rem; letter-spacing: 2px; }
 
         .login-wrapper:hover {
             box-shadow: 0 50px 140px rgba(0, 0, 0, 0.8), 0 0 70px rgba(34, 211, 238, 0.15), inset 0 2px 20px rgba(255, 255, 255, 0.08);
@@ -819,28 +811,35 @@
     </style>
 </head>
 <body>
-    <div class="stellar-scroll" aria-hidden="true">
-        <div class="stellar-layer far"></div>
-        <div class="stellar-layer near"></div>
+    <div class="ambient-bg">
+        <div class="orb orb-1"></div>
+        <div class="orb orb-2"></div>
+        <div class="orb orb-3"></div>
     </div>
-    <div class="bg-video-wrap" aria-hidden="true">
-        <div class="bg-orb a"></div>
-        <div class="bg-orb b"></div>
-        <div class="bg-orb c"></div>
-    </div>
+    <div class="ambient-noise"></div>
     <div class="bg-branding">CYPHERSCOUT</div>
 
     <main class="page">
         <section class="hero-screen">
             <div class="login-wrapper">
-                <div class="form-container">
-                    <div style="text-align: center; margin-bottom: 28px;">
-                        <div style="width: 54px; height: 54px; background: linear-gradient(135deg, rgba(34, 211, 238, 0.15), rgba(59, 130, 246, 0.15)); border: 1px solid rgba(34, 211, 238, 0.4); border-radius: 16px; display: inline-flex; justify-content: center; align-items: center; box-shadow: 0 0 24px rgba(34, 211, 238, 0.4); margin-bottom: 18px;">
-                            <i data-lucide="shield-check" color="#22d3ee" size="26"></i>
+                <div class="side-visual">
+                    <div class="logo-text">CypherScout</div>
+                    <div>
+                        <div class="section-tag" style="color:#fff;opacity:0.85;">AI Security Core / Threat Defense</div>
+                        <h1 class="hero-heading">CYPHER<br>SCOUT AI</h1>
+                        <p class="hero-meta">&copy; 2026 CYPHERSCOUT // URL VERDICTS WITH VIRUSTOTAL, HEURISTICS, AND FEEDBACK-TRAINED ML</p>
+                        <div class="hero-tags">
+                            <span class="hero-tag">VirusTotal Engines</span>
+                            <span class="hero-tag">Heuristic Signals</span>
+                            <span class="hero-tag">Feedback Learning</span>
                         </div>
-                        <h1 class="hero-heading" style="font-size: 1.85rem; letter-spacing: -1.5px; margin-bottom: 6px;">CypherScout Auth</h1>
-                        <p style="color: var(--text-dim); font-size: 0.75rem; letter-spacing: 1.5px; text-transform: uppercase;">Command Center Access</p>
                     </div>
+                    <div class="protocol-line">PROTOCOL: ON-DEMAND LINK VERIFICATION // STATUS: ANALYZER READY</div>
+                </div>
+
+                <div class="form-container">
+                    <div class="section-tag">Handshake</div>
+                    <h2>Identity Verification</h2>
                     {% with messages = get_flashed_messages(with_categories=true) %}
                     {% if messages %}
                     <div class="flash-stack">
