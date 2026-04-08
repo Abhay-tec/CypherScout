@@ -609,16 +609,16 @@
             font-weight: 600;
         }
 
-        /* ---------------- Isometric Tech Track Animation ---------------- */
+        /* ---------------- Elegant Floating Icon Ribbon ---------------- */
         .wave-section {
-            padding: 80px 0;
+            padding: 70px 0;
             width: 100%;
             overflow: hidden;
             position: relative;
             z-index: 50;
-            background: radial-gradient(ellipse at center, rgba(6, 182, 212, 0.05) 0%, transparent 60%);
-            border-top: 1px solid rgba(255, 255, 255, 0.02);
-            border-bottom: 1px solid rgba(255, 255, 255, 0.02);
+            background: linear-gradient(180deg, transparent, rgba(255,255,255,0.01) 50%, transparent);
+            border-top: 1px solid rgba(255, 255, 255, 0.03);
+            border-bottom: 1px solid rgba(255, 255, 255, 0.03);
         }
         
         .wave-section::before, .wave-section::after {
@@ -644,9 +644,8 @@
         .wave-track {
             display: flex;
             width: max-content;
-            animation: scroll-wave 40s linear infinite;
-            padding: 60px 0;
-            perspective: 1200px;
+            animation: scroll-track 45s linear infinite;
+            padding: 30px 0;
         }
 
         .wave-track:hover {
@@ -655,60 +654,57 @@
 
         .wave-group {
             display: flex;
-            gap: 32px;
-            padding-right: 32px;
+            gap: 40px;
+            padding-right: 40px;
             align-items: center;
-            transform-style: preserve-3d;
         }
 
         .wave-icon {
-            width: 80px;
-            height: 80px;
-            border-radius: 20px;
-            background: linear-gradient(135deg, rgba(255,255,255,0.08), rgba(255,255,255,0.01));
-            border: 1px solid rgba(255, 255, 255, 0.1);
-            border-top: 1px solid rgba(255, 255, 255, 0.3);
-            border-left: 1px solid rgba(255, 255, 255, 0.3);
+            width: 68px;
+            height: 68px;
+            border-radius: 50%;
+            background: rgba(255, 255, 255, 0.015);
+            border: 1px solid rgba(255, 255, 255, 0.08);
             display: flex;
             align-items: center;
             justify-content: center;
-            color: rgba(255, 255, 255, 0.6);
-            backdrop-filter: blur(12px);
-            -webkit-backdrop-filter: blur(12px);
+            color: rgba(255, 255, 255, 0.4);
+            backdrop-filter: blur(10px);
+            -webkit-backdrop-filter: blur(10px);
             flex-shrink: 0;
-            transform: rotateX(45deg) rotateZ(-15deg) rotateY(10deg);
-            transition: all 0.5s cubic-bezier(0.16, 1, 0.3, 1);
+            animation: gentle-float 4s ease-in-out infinite;
+            animation-delay: calc(var(--i) * -0.3s);
+            transition: all 0.4s cubic-bezier(0.16, 1, 0.3, 1);
             cursor: pointer;
-            box-shadow: -15px 20px 30px rgba(0,0,0,0.5), inset 0 0 20px rgba(255,255,255,0.02);
+            box-shadow: 0 4px 15px rgba(0,0,0,0.2);
             position: relative;
         }
 
-        .wave-track:hover .wave-icon {
-            opacity: 0.3;
-            transform: rotateX(45deg) rotateZ(-15deg) rotateY(10deg) scale(0.9);
-        }
-
-        .wave-track .wave-icon:hover {
-            opacity: 1;
-            transform: rotateX(0deg) rotateZ(0deg) rotateY(0deg) scale(1.2) translateY(-10px);
+        .wave-icon:hover {
             color: #fff;
-            border-color: rgba(6, 182, 212, 0.8);
-            background: linear-gradient(135deg, rgba(6, 182, 212, 0.2), rgba(255,255,255,0.05));
-            box-shadow: 0 20px 40px rgba(6, 182, 212, 0.25), inset 0 0 30px rgba(6, 182, 212, 0.3);
+            border-color: rgba(255, 255, 255, 0.3);
+            background: rgba(255, 255, 255, 0.06);
+            transform: scale(1.15) !important;
+            box-shadow: 0 0 25px rgba(255, 255, 255, 0.1), inset 0 0 15px rgba(255, 255, 255, 0.05);
+            animation-play-state: paused;
             z-index: 10;
         }
 
         .wave-icon svg {
-            transition: all 0.5s cubic-bezier(0.16, 1, 0.3, 1);
-            filter: drop-shadow(0 4px 6px rgba(0,0,0,0.5));
+            transition: all 0.4s cubic-bezier(0.16, 1, 0.3, 1);
         }
 
         .wave-icon:hover svg {
-            transform: scale(1.25);
-            filter: drop-shadow(0 0 12px rgba(6, 182, 212, 0.8));
+            transform: scale(1.2);
+            filter: drop-shadow(0 0 10px rgba(255,255,255,0.7));
         }
 
-        @keyframes scroll-wave {
+        @keyframes gentle-float {
+            0%, 100% { transform: translateY(0px) scale(1); }
+            50% { transform: translateY(-12px) scale(1.02); }
+        }
+
+        @keyframes scroll-track {
             0% { transform: translateX(0); }
             100% { transform: translateX(-50%); }
         }
