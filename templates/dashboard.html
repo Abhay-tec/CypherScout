@@ -1533,11 +1533,22 @@
             // 2. Handle Tour logic
             const urlParams = new URLSearchParams(window.location.search);
             const forcedTour = urlParams.get('tour') === 'true';
-            const tourDone = localStorage.getItem('cypher_tour_done');
-            if (forcedTour || !tourDone) {
+            const tourDone = localStorage.getItem('cypher_tour_done') === 'true';
+
+            // Show the tour only when the user has never completed/dismissed it.
+            if (!tourDone) {
                 localStorage.setItem('cypher_tour_done', 'true');
                 currentStep = 0;
                 showModal('tourChoiceModal');
+                // drop the tour param so a refresh doesn't retrigger
+                const cleanUrl = new URL(window.location.href);
+                cleanUrl.searchParams.delete('tour');
+                window.history.replaceState({}, '', cleanUrl.toString());
+            } else if (forcedTour) {
+                // If the param lingers but the tour is already done, just clean the URL.
+                const cleanUrl = new URL(window.location.href);
+                cleanUrl.searchParams.delete('tour');
+                window.history.replaceState({}, '', cleanUrl.toString());
             }
         }
 
