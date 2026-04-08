@@ -3,774 +3,991 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <meta name="google-site-verification" content="q6F8RVg_jjGQTeiJNRUkiSBJ4HrS492pqTj_wdtdIYQ" />
-    <title>CypherScout | AI Scam &amp; Phishing Link Detector</title>
     <meta name="description" content="CypherScout (Sudarshan AI) is an AI-driven scam and phishing detector that keeps learning from user interactions to spot malicious links before they get you." />
-    <meta name="keywords" content="CypherScout, Sudarshan AI, Scam Detector, Phishing Detector, Cyber Security, Link Scanner" />
-    <link rel="canonical" href="https://cypher-scout.vercel.app/">
-    <meta property="og:title" content="CypherScout | AI Scam &amp; Phishing Link Detector">
-    <meta property="og:description" content="AI-powered scam & phishing detector that learns from user interactions to stop malicious links fast.">
-    <meta property="og:type" content="website">
-    <meta property="og:url" content="https://cypher-scout.vercel.app/">
-    <meta property="og:image" content="https://cypher-scout.vercel.app/static/og-image.png">
-    <meta name="twitter:card" content="summary_large_image">
-    <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@300;400;600;800&family=Inter:wght@400;600;700&family=JetBrains+Mono:wght@500;700&family=Space+Grotesk:wght@400;500;600;700&display=swap" rel="stylesheet">
+    <title>CypherScout | AI Scam & Phishing Link Detector</title>
+    
+    <!-- Fonts: Outfit for premium modern feel -->
+    <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;500;600;700;800&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
     <script src="https://unpkg.com/lucide@latest"></script>
-    <script type="application/ld+json">
-    {
-      "@context": "https://schema.org",
-      "@type": "Organization",
-      "name": "CypherScout",
-      "alternateName": "Sudarshan AI",
-      "url": "https://cypher-scout.vercel.app/",
-      "logo": "https://cypher-scout.vercel.app/static/og-image.png",
-      "sameAs": [
-        "https://cypher-scout.vercel.app/"
-      ]
-    }
-    </script>
+    
     <style>
         :root {
-            --bg-dark: #020617;
-            --surface: rgba(15, 23, 42, 0.64);
-            --surface-soft: rgba(15, 23, 42, 0.42);
-            --border: rgba(186, 230, 253, 0.22);
-            --frost-line: rgba(186, 230, 253, 0.28);
-            --accent: #22d3ee;
-            --accent-ice: #bae6fd;
-            --text-white: #f8fafc;
-            --text-dim: #94a3b8;
-            --hero-grad-a: rgba(56, 189, 248, 0.18);
-            --hero-grad-b: rgba(34, 211, 238, 0.12);
-            --danger: #fb7185;
-            --ok: #34d399;
+            --bg: #030303;
+            --text-main: #F3F4F6;
+            --text-muted: #9CA3AF;
+            --surface: rgba(255, 255, 255, 0.02);
+            --surface-hover: rgba(255, 255, 255, 0.04);
+            --border: rgba(255, 255, 255, 0.08);
+            --border-hover: rgba(255, 255, 255, 0.2);
+            --glass-blur: blur(28px);
+            --accent: #60A5FA;
+            
+            /* Fluid gradient orb colors */
+            --orb-1: #3B82F6; /* Deep Blue */
+            --orb-2: #8B5CF6; /* Purple */
+            --orb-3: #06B6D4; /* Cyan */
         }
 
-        * { box-sizing: border-box; margin: 0; padding: 0; }
-        html { scroll-behavior: smooth; }
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        
         body {
-            min-height: 100vh;
+            background-color: var(--bg);
+            color: var(--text-main);
+            font-family: 'Outfit', sans-serif;
             overflow-x: hidden;
-            font-family: "Inter", sans-serif;
-            color: var(--text-white);
-            background:
-                radial-gradient(circle at 15% 10%, var(--hero-grad-a), transparent 36%),
-                radial-gradient(circle at 86% 86%, var(--hero-grad-b), transparent 42%),
-                radial-gradient(circle at 50% 50%, #1e293b 0%, var(--bg-dark) 100%);
-            position: relative;
+            line-height: 1.6;
+            cursor: default;
         }
 
-        body::before {
-            content: "";
+        ::selection {
+            background: rgba(139, 92, 246, 0.4);
+            color: white;
+        }
+
+        /* ---------------- Fluid Gradient Background ---------------- */
+        .ambient-bg {
             position: fixed;
-            inset: 0;
-            pointer-events: none;
-            background-image: linear-gradient(to right, rgba(186, 230, 253, 0.03) 1px, transparent 1px), linear-gradient(to bottom, rgba(186, 230, 253, 0.03) 1px, transparent 1px);
-            background-size: 36px 36px;
-            mask-image: radial-gradient(circle at 55% 30%, black 30%, transparent 88%);
-            z-index: -1;
+            top: 0; left: 0; width: 100vw; height: 100vh;
+            z-index: -2;
+            overflow: hidden;
+            background: var(--bg);
         }
-
-        .stellar {
-            position: fixed;
-            inset: -18%;
-            z-index: 0;
-            pointer-events: none;
-        }
-
-        .stars-a,
-        .stars-b {
-            position: absolute;
-            inset: 0;
-            will-change: transform;
-        }
-
-        .stars-a {
-            background:
-                radial-gradient(circle at 12% 20%, rgba(186, 230, 253, 0.88) 0 1px, transparent 1px),
-                radial-gradient(circle at 62% 33%, rgba(34, 211, 238, 0.8) 0 1px, transparent 1px),
-                radial-gradient(circle at 86% 75%, rgba(186, 230, 253, 0.76) 0 1px, transparent 1px);
-            background-size: 280px 280px, 320px 320px, 260px 260px;
-            opacity: 0.45;
-            animation: driftA 95s linear infinite;
-        }
-
-        .stars-b {
-            background:
-                radial-gradient(circle at 35% 65%, rgba(186, 230, 253, 0.7) 0 1px, transparent 1px),
-                radial-gradient(circle at 78% 38%, rgba(34, 211, 238, 0.62) 0 1px, transparent 1px);
-            background-size: 420px 420px, 470px 470px;
-            opacity: 0.28;
-            animation: driftB 120s linear infinite reverse;
-        }
-
-        @keyframes driftA { to { transform: translateY(18px); } }
-        @keyframes driftB { to { transform: translateY(-24px); } }
 
         .orb {
-            position: fixed;
-            width: 45vmax;
-            height: 45vmax;
-            border-radius: 999px;
-            filter: blur(70px);
+            position: absolute;
+            border-radius: 50%;
+            filter: blur(140px);
+            opacity: 0.45;
+            animation: float 25s infinite ease-in-out alternate;
+        }
+
+        .orb-1 { 
+            width: 70vw; height: 70vw; 
+            background: radial-gradient(circle, var(--orb-1) 0%, transparent 70%);
+            top: -20%; left: -15%; 
+            animation-duration: 25s; 
+        }
+        .orb-2 { 
+            width: 60vw; height: 60vw; 
+            background: radial-gradient(circle, var(--orb-2) 0%, transparent 70%);
+            bottom: -20%; right: -10%; 
+            animation-duration: 22s; animation-direction: alternate-reverse; 
+            opacity: 0.35;
+        }
+        .orb-3 { 
+            width: 50vw; height: 50vw; 
+            background: radial-gradient(circle, var(--orb-3) 0%, transparent 70%);
+            top: 20%; left: 30%; 
+            animation-duration: 30s; 
             opacity: 0.25;
-            z-index: 0;
+        }
+
+        @keyframes float {
+            0% { transform: translate(0, 0) scale(1); }
+            50% { transform: translate(8%, 12%) scale(1.05); }
+            100% { transform: translate(-6%, -8%) scale(0.95); }
+        }
+
+        /* Fine noise texture overlay for realism */
+        .ambient-noise {
+            position: fixed;
+            top: 0; left: 0; width: 100vw; height: 100vh;
+            z-index: -1;
+            opacity: 0.05;
             pointer-events: none;
-            animation: orbFloat 16s ease-in-out infinite;
+            background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 200 200' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='noiseFilter'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.8' numOctaves='3' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23noiseFilter)'/%3E%3C/svg%3E");
         }
 
-        .orb.a {
-            top: -18vmax;
-            left: -14vmax;
-            background: radial-gradient(circle, rgba(56, 189, 248, 0.56) 0%, rgba(56, 189, 248, 0) 65%);
-        }
-
-        .orb.b {
-            right: -16vmax;
-            bottom: -16vmax;
-            background: radial-gradient(circle, rgba(34, 211, 238, 0.54) 0%, rgba(34, 211, 238, 0) 66%);
-            animation-delay: -7s;
-        }
-
-        @keyframes orbFloat {
-            0%, 100% { transform: translateY(0px); }
-            50% { transform: translateY(-14px); }
-        }
-
-        .site {
-            position: relative;
-            z-index: 5;
-        }
-
+        /* Container */
         .container {
-            width: min(1140px, calc(100% - 34px));
+            width: min(1200px, calc(100% - 40px));
             margin: 0 auto;
         }
 
-        .top-nav {
-            position: sticky;
-            top: 0;
-            z-index: 20;
-            border-bottom: 1px solid transparent;
-            transition: background 280ms ease, border-color 280ms ease, backdrop-filter 280ms ease;
+        /* ---------------- Floating Navbar ---------------- */
+        .navbar-wrapper {
+            position: fixed;
+            top: 32px; left: 0; right: 0;
+            z-index: 100;
+            display: flex;
+            justify-content: center;
+            pointer-events: none;
+            transition: top 0.4s ease;
+        }
+        
+        .navbar-wrapper.scrolled {
+            top: 16px;
         }
 
-        .top-nav.scrolled {
-            background: rgba(2, 6, 23, 0.62);
-            backdrop-filter: blur(12px);
-            border-bottom-color: var(--border);
-        }
-
-        .nav-row {
-            min-height: 74px;
+        .navbar {
+            pointer-events: auto;
+            background: rgba(10, 10, 10, 0.3);
+            backdrop-filter: var(--glass-blur);
+            -webkit-backdrop-filter: var(--glass-blur);
+            border: 1px solid var(--border);
+            padding: 10px 12px 10px 24px;
+            border-radius: 100px;
             display: flex;
             align-items: center;
-            justify-content: space-between;
-            gap: 16px;
+            gap: 48px;
+            box-shadow: 0 16px 40px rgba(0,0,0, 0.4);
+            transition: all 0.4s cubic-bezier(0.16, 1, 0.3, 1);
         }
 
-        .brand {
-            display: inline-flex;
+        .navbar:hover {
+            border-color: rgba(255, 255, 255, 0.15);
+            background: rgba(20, 20, 20, 0.45);
+        }
+
+        .nav-brand {
+            display: flex;
             align-items: center;
             gap: 10px;
-            font-family: "Plus Jakarta Sans", sans-serif;
-            font-weight: 800;
-            letter-spacing: 1px;
-            text-transform: uppercase;
+            font-weight: 700;
+            font-size: 1.15rem;
+            color: #fff;
+            text-decoration: none;
+            letter-spacing: 0.5px;
         }
 
-        .brand-badge {
-            width: 34px;
-            height: 34px;
-            border-radius: 10px;
-            display: grid;
-            place-items: center;
-            background: linear-gradient(130deg, #8be9ff, #22d3ee);
-            color: #001018;
-            box-shadow: 0 0 22px rgba(34, 211, 238, 0.32);
+        .nav-brand .icon-wrap {
+            background: linear-gradient(135deg, var(--orb-1), var(--orb-3));
+            width: 32px; height: 32px;
+            border-radius: 50%;
+            display: flex; align-items: center; justify-content: center;
+            box-shadow: 0 0 16px rgba(59, 130, 246, 0.4);
         }
 
         .nav-links {
             display: flex;
-            align-items: center;
-            gap: 24px;
+            gap: 28px;
         }
 
         .nav-links a {
+            color: var(--text-muted);
             text-decoration: none;
-            color: var(--text-dim);
-            font-size: 0.92rem;
-            font-weight: 600;
-            transition: color 180ms ease;
+            font-size: 0.95rem;
+            font-weight: 500;
+            transition: color 0.2s ease;
         }
 
-        .nav-links a:hover { color: var(--accent-ice); }
+        .nav-links a:hover {
+            color: #fff;
+        }
 
         .btn {
             display: inline-flex;
             align-items: center;
             justify-content: center;
-            gap: 8px;
+            padding: 12px 28px;
+            border-radius: 100px;
+            font-weight: 600;
+            font-size: 0.95rem;
             text-decoration: none;
-            border-radius: 999px;
-            border: 1px solid transparent;
-            padding: 11px 18px;
-            font-size: 0.9rem;
-            font-weight: 700;
-            transition: transform 220ms ease, box-shadow 220ms ease, border-color 220ms ease;
-        }
-
-        .btn-main {
-            color: #001018;
-            background: linear-gradient(120deg, var(--accent-ice), var(--accent));
-            box-shadow: 0 10px 24px rgba(34, 211, 238, 0.35);
-        }
-
-        .btn-alt {
-            color: var(--accent-ice);
-            background: rgba(15, 23, 42, 0.45);
-            border-color: var(--border);
-        }
-
-        .btn:hover {
-            transform: translateY(-2px);
-            box-shadow: 0 14px 28px rgba(34, 211, 238, 0.28);
-            border-color: var(--frost-line);
-        }
-
-        .hero {
+            transition: all 0.3s cubic-bezier(0.16, 1, 0.3, 1);
             position: relative;
-            min-height: 88vh;
-            display: grid;
-            place-items: center;
-            padding: 24px 0 30px;
             overflow: hidden;
+            cursor: pointer;
+            gap: 8px;
         }
 
-        .hero::after {
-            content: "";
+        .btn-primary {
+            background: #fff;
+            color: #000;
+            border: none;
+            box-shadow: 0 0 0 rgba(255,255,255,0);
+        }
+
+        .btn-primary:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 8px 24px rgba(255,255,255,0.25);
+            background: #f8fafc;
+        }
+
+        .btn-glass {
+            background: rgba(255,255,255,0.03);
+            color: #fff;
+            border: 1px solid var(--border);
+            backdrop-filter: blur(12px);
+        }
+
+        .btn-glass:hover {
+            background: rgba(255,255,255,0.08);
+            border-color: var(--border-hover);
+            transform: translateY(-2px);
+        }
+
+        /* ---------------- Hero Section ---------------- */
+        .hero {
+            min-height: 100vh;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+            text-align: center;
+            padding-top: 60px;
+            position: relative;
+            z-index: 10;
+        }
+
+        .pill-badge {
+            background: rgba(255, 255, 255, 0.02);
+            border: 1px solid var(--border);
+            padding: 6px 18px;
+            border-radius: 100px;
+            font-size: 0.85rem;
+            font-weight: 600;
+            color: #E5E7EB;
+            margin-bottom: 32px;
+            backdrop-filter: var(--glass-blur);
+            display: inline-flex;
+            align-items: center;
+            gap: 10px;
+            animation: pulse-border 4s infinite alternate;
+        }
+
+        @keyframes pulse-border {
+            0% { border-color: rgba(255,255,255,0.05); }
+            100% { border-color: rgba(255,255,255,0.15); }
+        }
+
+        .pill-badge span.dot {
+            width: 6px; height: 6px;
+            background: var(--orb-3);
+            border-radius: 50%;
+            display: inline-block;
+            box-shadow: 0 0 12px var(--orb-3);
+        }
+
+        .hero h1 {
+            font-size: clamp(3rem, 7.5vw, 6.2rem);
+            font-weight: 800;
+            line-height: 1.05;
+            letter-spacing: -0.03em;
+            margin-bottom: 28px;
+            max-width: 950px;
+            color: #fff;
+        }
+
+        .hero h1 span.gradient-text {
+            background: linear-gradient(90deg, #60A5FA, #A78BFA, #34D399);
+            background-size: 200% auto;
+            -webkit-background-clip: text;
+            background-clip: text;
+            -webkit-text-fill-color: transparent;
+            animation: text-shine 6s linear infinite;
+        }
+
+        @keyframes text-shine {
+            to { background-position: 200% center; }
+        }
+
+        .hero p {
+            font-size: clamp(1.1rem, 1.8vw, 1.35rem);
+            color: var(--text-muted);
+            max-width: 640px;
+            margin-bottom: 48px;
+            line-height: 1.6;
+        }
+
+        .hero-cta {
+            display: flex;
+            gap: 16px;
+            align-items: center;
+            justify-content: center;
+            flex-wrap: wrap;
+        }
+
+        /* ---------------- Video / Demo Panel ---------------- */
+        .demo-section {
+            padding: 40px 0 120px;
+            position: relative;
+            z-index: 10;
+        }
+
+        .glass-panel {
+            background: var(--surface);
+            border: 1px solid var(--border);
+            border-radius: 24px;
+            padding: 12px;
+            backdrop-filter: var(--glass-blur);
+            position: relative;
+            box-shadow: 0 30px 60px rgba(0,0,0,0.6);
+            overflow: hidden;
+            margin: 0 auto;
+            max-width: 1000px;
+            transform: perspective(1000px) rotateX(2deg);
+            transition: transform 0.6s cubic-bezier(0.16, 1, 0.3, 1);
+        }
+
+        .glass-panel:hover {
+            transform: perspective(1000px) rotateX(0deg) translateY(-10px);
+            border-color: rgba(255,255,255,0.12);
+        }
+
+        .glass-panel .panel-header {
+            display: flex;
+            gap: 8px;
+            padding: 10px 14px 18px;
+        }
+
+        .glass-panel .panel-btn {
+            width: 12px; height: 12px;
+            border-radius: 50%;
+            background: rgba(255,255,255,0.15);
+        }
+        
+        .video-wrapper {
+            width: 100%;
+            border-radius: 12px;
+            overflow: hidden;
+            box-shadow: 0 8px 32px rgba(0,0,0,0.4);
+        }
+        
+        .glass-panel video {
+            width: 100%;
+            display: block;
+            opacity: 0.9;
+            mix-blend-mode: screen;
+            background: #050505;
+            transform: scale(1.16) translate(1%, 1%); /* Increased scale & shifted to fully crop bottom-right watermark */
+            transform-origin: center center;
+        }
+
+        /* ---------------- Features / Grid ---------------- */
+        .section-title {
+            text-align: center;
+            font-size: clamp(2.5rem, 4.5vw, 4rem);
+            font-weight: 700;
+            margin-bottom: 20px;
+            letter-spacing: -0.02em;
+        }
+
+        .section-subtitle {
+            text-align: center;
+            color: var(--text-muted);
+            font-size: 1.15rem;
+            max-width: 650px;
+            margin: 0 auto 72px auto;
+        }
+
+        .cards-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(340px, 1fr));
+            gap: 24px;
+            padding-bottom: 120px;
+            position: relative;
+            z-index: 10;
+        }
+
+        /* Glowing Mouse Hover Spotlight Card */
+        .glass-card {
+            background: var(--surface);
+            border: 1px solid var(--border);
+            border-radius: 28px;
+            padding: 36px;
+            backdrop-filter: var(--glass-blur);
+            -webkit-backdrop-filter: var(--glass-blur);
+            transition: all 0.4s cubic-bezier(0.16, 1, 0.3, 1);
+            position: relative;
+            overflow: hidden;
+            display: flex;
+            flex-direction: column;
+            gap: 20px;
+            text-align: left;
+        }
+
+        /* The pseudo-element for the spotlight effect */
+        .glass-card::before {
+            content: '';
             position: absolute;
             inset: 0;
-            background: linear-gradient(90deg,
-                rgba(2, 6, 23, 0.46) 0%,
-                rgba(2, 6, 23, 0.18) 35%,
-                rgba(2, 6, 23, 0.06) 60%,
-                transparent 92%);
-            z-index: 1;
+            background: radial-gradient(
+                600px circle at var(--mouse-x) var(--mouse-y), 
+                rgba(255, 255, 255, 0.08),
+                transparent 40%
+            );
+            z-index: 0;
+            opacity: 0;
+            transition: opacity 0.4s ease;
             pointer-events: none;
         }
 
-        .hero-bg {
-            position: absolute;
-            inset: 0;
-            width: 100%;
-            height: 100%;
-            object-fit: cover;
-            filter: saturate(1.05) contrast(1.06) brightness(0.8);
-            z-index: 0;
+        .glass-card:hover::before {
+            opacity: 1;
         }
 
-        .hero-grid {
-            display: grid;
-            grid-template-columns: 1fr;
-            align-items: center;
-            justify-items: center;
-            gap: 18px;
+        .glass-card:hover {
+            transform: translateY(-8px);
+            border-color: rgba(255,255,255,0.15);
+            background: rgba(255,255,255,0.04);
+            box-shadow: 0 20px 40px rgba(0,0,0,0.3);
+        }
+
+        .card-content {
             position: relative;
-            z-index: 2;
-            width: 100%;
-            padding: 0 24px;
-            text-align: center;
+            z-index: 1;
         }
 
-        .entry {
-            opacity: 0;
-            transform: translateY(26px) scale(0.97);
-            animation: entryIn 860ms cubic-bezier(.2,.8,.25,1) forwards;
-            max-width: 540px;
-            padding: 0;
-            border-radius: 0;
-            background: transparent;
-            border: none;
-            backdrop-filter: none;
-            text-align: center;
-        }
-
-        .entry.delay { animation-delay: 130ms; }
-
-        @keyframes entryIn {
-            to { opacity: 1; transform: translateY(0) scale(1); }
-        }
-
-        .eyebrow {
-            display: inline-flex;
-            align-items: center;
-            gap: 6px;
-            padding: 7px 12px;
-            border-radius: 999px;
-            border: 1px solid rgba(226, 243, 255, 0.3);
-            background: rgba(2, 6, 23, 0.45);
-            color: #e2f3ff;
-            font-weight: 700;
-            letter-spacing: 0.4px;
-            font-size: 0.75rem;
-            text-transform: uppercase;
-            margin-bottom: 12px;
-        }
-
-        h1 {
-            font-family: "Space Grotesk", "Plus Jakarta Sans", sans-serif;
-            font-weight: 600;
-            line-height: 1.08;
-            letter-spacing: -0.25px;
-            text-transform: none;
-            font-size: clamp(2.1rem, 3.8vw, 3.4rem);
-            margin-bottom: 10px;
-            text-shadow: 0 5px 12px rgba(2, 6, 23, 0.42);
-        }
-
-        .type-line { display: none; }
-        .cursor { display: none; }
-
-        .hero-copy {
-            color: #dce8f5;
-            line-height: 1.55;
-            max-width: 34ch;
-            margin: 0 auto 16px auto;
-            font-size: 1rem;
-            opacity: 0.92;
-        }
-
-        .cta-row {
+        .icon-wrap-feature {
+            width: 52px;
+            height: 52px;
+            background: rgba(255,255,255,0.04);
+            border: 1px solid var(--border);
+            border-radius: 16px;
             display: flex;
             align-items: center;
             justify-content: center;
-            gap: 12px;
-            flex-wrap: wrap;
-            margin-bottom: 0;
+            color: #fff;
+            margin-bottom: 12px;
+            transition: all 0.4s cubic-bezier(0.16, 1, 0.3, 1);
         }
 
-        .hero-menu { display: none; }
-
-        .divider-wave {
-            width: 100%;
-            display: block;
-            height: 76px;
-            margin-top: -6px;
+        .glass-card:hover .icon-wrap-feature {
+            transform: scale(1.1) translateY(-4px);
+            background: rgba(255,255,255,0.08);
+            border-color: rgba(255,255,255,0.2);
+            color: var(--orb-3);
+            box-shadow: 0 10px 20px rgba(6, 182, 212, 0.15);
         }
 
-        section {
-            padding: 62px 0;
+        .glass-card h3 {
+            font-size: 1.35rem;
+            font-weight: 600;
+            margin-bottom: 10px;
+            color: #F9FAFB;
+        }
+
+        .glass-card p {
+            color: var(--text-muted);
+            font-size: 1rem;
+            line-height: 1.6;
+        }
+
+        /* ---------------- Footer ---------------- */
+        footer {
+            border-top: 1px solid var(--border);
+            padding: 50px 0;
+            text-align: center;
+            color: var(--text-muted);
+            font-size: 0.95rem;
             position: relative;
+            z-index: 10;
+            background: rgba(0,0,0,0.4);
+            backdrop-filter: blur(20px);
         }
 
-        .section-head {
-            margin-bottom: 20px;
+        .footer-content {
             display: flex;
             justify-content: space-between;
-            gap: 12px;
-            align-items: end;
-            flex-wrap: wrap;
-        }
-
-        .section-head h2 {
-            font-family: "Plus Jakarta Sans", sans-serif;
-            text-transform: uppercase;
-            letter-spacing: 0.5px;
-            font-size: clamp(1.35rem, 3vw, 2rem);
-        }
-
-        .section-head p {
-            max-width: 62ch;
-            color: var(--text-dim);
-            line-height: 1.7;
-            font-size: 0.95rem;
-        }
-
-        .grid {
-            display: grid;
-            gap: 14px;
-            grid-template-columns: repeat(3, minmax(0, 1fr));
-        }
-
-        .card {
-            border: 1px solid var(--border);
-            border-radius: 18px;
-            background: linear-gradient(160deg, rgba(15, 23, 42, 0.7), rgba(15, 23, 42, 0.48));
-            padding: 18px;
-            box-shadow: 0 16px 36px rgba(2, 6, 23, 0.38);
-            transition: transform 220ms ease, box-shadow 220ms ease, border-color 220ms ease;
-        }
-
-        .card:hover {
-            transform: translateY(-5px);
-            border-color: var(--frost-line);
-            box-shadow: 0 20px 42px rgba(2, 6, 23, 0.45);
-        }
-
-        .card .icon {
-            width: 36px;
-            height: 36px;
-            display: grid;
-            place-items: center;
-            border-radius: 10px;
-            background: linear-gradient(130deg, rgba(186, 230, 253, 0.9), rgba(34, 211, 238, 0.9));
-            color: #001018;
-            margin-bottom: 12px;
-            transition: transform 220ms ease;
-        }
-
-        .card:hover .icon { transform: scale(1.08); }
-
-        .card h3 {
-            font-family: "Plus Jakarta Sans", sans-serif;
-            margin-bottom: 7px;
-            font-size: 1rem;
-        }
-
-        .card p {
-            color: var(--text-dim);
-            line-height: 1.66;
-            font-size: 0.9rem;
-        }
-
-        .workflow {
-            display: grid;
-            grid-template-columns: 1fr 1fr;
-            gap: 14px;
-        }
-
-        .step {
-            border: 1px solid var(--border);
-            border-radius: 18px;
-            background: var(--surface-soft);
-            padding: 16px;
-            display: flex;
-            align-items: start;
-            gap: 12px;
-            transition: transform 220ms ease, box-shadow 220ms ease;
-        }
-
-        .step:hover {
-            transform: translateY(-4px);
-            box-shadow: 0 14px 30px rgba(2, 6, 23, 0.42);
-        }
-
-        .step-num {
-            min-width: 42px;
-            min-height: 42px;
-            border-radius: 10px;
-            border: 1px solid var(--frost-line);
-            display: grid;
-            place-items: center;
-            color: #dff5ff;
-            font-family: "JetBrains Mono", monospace;
-            font-weight: 700;
-            background: rgba(2, 6, 23, 0.55);
-        }
-
-        .status-strip {
-            border: 1px solid var(--border);
-            border-radius: 22px;
-            background: linear-gradient(145deg, rgba(15, 23, 42, 0.78), rgba(15, 23, 42, 0.56));
-            padding: 24px;
-            display: grid;
-            grid-template-columns: 1fr auto;
             align-items: center;
-            gap: 14px;
-            box-shadow: 0 20px 44px rgba(2, 6, 23, 0.4);
-        }
-
-        .status-strip p {
-            color: var(--text-dim);
-            line-height: 1.7;
-            margin-top: 6px;
-        }
-
-        .tiny-status {
-            margin-top: 10px;
-            display: flex;
-            gap: 8px;
             flex-wrap: wrap;
+            gap: 20px;
         }
 
-        .tiny-status span {
-            font-size: 0.72rem;
-            border: 1px solid var(--border);
-            border-radius: 999px;
-            padding: 5px 10px;
-            background: rgba(2, 6, 23, 0.52);
-            color: var(--accent-ice);
-        }
-
-        .ok { color: var(--ok); }
-        .bad { color: var(--danger); }
-
-        .footer {
-            padding: 24px 0 32px;
-            color: var(--text-dim);
-            font-size: 0.86rem;
-        }
-
+        /* ---------------- Animations ---------------- */
         .reveal {
             opacity: 0;
-            transform: translateY(28px);
-            transition: opacity 640ms ease, transform 640ms ease;
+            transform: translateY(40px);
+            transition: all 0.9s cubic-bezier(0.16, 1, 0.3, 1);
         }
-
-        .reveal.top { transform: translateY(-24px); }
-        .reveal.in {
+        .reveal.active {
             opacity: 1;
             transform: translateY(0);
         }
 
-        .stagger { transition-delay: var(--d, 0ms); }
+        /* Staggered load for hero elements */
+        .hero .reveal-stagger {
+            opacity: 0;
+            transform: translateY(20px);
+            animation: fadeUp 0.8s cubic-bezier(0.16, 1, 0.3, 1) forwards;
+        }
+        .hero .reveal-stagger:nth-child(1) { animation-delay: 0.1s; }
+        .hero .reveal-stagger:nth-child(2) { animation-delay: 0.2s; }
+        .hero .reveal-stagger:nth-child(3) { animation-delay: 0.3s; }
+        .hero .reveal-stagger:nth-child(4) { animation-delay: 0.4s; }
 
-        .parallax {
-            transform: translateY(var(--yoff, 0px));
-            will-change: transform;
+        @keyframes fadeUp {
+            to { opacity: 1; transform: translateY(0); }
         }
 
-        @media (max-width: 980px) {
-            .hero-grid,
-            .grid,
-            .workflow,
-            .status-strip,
-            .hero-stats { grid-template-columns: 1fr; }
-            .nav-links a:not(.btn) { display: none; }
+        /* ---------------- Additional Unique Animations for New Sections ---------------- */
+        .reveal-scale {
+            opacity: 0;
+            transform: scale(0.85);
+            transition: all 0.9s cubic-bezier(0.16, 1, 0.3, 1);
+        }
+        .reveal-scale.active {
+            opacity: 1;
+            transform: scale(1);
         }
 
-        @media (max-width: 640px) {
-            .container { width: calc(100% - 20px); }
-            .nav-row { min-height: 64px; }
-            .btn { padding: 10px 14px; font-size: 0.82rem; }
-            .card, .step { padding: 14px; }
-            .divider-wave { height: 58px; }
+        .reveal-slide-left {
+            opacity: 0;
+            transform: translateX(-80px);
+            transition: all 1s cubic-bezier(0.16, 1, 0.3, 1);
         }
+        .reveal-slide-left.active {
+            opacity: 1;
+            transform: translateX(0);
+        }
+
+        .reveal-slide-right {
+            opacity: 0;
+            transform: translateX(80px);
+            transition: all 1s cubic-bezier(0.16, 1, 0.3, 1);
+        }
+        .reveal-slide-right.active {
+            opacity: 1;
+            transform: translateX(0);
+        }
+
+        .reveal-3d-flip {
+            opacity: 0;
+            transform: perspective(1200px) rotateX(25deg) translateY(50px);
+            transform-origin: center bottom;
+            transition: all 1.2s cubic-bezier(0.16, 1, 0.3, 1);
+        }
+        .reveal-3d-flip.active {
+            opacity: 1;
+            transform: perspective(1200px) rotateX(0deg) translateY(0);
+        }
+        
+        /* ---------------- Custom Components for New Sections ---------------- */
+        .code-block-container {
+            background: rgba(10, 10, 10, 0.9);
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            border-radius: 20px;
+            padding: 24px 32px;
+            font-family: 'JetBrains Mono', monospace;
+            font-size: 0.95rem;
+            overflow-x: auto;
+            position: relative;
+            box-shadow: 0 20px 50px rgba(0,0,0,0.5), inset 0 2px 20px rgba(255,255,255,0.02);
+            backdrop-filter: var(--glass-blur);
+        }
+
+        .site-stats-container {
+            display: flex;
+            gap: 24px;
+            flex-wrap: wrap;
+            justify-content: center;
+            position: relative;
+            z-index: 10;
+        }
+        .stat-card {
+            background: var(--surface);
+            border: 1px solid var(--border);
+            padding: 28px 32px;
+            border-radius: 24px;
+            backdrop-filter: var(--glass-blur);
+            text-align: center;
+            flex: 1;
+            min-width: 200px;
+            max-width: 260px;
+            transition: all 0.4s cubic-bezier(0.16, 1, 0.3, 1);
+        }
+        .stat-card:hover {
+            transform: translateY(-5px);
+            border-color: rgba(255,255,255,0.15);
+            background: rgba(255,255,255,0.04);
+        }
+        .stat-card .value {
+            font-size: 2.2rem;
+            font-weight: 800;
+            margin-bottom: 10px;
+            background: linear-gradient(135deg, #fff, var(--text-muted));
+            -webkit-background-clip: text;
+            background-clip: text;
+            -webkit-text-fill-color: transparent;
+        }
+        .stat-card .label {
+            color: var(--orb-3);
+            font-size: 0.95rem;
+            text-transform: uppercase;
+            letter-spacing: 1.5px;
+            font-weight: 600;
+        }
+
+        /* ---------------- Icon Wave Animation ---------------- */
+        .wave-section {
+            padding: 60px 0 80px 0;
+            width: 100%;
+            overflow: hidden;
+            position: relative;
+            z-index: 10;
+            -webkit-mask-image: linear-gradient(to right, transparent, black 10%, black 90%, transparent);
+            mask-image: linear-gradient(to right, transparent, black 10%, black 90%, transparent);
+        }
+
+        .wave-track {
+            display: flex;
+            width: max-content;
+            animation: scroll-wave 35s linear infinite;
+            padding: 40px 0;
+        }
+
+        .wave-track:hover {
+            animation-play-state: paused;
+        }
+
+        .wave-group {
+            display: flex;
+            gap: 40px;
+            padding-right: 40px;
+            align-items: center;
+        }
+
+        .wave-icon {
+            width: 72px;
+            height: 72px;
+            border-radius: 50%;
+            background: rgba(255, 255, 255, 0.02);
+            border: 1px solid var(--border);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: var(--text-muted);
+            backdrop-filter: var(--glass-blur);
+            flex-shrink: 0;
+            animation: bob 3s ease-in-out infinite;
+            animation-delay: calc(var(--i) * -0.2s);
+            transition: all 0.3s ease;
+            cursor: pointer;
+            box-shadow: 0 4px 20px rgba(0,0,0,0.2);
+        }
+
+        .wave-icon svg {
+            transition: all 0.3s cubic-bezier(0.16, 1, 0.3, 1);
+        }
+
+        .wave-icon:hover {
+            background: rgba(255, 255, 255, 0.05);
+            color: #fff;
+            border-color: rgba(255,255,255,0.2);
+            box-shadow: 0 0 24px rgba(255,255,255,0.1);
+        }
+
+        .wave-icon:hover svg {
+            transform: scale(1.25);
+            filter: drop-shadow(0 0 8px rgba(255,255,255,0.5));
+        }
+
+        @keyframes bob {
+            0%, 100% { transform: translateY(0px); }
+            50% { transform: translateY(-38px); }
+        }
+
+        @keyframes scroll-wave {
+            0% { transform: translateX(0); }
+            100% { transform: translateX(-50%); }
+        }
+
+        @media (max-width: 860px) {
+            .navbar { padding: 12px 16px; gap: 20px; }
+            .nav-links { display: none; }
+            .hero { padding-top: 100px; }
+            .glass-panel { transform: none !important; }
+            .cards-grid { grid-template-columns: 1fr; }
+            .footer-content { flex-direction: column; text-align: center; justify-content: center; }
+        }
+
     </style>
 </head>
 <body>
-    <div class="stellar" aria-hidden="true">
-        <div class="stars-a"></div>
-        <div class="stars-b"></div>
+
+    <!-- Fluid Gradient Background Elements -->
+    <div class="ambient-bg">
+        <div class="orb orb-1"></div>
+        <div class="orb orb-2"></div>
+        <div class="orb orb-3"></div>
     </div>
-    <div class="orb a" aria-hidden="true"></div>
-    <div class="orb b" aria-hidden="true"></div>
+    <div class="ambient-noise"></div>
 
-    <div class="site">
-        <header class="top-nav" id="topNav">
-            <div class="container nav-row">
-                <div class="brand">
-                    <span class="brand-badge"><i data-lucide="shield-check" size="18"></i></span>
-                    <span>CypherScout</span>
-                </div>
-                <nav class="nav-links">
-                    <a href="#capabilities">Capabilities</a>
-                    <a href="#workflow">Workflow</a>
-                    <a href="#impact">Impact</a>
-                    <a href="/login" class="btn btn-main">Secure Login</a>
-                </nav>
+    <!-- Floating Navbar -->
+    <div class="navbar-wrapper section" id="navbarWrapper">
+        <nav class="navbar">
+            <a href="/" class="nav-brand">
+                <div class="icon-wrap"><i data-lucide="shield-check" size="18" color="#fff"></i></div>
+                <span>CypherScout</span>
+            </a>
+            <div class="nav-links">
+                <a href="#capabilities">Capabilities</a>
+                <a href="#architecture">Architecture</a>
+                <a href="#impact">Platform Metrics</a>
             </div>
-        </header>
+            <a href="/login" class="btn btn-primary" style="padding: 10px 20px; font-size: 0.9rem;">
+                Console <i data-lucide="arrow-right" size="16"></i>
+            </a>
+        </nav>
+    </div>
 
-        <main>
-            <section class="hero">
-                <video class="hero-bg" autoplay muted loop playsinline preload="auto" aria-label="CypherScout hero background">
-                    <source src="{{ url_for('static', filename='mainscreen.mp4') }}" type="video/mp4">
-                </video>
-                <div class="container hero-grid">
-                    <div class="entry">
-                        <div class="eyebrow"><i data-lucide="shield" size="14"></i> CypherScout</div>
-                        <h1>Where trust grows</h1>
-                        <p class="hero-copy">Programmable, explainable protection for links and logins—built to stop scams before they touch your users.</p>
-                        <div class="cta-row">
-                            <a href="/login" class="btn btn-main">Launch Console</a>
+    <main>
+        <!-- Hero Section -->
+        <section class="hero container">
+            <div class="pill-badge reveal-stagger">
+                <span class="dot"></span>
+                Next-Gen Phishing Protection
+            </div>
+            <h1 class="reveal-stagger">Securing the digital frontier with <span class="gradient-text">Adaptive AI</span></h1>
+            <p class="reveal-stagger">CypherScout anticipates, dissects, and neutralizes targeted phishing campaigns in real-time. Experience a visually stunning, predictive security platform.</p>
+            <div class="hero-cta reveal-stagger">
+                <a href="/login" class="btn btn-primary">Start Protection</a>
+                <a href="#capabilities" class="btn btn-glass">Explore Platform</a>
+            </div>
+        </section>
+
+        <!-- Video Demo Panel -->
+        <section class="demo-section container reveal">
+            <div class="glass-panel">
+                <div class="panel-header">
+                    <div class="panel-btn" style="background:#EF4444"></div>
+                    <div class="panel-btn" style="background:#F59E0B"></div>
+                    <div class="panel-btn" style="background:#10B981"></div>
+                </div>
+                <div class="video-wrapper">
+                    <video autoplay muted loop playsinline class="demo-vid">
+                        <source src="{{ url_for('static', filename='mainscreen.mp4') }}" type="video/mp4">
+                    </video>
+                </div>
+            </div>
+        </section>
+
+        <!-- Capabilities Section -->
+        <section id="capabilities" style="padding: 60px 0;">
+            <div class="container">
+                <h2 class="section-title reveal">Unmatched Visibility</h2>
+                <p class="section-subtitle reveal">Every layer of the platform is engineered for rapid threat identification, dynamic scalability, and uncompromising aesthetics.</p>
+                
+                <div class="cards-grid">
+                    <div class="glass-card element-cards reveal">
+                        <div class="card-content">
+                            <div class="icon-wrap-feature"><i data-lucide="radar"></i></div>
+                            <h3>Deep Link Analysis</h3>
+                            <p>We computationally decompose and sandbox every link, executing real-time checks against complex domain reputations and obfuscated patterns.</p>
+                        </div>
+                    </div>
+                    
+                    <div class="glass-card element-cards reveal" style="transition-delay: 0.1s;">
+                        <div class="card-content">
+                            <div class="icon-wrap-feature"><i data-lucide="brain-circuit"></i></div>
+                            <h3>Continuous Learning</h3>
+                            <p>Our autonomous ML models adapt endlessly. Once a novel evasion tactic is discovered, the entire decentralized network is instantly immunized.</p>
+                        </div>
+                    </div>
+
+                    <div class="glass-card element-cards reveal" style="transition-delay: 0.2s;">
+                        <div class="card-content">
+                            <div class="icon-wrap-feature"><i data-lucide="zap"></i></div>
+                            <h3>Zero-Latency Verdicts</h3>
+                            <p>Receive mathematically confident threat intelligence in milliseconds, integrating frictionlessly into your existing SOC operational flows.</p>
+                        </div>
+                    </div>
+
+                    <div class="glass-card element-cards reveal">
+                        <div class="card-content">
+                            <div class="icon-wrap-feature"><i data-lucide="shield-alert"></i></div>
+                            <h3>Automated Remediation</h3>
+                            <p>Configure dynamic playbooks to instantly block, sinkhole, or alert upon specific threshold detections, practically eliminating reaction gaps.</p>
+                        </div>
+                    </div>
+
+                    <div class="glass-card element-cards reveal" style="transition-delay: 0.1s;">
+                        <div class="card-content">
+                            <div class="icon-wrap-feature"><i data-lucide="activity"></i></div>
+                            <h3>Live Telemetry</h3>
+                            <p>Observe the global threat landscape as it unfolds via a fully interactive, immersive, hardware-accelerated dark-mode dashboard.</p>
+                        </div>
+                    </div>
+
+                    <div class="glass-card element-cards reveal" style="transition-delay: 0.2s;">
+                        <div class="card-content">
+                            <div class="icon-wrap-feature"><i data-lucide="workflow"></i></div>
+                            <h3>Multi-vector Intel</h3>
+                            <p>Correlate heuristics across independent threat exchanges natively, guaranteeing high-resolution accuracy.</p>
                         </div>
                     </div>
                 </div>
-            </section>
-
-            <svg class="divider-wave" viewBox="0 0 1440 120" preserveAspectRatio="none" aria-hidden="true">
-                <path fill="#081327" d="M0,96L80,101.3C160,107,320,117,480,112C640,107,800,85,960,80C1120,75,1280,85,1360,90.7L1440,96L1440,120L1360,120C1280,120,1120,120,960,120C800,120,640,120,480,120C320,120,160,120,80,120L0,120Z"></path>
-            </svg>
-
-            <section id="capabilities" style="background: linear-gradient(180deg, rgba(2,6,23,0.38), rgba(2,6,23,0.24));">
-                <div class="container">
-                    <div class="section-head reveal top">
-                        <h2>Platform Capabilities</h2>
-                        <p>CypherScout website experience highlights how detection, visibility, and response come together in one security platform.</p>
-                    </div>
-                    <div class="grid">
-                        <article class="card reveal stagger" style="--d: 60ms;">
-                            <div class="icon"><i data-lucide="link" size="18"></i></div>
-                            <h3>Threat Detection Engine</h3>
-                            <p>Detects malicious patterns across domain behavior, URL structure, and threat reputation signals to classify risk confidently.</p>
-                        </article>
-                        <article class="card reveal stagger" style="--d: 130ms;">
-                            <div class="icon"><i data-lucide="database-zap" size="18"></i></div>
-                            <h3>Multi-Source Intelligence</h3>
-                            <p>Correlates independent intelligence providers and internal checks to reduce blind spots and improve decision reliability.</p>
-                        </article>
-                        <article class="card reveal stagger" style="--d: 200ms;">
-                            <div class="icon"><i data-lucide="brain-circuit" size="18"></i></div>
-                            <h3>Adaptive ML Layer</h3>
-                            <p>Learns from validated outcomes and evolving patterns so detection quality improves continuously over time.</p>
-                        </article>
-                        <article class="card reveal stagger" style="--d: 80ms;">
-                            <div class="icon"><i data-lucide="bell-ring" size="18"></i></div>
-                            <h3>Actionable Alerts</h3>
-                            <p>Prioritized alerting with clear context helps security teams respond faster to events that actually matter.</p>
-                        </article>
-                        <article class="card reveal stagger" style="--d: 150ms;">
-                            <div class="icon"><i data-lucide="scan-search" size="18"></i></div>
-                            <h3>Deep Investigation</h3>
-                            <p>Escalate suspicious findings into deeper analysis modes for high-risk campaigns and targeted abuse monitoring.</p>
-                        </article>
-                        <article class="card reveal stagger" style="--d: 230ms;">
-                            <div class="icon"><i data-lucide="shield-ellipsis" size="18"></i></div>
-                            <h3>Governance Controls</h3>
-                            <p>Policy-aware controls keep workflows compliant while enabling teams to scale security operations safely.</p>
-                        </article>
-                    </div>
-                </div>
-            </section>
-
-            <section id="workflow">
-                <div class="container">
-                    <div class="section-head reveal">
-                        <h2>How CypherScout Delivers Value</h2>
-                        <p>From intake to decisioning and action, every stage is designed for speed, clarity, and operational trust.</p>
-                    </div>
-                    <div class="workflow">
-                        <article class="step reveal stagger" style="--d: 60ms;">
-                            <div class="step-num">01</div>
-                            <div>
-                                <h3>Collect & Normalize</h3>
-                                <p style="color:var(--text-dim); margin-top:6px; line-height:1.65;">Incoming web indicators are normalized and enriched so downstream analysis remains accurate and consistent.</p>
-                            </div>
-                        </article>
-                        <article class="step reveal stagger" style="--d: 130ms;">
-                            <div class="step-num">02</div>
-                            <div>
-                                <h3>Correlate Intelligence</h3>
-                                <p style="color:var(--text-dim); margin-top:6px; line-height:1.65;">Independent signals are fused into a confidence model to separate noise from real threats.</p>
-                            </div>
-                        </article>
-                        <article class="step reveal stagger" style="--d: 190ms;">
-                            <div class="step-num">03</div>
-                            <div>
-                                <h3>Explain Decisions</h3>
-                                <p style="color:var(--text-dim); margin-top:6px; line-height:1.65;">Every verdict includes transparent context so analysts and stakeholders can trust the outcome.</p>
-                            </div>
-                        </article>
-                        <article class="step reveal stagger" style="--d: 250ms;">
-                            <div class="step-num">04</div>
-                            <div>
-                                <h3>Respond & Improve</h3>
-                                <p style="color:var(--text-dim); margin-top:6px; line-height:1.65;">Teams trigger response playbooks and feedback loops that continuously harden future detections.</p>
-                            </div>
-                        </article>
-                    </div>
-                </div>
-            </section>
-
-            <section id="impact">
-                <div class="container">
-                    <div class="status-strip reveal">
-                        <div>
-                            <h2 style="font-family:'Plus Jakarta Sans',sans-serif; text-transform:uppercase; letter-spacing:0.4px;">Security Outcomes That Scale</h2>
-                            <p>CypherScout helps teams cut investigation time, improve verdict confidence, and protect users against constantly changing phishing tactics.</p>
-                            <div class="tiny-status">
-                                <span class="ok">Faster Analyst Response</span>
-                                <span>Higher Detection Confidence</span>
-                                <span class="bad">Lower Scam Exposure</span>
-                            </div>
-                        </div>
-                        <a href="/login" class="btn btn-main">Proceed to Login <i data-lucide="arrow-right" size="15"></i></a>
-                    </div>
-                </div>
-            </section>
-        </main>
-
-        <footer class="footer">
-            <div class="container" style="display:flex;justify-content:space-between;gap:10px;flex-wrap:wrap;">
-                <span>CypherScout AI Security Platform</span>
-                <span>Dark cyber UI + animated security-first motion</span>
             </div>
-        </footer>
-    </div>
+        </section>
 
-    <script type="application/ld+json">
-    {
-      "@context": "https://schema.org",
-      "@type": "FAQPage",
-      "mainEntity": [
-        {
-          "@type": "Question",
-          "name": "What is CypherScout?",
-          "acceptedAnswer": {
-            "@type": "Answer",
-            "text": "CypherScout is an AI-driven scam and phishing detector that analyzes links and domains in real time to keep users safe."
-          }
-        },
-        {
-          "@type": "Question",
-          "name": "How does CypherScout improve over time?",
-          "acceptedAnswer": {
-            "@type": "Answer",
-            "text": "It learns from user interactions and validated outcomes, continuously refining detection models to stay ahead of new scam patterns."
-          }
-        },
-        {
-          "@type": "Question",
-          "name": "Do I need an account to use CypherScout?",
-          "acceptedAnswer": {
-            "@type": "Answer",
-            "text": "The public site showcases the platform; secure access to the dashboard requires login for protected operations."
-          }
-        }
-      ]
+        <!-- Icon Wave Animation Section -->
+        <section class="wave-section">
+            <div class="wave-track">
+                <!-- Group 1 -->
+                <div class="wave-group">
+                    <div class="wave-icon" style="--i: 1;"><i data-lucide="layout-grid"></i></div>
+                    <div class="wave-icon" style="--i: 2;"><i data-lucide="corner-down-left"></i></div>
+                    <div class="wave-icon" style="--i: 3;"><i data-lucide="box"></i></div>
+                    <div class="wave-icon" style="--i: 4;"><i data-lucide="sparkles"></i></div>
+                    <div class="wave-icon" style="--i: 5;"><i data-lucide="wand-2"></i></div>
+                    <div class="wave-icon" style="--i: 6;"><i data-lucide="code"></i></div>
+                    <div class="wave-icon" style="--i: 7;"><i data-lucide="search"></i></div>
+                    <div class="wave-icon" style="--i: 8;"><i data-lucide="check-circle"></i></div>
+                    <div class="wave-icon" style="--i: 9;"><i data-lucide="arrow-right-to-line"></i></div>
+                    <div class="wave-icon" style="--i: 10;"><i data-lucide="copy"></i></div>
+                    <div class="wave-icon" style="--i: 11;"><i data-lucide="git-commit-horizontal"></i></div>
+                    <div class="wave-icon" style="--i: 12;"><i data-lucide="git-branch"></i></div>
+                    <div class="wave-icon" style="--i: 13;"><i data-lucide="shield"></i></div>
+                    <div class="wave-icon" style="--i: 14;"><i data-lucide="lock"></i></div>
+                    <div class="wave-icon" style="--i: 15;"><i data-lucide="network"></i></div>
+                </div>
+                <!-- Group 2 (Duplicate for infinite seamless scroll) -->
+                <div class="wave-group">
+                    <div class="wave-icon" style="--i: 1;"><i data-lucide="layout-grid"></i></div>
+                    <div class="wave-icon" style="--i: 2;"><i data-lucide="corner-down-left"></i></div>
+                    <div class="wave-icon" style="--i: 3;"><i data-lucide="box"></i></div>
+                    <div class="wave-icon" style="--i: 4;"><i data-lucide="sparkles"></i></div>
+                    <div class="wave-icon" style="--i: 5;"><i data-lucide="wand-2"></i></div>
+                    <div class="wave-icon" style="--i: 6;"><i data-lucide="code"></i></div>
+                    <div class="wave-icon" style="--i: 7;"><i data-lucide="search"></i></div>
+                    <div class="wave-icon" style="--i: 8;"><i data-lucide="check-circle"></i></div>
+                    <div class="wave-icon" style="--i: 9;"><i data-lucide="arrow-right-to-line"></i></div>
+                    <div class="wave-icon" style="--i: 10;"><i data-lucide="copy"></i></div>
+                    <div class="wave-icon" style="--i: 11;"><i data-lucide="git-commit-horizontal"></i></div>
+                    <div class="wave-icon" style="--i: 12;"><i data-lucide="git-branch"></i></div>
+                    <div class="wave-icon" style="--i: 13;"><i data-lucide="shield"></i></div>
+                    <div class="wave-icon" style="--i: 14;"><i data-lucide="lock"></i></div>
+                    <div class="wave-icon" style="--i: 15;"><i data-lucide="network"></i></div>
+                </div>
+            </div>
+        </section>
+
+        <!-- Architecture / Code Details -->
+        <section id="architecture" style="padding: 100px 0; overflow: hidden; position: relative;">
+            <div class="container" style="display: flex; flex-direction: column; gap: 60px;">
+                <div style="display: flex; flex-wrap: wrap; align-items: center; gap: 40px;">
+                    <div style="flex: 1; min-width: 320px;" class="reveal-slide-left">
+                        <div class="pill-badge" style="margin-bottom:20px; font-size:0.8rem;">
+                            <span class="dot" style="background:#8B5CF6; box-shadow:0 0 12px #8B5CF6;"></span> Under the Hood
+                        </div>
+                        <h2 class="section-title" style="text-align: left; font-size: clamp(2rem, 3.5vw, 3rem);">Engineered for Scale</h2>
+                        <p class="section-subtitle" style="text-align: left; margin: 0 0 28px 0;">CypherScout's core logic is built on a highly concurrent, asynchronous Python architectural pattern. Every line of code is optimized to ensure zero processing bottlenecks, enabling real-time classification of zero-day threats.</p>
+                        <div style="display: flex; gap: 12px; margin-bottom: 24px; flex-wrap: wrap;">
+                            <span class="pill-badge" style="margin-bottom:0; font-size:0.8rem; padding: 6px 14px;"><i data-lucide="cpu" size="14"></i> Async Core</span>
+                            <span class="pill-badge" style="margin-bottom:0; font-size:0.8rem; padding: 6px 14px;"><i data-lucide="database" size="14"></i> Vector Embeddings</span>
+                            <span class="pill-badge" style="margin-bottom:0; font-size:0.8rem; padding: 6px 14px;"><i data-lucide="cloud" size="14"></i> Edge Deployed</span>
+                        </div>
+                    </div>
+                    <div style="flex: 1.2; min-width: 340px;" class="reveal-3d-flip">
+                        <div class="code-block-container">
+                            <div style="display: flex; gap: 8px; margin-bottom: 16px;">
+                                <div style="width: 12px; height: 12px; border-radius: 50%; background: #EF4444;"></div>
+                                <div style="width: 12px; height: 12px; border-radius: 50%; background: #F59E0B;"></div>
+                                <div style="width: 12px; height: 12px; border-radius: 50%; background: #10B981;"></div>
+                            </div>
+                            <pre style="margin: 0; line-height: 1.6; color: #E5E7EB; white-space: pre-wrap;">
+<span style="color: #F87171;">async def</span> <span style="color: #60A5FA;">analyze_url_vector</span>(url: <span style="color: #A78BFA;">str</span>, context: <span style="color: #A78BFA;">dict</span>):
+    <span style="color: #9CA3AF;"># 1. Decompose URL into multi-dimensional features</span>
+    features = <span style="color: #F87171;">await</span> ml_pipeline.extract_async(url)
+    
+    <span style="color: #9CA3AF;"># 2. Score against clustered neural ensemble</span>
+    verdict = <span style="color: #F87171;">await</span> ensemble.predict_score(
+        model=<span style="color: #34D399;">"cypher-v3-beta"</span>,
+        features=features
+    )
+    
+    <span style="color: #F87171;">return</span> {
+        <span style="color: #34D399;">"risk_score"</span>: verdict.magnitude,
+        <span style="color: #34D399;">"confidence"</span>: verdict.confidence_interval,
+        <span style="color: #34D399;">"isolate"</span>: verdict.magnitude > <span style="color: #FBBF24;">0.85</span>
     }
-    </script>
+                            </pre>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- Site Characteristics / Impact -->
+        <section id="impact" style="padding: 60px 0 100px 0; position: relative;">
+            <div class="container">
+                <div style="text-align: center; margin-bottom: 56px;" class="reveal-scale">
+                    <h2 class="section-title">Platform Architecture</h2>
+                    <p class="section-subtitle" style="margin-bottom: 0;">Built for reliability and deep threat inspection using decentralized cloud and local heuristics.</p>
+                </div>
+                <div class="site-stats-container">
+                    <div class="stat-card reveal-slide-right" style="transition-delay: 0s;">
+                        <div class="value">Global</div>
+                        <div class="label">Server Network</div>
+                    </div>
+                    <div class="stat-card reveal-slide-right" style="transition-delay: 0.15s;">
+                        <div class="value">Async</div>
+                        <div class="label">Verification</div>
+                    </div>
+                    <div class="stat-card reveal-slide-right" style="transition-delay: 0.3s;">
+                        <div class="value">Local</div>
+                        <div class="label">Heuristic DB</div>
+                    </div>
+                    <div class="stat-card reveal-slide-right" style="transition-delay: 0.45s;">
+                        <div class="value">0-Day</div>
+                        <div class="label">Priority Intel</div>
+                    </div>
+                </div>
+            </div>
+        </section>
+    </main>
+
+    <footer>
+        <div class="container footer-content">
+            <div style="display:flex; align-items:center; gap:8px;">
+                <i data-lucide="shield-check" size="18" color="var(--orb-3)"></i>
+                <span style="font-weight:600; color:#fff;">CypherScout AI</span>
+            </div>
+            <p>&copy; 2026 CypherScout. Engineered for the frontier.</p>
+            <div style="display:flex; gap:16px;">
+                <a href="#" style="color:var(--text-muted); text-decoration:none;">Privacy</a>
+                <a href="#" style="color:var(--text-muted); text-decoration:none;">Terms</a>
+            </div>
+        </div>
+    </footer>
+
     <script>
+        // Initialize Icons
         lucide.createIcons();
 
-        const nav = document.getElementById("topNav");
-        const typeTarget = document.getElementById("typeTarget");
-        const line = "Real-time threat intelligence for modern web security.";
-        let ptr = 0;
-
-        function typeWriter() {
-            if (!typeTarget || ptr > line.length) return;
-            typeTarget.textContent = line.slice(0, ptr);
-            ptr += 1;
-            setTimeout(typeWriter, 26);
-        }
-        typeWriter();
-
-        const revealItems = document.querySelectorAll(".reveal");
-        const io = new IntersectionObserver((entries) => {
-            entries.forEach((entry) => {
+        // Reveal animations on scroll
+        const observeElements = document.querySelectorAll('.reveal, .reveal-scale, .reveal-slide-left, .reveal-slide-right, .reveal-3d-flip');
+        const observer = new IntersectionObserver((entries) => {
+            entries.forEach(entry => {
                 if (entry.isIntersecting) {
-                    entry.target.classList.add("in");
-                    io.unobserve(entry.target);
+                    entry.target.classList.add('active');
                 }
             });
-        }, { threshold: 0.16 });
-        revealItems.forEach((el) => io.observe(el));
+        }, { threshold: 0.12 });
 
-        const parallaxNodes = document.querySelectorAll(".parallax");
-        function onScroll() {
-            const y = window.scrollY || 0;
-            if (nav) nav.classList.toggle("scrolled", y > 10);
-            parallaxNodes.forEach((node, i) => {
-                const speed = i % 2 === 0 ? -0.045 : -0.07;
-                node.style.setProperty("--yoff", `${y * speed}px`);
+        observeElements.forEach(el => observer.observe(el));
+        
+        // Initial check for elements in view
+        setTimeout(() => {
+            document.querySelectorAll('.reveal, .reveal-scale, .reveal-slide-left, .reveal-slide-right, .reveal-3d-flip').forEach(el => {
+                if (el.getBoundingClientRect().top < window.innerHeight) {
+                    el.classList.add('active');
+                }
             });
-        }
-        onScroll();
-        window.addEventListener("scroll", onScroll, { passive: true });
+        }, 150);
+
+        // Glass Card Hover Spotlight Effect
+        const cards = document.querySelectorAll('.element-cards');
+        cards.forEach(card => {
+            card.addEventListener('mousemove', e => {
+                const rect = card.getBoundingClientRect();
+                const x = e.clientX - rect.left;
+                const y = e.clientY - rect.top;
+                card.style.setProperty('--mouse-x', `${x}px`);
+                card.style.setProperty('--mouse-y', `${y}px`);
+            });
+        });
+
+        // Navbar Scroll Effect
+        const navbarWrapper = document.getElementById('navbarWrapper');
+        window.addEventListener('scroll', () => {
+            if (window.scrollY > 50) {
+                navbarWrapper.classList.add('scrolled');
+            } else {
+                navbarWrapper.classList.remove('scrolled');
+            }
+        }, { passive: true });
     </script>
 </body>
 </html>
-
