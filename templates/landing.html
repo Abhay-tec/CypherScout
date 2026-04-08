@@ -609,6 +609,82 @@
             font-weight: 600;
         }
 
+        /* ---------------- Icon Wave Animation ---------------- */
+        .wave-section {
+            padding: 60px 0 80px 0;
+            width: 100%;
+            overflow: hidden;
+            position: relative;
+            z-index: 50; /* Increased z-index */
+            background: rgba(255, 255, 255, 0.01); /* Slight background to make it visible */
+            border-top: 1px solid rgba(255, 255, 255, 0.05);
+            border-bottom: 1px solid rgba(255, 255, 255, 0.05);
+        }
+
+        .wave-track {
+            display: flex;
+            width: max-content;
+            animation: scroll-wave 35s linear infinite;
+            padding: 40px 0;
+        }
+
+        .wave-track:hover {
+            animation-play-state: paused;
+        }
+
+        .wave-group {
+            display: flex;
+            gap: 40px;
+            padding-right: 40px;
+            align-items: center;
+        }
+
+        .wave-icon {
+            width: 72px;
+            height: 72px;
+            border-radius: 50%;
+            background: rgba(255, 255, 255, 0.05); /* Increased base brightness */
+            border: 2px solid rgba(255, 255, 255, 0.15); /* Thicker and brighter border */
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: #fff; /* White icon color for visibility */
+            backdrop-filter: blur(8px);
+            -webkit-backdrop-filter: blur(8px);
+            flex-shrink: 0;
+            animation: bob 3s ease-in-out infinite;
+            animation-delay: calc(var(--i) * -0.2s);
+            transition: all 0.3s ease;
+            cursor: pointer;
+            box-shadow: 0 4px 20px rgba(0,0,0,0.4);
+        }
+
+        .wave-icon svg {
+            transition: all 0.3s cubic-bezier(0.16, 1, 0.3, 1);
+        }
+
+        .wave-icon:hover {
+            background: rgba(255, 255, 255, 0.05);
+            color: #fff;
+            border-color: rgba(255,255,255,0.2);
+            box-shadow: 0 0 24px rgba(255,255,255,0.1);
+        }
+
+        .wave-icon:hover svg {
+            transform: scale(1.25);
+            filter: drop-shadow(0 0 8px rgba(255,255,255,0.5));
+        }
+
+        @keyframes bob {
+            0%, 100% { transform: translateY(0px); }
+            50% { transform: translateY(-38px); }
+        }
+
+        @keyframes scroll-wave {
+            0% { transform: translateX(0); }
+            100% { transform: translateX(-50%); }
+        }
+
         @media (max-width: 860px) {
             .navbar { padding: 12px 16px; gap: 20px; }
             .nav-links { display: none; }
@@ -733,6 +809,48 @@
                             <p>Correlate heuristics across independent threat exchanges natively, guaranteeing high-resolution accuracy.</p>
                         </div>
                     </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- Icon Wave Animation Section -->
+        <section class="wave-section">
+            <div class="wave-track">
+                <!-- Group 1 -->
+                <div class="wave-group">
+                    <div class="wave-icon" style="--i: 1;"><i data-lucide="layout-grid"></i></div>
+                    <div class="wave-icon" style="--i: 2;"><i data-lucide="corner-down-left"></i></div>
+                    <div class="wave-icon" style="--i: 3;"><i data-lucide="box"></i></div>
+                    <div class="wave-icon" style="--i: 4;"><i data-lucide="sparkles"></i></div>
+                    <div class="wave-icon" style="--i: 5;"><i data-lucide="wand-2"></i></div>
+                    <div class="wave-icon" style="--i: 6;"><i data-lucide="code"></i></div>
+                    <div class="wave-icon" style="--i: 7;"><i data-lucide="search"></i></div>
+                    <div class="wave-icon" style="--i: 8;"><i data-lucide="check-circle"></i></div>
+                    <div class="wave-icon" style="--i: 9;"><i data-lucide="arrow-right-to-line"></i></div>
+                    <div class="wave-icon" style="--i: 10;"><i data-lucide="copy"></i></div>
+                    <div class="wave-icon" style="--i: 11;"><i data-lucide="git-commit-horizontal"></i></div>
+                    <div class="wave-icon" style="--i: 12;"><i data-lucide="git-branch"></i></div>
+                    <div class="wave-icon" style="--i: 13;"><i data-lucide="shield"></i></div>
+                    <div class="wave-icon" style="--i: 14;"><i data-lucide="lock"></i></div>
+                    <div class="wave-icon" style="--i: 15;"><i data-lucide="network"></i></div>
+                </div>
+                <!-- Group 2 (Duplicate for infinite seamless scroll) -->
+                <div class="wave-group">
+                    <div class="wave-icon" style="--i: 1;"><i data-lucide="layout-grid"></i></div>
+                    <div class="wave-icon" style="--i: 2;"><i data-lucide="corner-down-left"></i></div>
+                    <div class="wave-icon" style="--i: 3;"><i data-lucide="box"></i></div>
+                    <div class="wave-icon" style="--i: 4;"><i data-lucide="sparkles"></i></div>
+                    <div class="wave-icon" style="--i: 5;"><i data-lucide="wand-2"></i></div>
+                    <div class="wave-icon" style="--i: 6;"><i data-lucide="code"></i></div>
+                    <div class="wave-icon" style="--i: 7;"><i data-lucide="search"></i></div>
+                    <div class="wave-icon" style="--i: 8;"><i data-lucide="check-circle"></i></div>
+                    <div class="wave-icon" style="--i: 9;"><i data-lucide="arrow-right-to-line"></i></div>
+                    <div class="wave-icon" style="--i: 10;"><i data-lucide="copy"></i></div>
+                    <div class="wave-icon" style="--i: 11;"><i data-lucide="git-commit-horizontal"></i></div>
+                    <div class="wave-icon" style="--i: 12;"><i data-lucide="git-branch"></i></div>
+                    <div class="wave-icon" style="--i: 13;"><i data-lucide="shield"></i></div>
+                    <div class="wave-icon" style="--i: 14;"><i data-lucide="lock"></i></div>
+                    <div class="wave-icon" style="--i: 15;"><i data-lucide="network"></i></div>
                 </div>
             </div>
         </section>
