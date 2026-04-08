@@ -371,97 +371,174 @@
             margin: 0 auto 72px auto;
         }
 
-        .cards-grid {
-            display: grid;
-            grid-template-columns: repeat(auto-fit, minmax(340px, 1fr));
-            gap: 24px;
-            padding-bottom: 120px;
+        /* ---------------- 3D Fan Deck (Capabilities) ---------------- */
+        .capabilities-deck {
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            perspective: 1200px;
+            padding: 80px 20px 140px;
+            margin: 0 auto;
             position: relative;
-            z-index: 10;
+            transform-style: preserve-3d;
         }
 
-        /* Glowing Mouse Hover Spotlight Card */
-        .glass-card {
-            background: var(--surface);
-            border: 1px solid var(--border);
-            border-radius: 28px;
-            padding: 36px;
-            backdrop-filter: var(--glass-blur);
-            -webkit-backdrop-filter: var(--glass-blur);
-            transition: all 0.4s cubic-bezier(0.16, 1, 0.3, 1);
+        .glass-card-deck {
+            width: 260px;
+            height: 400px;
+            flex-shrink: 0;
             position: relative;
-            overflow: hidden;
+            margin-left: -60px; /* Base overlap */
+            border-radius: 24px;
+            background: rgba(10, 10, 14, 0.7);
+            backdrop-filter: blur(25px);
+            -webkit-backdrop-filter: blur(25px);
+            border: 1px solid rgba(255, 255, 255, 0.05);
+            border-top: 2px solid rgba(255, 255, 255, 0.2);
+            transition: all 0.6s cubic-bezier(0.16, 1, 0.3, 1);
+            transform-origin: center;
             display: flex;
             flex-direction: column;
-            gap: 20px;
-            text-align: left;
+            padding: 30px 24px;
+            text-align: center;
+            cursor: pointer;
+            box-shadow: 0 20px 50px rgba(0,0,0,0.5);
+            overflow: hidden;
+            z-index: 1; /* Default base */
+        }
+        
+        .capabilities-deck .glass-card-deck:first-child {
+            margin-left: 0;
         }
 
-        /* The pseudo-element for the spotlight effect */
-        .glass-card::before {
+        /* Top gradient bloom inside the card mimicking the reference image */
+        .glass-card-deck::before {
             content: '';
             position: absolute;
-            inset: 0;
-            background: radial-gradient(
-                600px circle at var(--mouse-x) var(--mouse-y), 
-                rgba(255, 255, 255, 0.08),
-                transparent 40%
-            );
-            z-index: 0;
-            opacity: 0;
-            transition: opacity 0.4s ease;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 150px;
+            opacity: 0.15;
+            transition: all 0.6s ease;
             pointer-events: none;
+            z-index: 0;
         }
 
-        .glass-card:hover::before {
-            opacity: 1;
-        }
+        /* 3D Static Fan Positions (CypherScout Vibe Colors) */
+        .glass-card-deck:nth-child(1) { transform: rotateY(25deg) scale(0.9); z-index: 1; border-top-color: #3B82F6; }
+        .glass-card-deck:nth-child(1)::before { background: radial-gradient(circle at top, #3B82F6 0%, transparent 70%); }
+        
+        .glass-card-deck:nth-child(2) { transform: rotateY(15deg) scale(0.95); z-index: 2; border-top-color: #8B5CF6; }
+        .glass-card-deck:nth-child(2)::before { background: radial-gradient(circle at top, #8B5CF6 0%, transparent 70%); }
+        
+        .glass-card-deck:nth-child(3) { transform: rotateY(5deg) scale(1); z-index: 3; border-top-color: #06B6D4; }
+        .glass-card-deck:nth-child(3)::before { background: radial-gradient(circle at top, #06B6D4 0%, transparent 70%); }
+        
+        .glass-card-deck:nth-child(4) { transform: rotateY(-5deg) scale(1); z-index: 3; border-top-color: #10B981; }
+        .glass-card-deck:nth-child(4)::before { background: radial-gradient(circle at top, #10B981 0%, transparent 70%); }
+        
+        .glass-card-deck:nth-child(5) { transform: rotateY(-15deg) scale(0.95); z-index: 2; border-top-color: #F59E0B; }
+        .glass-card-deck:nth-child(5)::before { background: radial-gradient(circle at top, #F59E0B 0%, transparent 70%); }
+        
+        .glass-card-deck:nth-child(6) { transform: rotateY(-25deg) scale(0.9); z-index: 1; border-top-color: #EC4899; }
+        .glass-card-deck:nth-child(6)::before { background: radial-gradient(circle at top, #EC4899 0%, transparent 70%); }
 
-        .glass-card:hover {
-            transform: translateY(-8px);
-            border-color: rgba(255,255,255,0.15);
-            background: rgba(255,255,255,0.04);
-            box-shadow: 0 20px 40px rgba(0,0,0,0.3);
-        }
-
-        .card-content {
-            position: relative;
-            z-index: 1;
-        }
-
-        .icon-wrap-feature {
-            width: 52px;
-            height: 52px;
-            background: rgba(255,255,255,0.04);
-            border: 1px solid var(--border);
-            border-radius: 16px;
+        /* Icon Wrapper Inside Deck */
+        .deck-icon-wrap {
+            width: 72px;
+            height: 72px;
+            margin: 20px auto 30px auto;
             display: flex;
             align-items: center;
             justify-content: center;
-            color: #fff;
-            margin-bottom: 12px;
-            transition: all 0.4s cubic-bezier(0.16, 1, 0.3, 1);
+            position: relative;
+            z-index: 2;
+            transition: all 0.5s ease;
         }
 
-        .glass-card:hover .icon-wrap-feature {
-            transform: scale(1.1) translateY(-4px);
-            background: rgba(255,255,255,0.08);
-            border-color: rgba(255,255,255,0.2);
-            color: var(--orb-3);
-            box-shadow: 0 10px 20px rgba(6, 182, 212, 0.15);
+        /* Specific Icon Glowing Colors */
+        .glass-card-deck:nth-child(1) .deck-icon-wrap { color: #3B82F6; filter: drop-shadow(0 0 15px rgba(59, 130, 246, 0.8)); }
+        .glass-card-deck:nth-child(2) .deck-icon-wrap { color: #8B5CF6; filter: drop-shadow(0 0 15px rgba(139, 92, 246, 0.8)); }
+        .glass-card-deck:nth-child(3) .deck-icon-wrap { color: #06B6D4; filter: drop-shadow(0 0 15px rgba(6, 182, 212, 0.8)); }
+        .glass-card-deck:nth-child(4) .deck-icon-wrap { color: #10B981; filter: drop-shadow(0 0 15px rgba(16, 185, 129, 0.8)); }
+        .glass-card-deck:nth-child(5) .deck-icon-wrap { color: #F59E0B; filter: drop-shadow(0 0 15px rgba(245, 158, 11, 0.8)); }
+        .glass-card-deck:nth-child(6) .deck-icon-wrap { color: #EC4899; filter: drop-shadow(0 0 15px rgba(236, 72, 153, 0.8)); }
+
+        .deck-content {
+            z-index: 2;
+            position: relative;
         }
 
-        .glass-card h3 {
+        .glass-card-deck h3 {
             font-size: 1.35rem;
-            font-weight: 600;
-            margin-bottom: 10px;
+            font-weight: 700;
             color: #F9FAFB;
+            margin-bottom: 15px;
         }
 
-        .glass-card p {
+        .glass-card-deck p {
             color: var(--text-muted);
-            font-size: 1rem;
+            font-size: 0.95rem;
             line-height: 1.6;
+            margin: 0;
+        }
+
+        /* --- Hover Interactions (The Fan Magic) --- */
+        .capabilities-deck:hover .glass-card-deck {
+            opacity: 0.4;
+            filter: grayscale(0.6) blur(2px);
+        }
+
+        .capabilities-deck .glass-card-deck:hover {
+            opacity: 1;
+            filter: none;
+            transform: rotateY(0deg) scale(1.15) translateY(-30px) !important;
+            z-index: 100 !important;
+            background: rgba(15, 15, 20, 0.95);
+            box-shadow: 0 40px 60px rgba(0,0,0,0.8), inset 0 2px 20px rgba(255,255,255,0.1) !important;
+        }
+        
+        .capabilities-deck .glass-card-deck:hover::before {
+            opacity: 0.6; /* Enhance top glow when focused */
+        }
+
+        .capabilities-deck .glass-card-deck:hover .deck-icon-wrap {
+            transform: scale(1.2);
+            filter: drop-shadow(0 0 25px currentColor);
+        }
+
+        /* Push preceding siblings left */
+        .capabilities-deck:has(.glass-card-deck:hover) .glass-card-deck:not(:hover):not(.glass-card-deck:hover ~ .glass-card-deck) {
+            transform: translateX(-50px) rotateY(25deg) scale(0.9);
+        }
+
+        /* Push succeeding siblings right */
+        .capabilities-deck .glass-card-deck:hover ~ .glass-card-deck {
+            transform: translateX(50px) rotateY(-25deg) scale(0.9);
+        }
+
+        @media (max-width: 1024px) {
+            .capabilities-deck {
+                flex-direction: column;
+                gap: 24px;
+                padding: 40px 20px;
+            }
+            .glass-card-deck {
+                width: 100%;
+                max-width: 400px;
+                margin-left: 0;
+                transform: none !important;
+            }
+            .glass-card-deck:hover {
+                transform: scale(1.05) translateY(-10px) !important;
+            }
+            .capabilities-deck:has(.glass-card-deck:hover) .glass-card-deck:not(:hover):not(.glass-card-deck:hover ~ .glass-card-deck) {
+                transform: none;
+            }
+            .capabilities-deck .glass-card-deck:hover ~ .glass-card-deck {
+                transform: none;
+            }
         }
 
         /* ---------------- Footer ---------------- */
@@ -819,50 +896,56 @@
                 <h2 class="section-title reveal">Unmatched Visibility</h2>
                 <p class="section-subtitle reveal">Every layer of the platform is engineered for rapid threat identification, dynamic scalability, and uncompromising aesthetics.</p>
                 
-                <div class="cards-grid">
-                    <div class="glass-card element-cards reveal">
-                        <div class="card-content">
-                            <div class="icon-wrap-feature"><i data-lucide="radar"></i></div>
+                <div class="capabilities-deck reveal">
+                    <!-- Card 1 -->
+                    <div class="glass-card-deck">
+                        <div class="deck-icon-wrap"><i data-lucide="radar" size="48"></i></div>
+                        <div class="deck-content">
                             <h3>Deep Link Analysis</h3>
-                            <p>We computationally decompose and sandbox every link, executing real-time checks against complex domain reputations and obfuscated patterns.</p>
+                            <p>We computationally decompose and sandbox every link, executing real-time checks against complex domain reputations.</p>
                         </div>
                     </div>
                     
-                    <div class="glass-card element-cards reveal" style="transition-delay: 0.1s;">
-                        <div class="card-content">
-                            <div class="icon-wrap-feature"><i data-lucide="brain-circuit"></i></div>
+                    <!-- Card 2 -->
+                    <div class="glass-card-deck">
+                        <div class="deck-icon-wrap"><i data-lucide="brain-circuit" size="48"></i></div>
+                        <div class="deck-content">
                             <h3>Continuous Learning</h3>
-                            <p>Our autonomous ML models adapt endlessly. Once a novel evasion tactic is discovered, the entire decentralized network is instantly immunized.</p>
+                            <p>Our autonomous ML models adapt endlessly. Once an evasion tactic is discovered, the decentralized network is instantly immunized.</p>
                         </div>
                     </div>
 
-                    <div class="glass-card element-cards reveal" style="transition-delay: 0.2s;">
-                        <div class="card-content">
-                            <div class="icon-wrap-feature"><i data-lucide="zap"></i></div>
+                    <!-- Card 3 -->
+                    <div class="glass-card-deck">
+                        <div class="deck-icon-wrap"><i data-lucide="zap" size="48"></i></div>
+                        <div class="deck-content">
                             <h3>Zero-Latency Verdicts</h3>
-                            <p>Receive mathematically confident threat intelligence in milliseconds, integrating frictionlessly into your existing SOC operational flows.</p>
+                            <p>Receive mathematically confident threat intelligence in milliseconds, integrating frictionlessly into your operational flows.</p>
                         </div>
                     </div>
 
-                    <div class="glass-card element-cards reveal">
-                        <div class="card-content">
-                            <div class="icon-wrap-feature"><i data-lucide="shield-alert"></i></div>
+                    <!-- Card 4 -->
+                    <div class="glass-card-deck">
+                        <div class="deck-icon-wrap"><i data-lucide="shield-alert" size="48"></i></div>
+                        <div class="deck-content">
                             <h3>Automated Remediation</h3>
                             <p>Configure dynamic playbooks to instantly block, sinkhole, or alert upon specific threshold detections, practically eliminating reaction gaps.</p>
                         </div>
                     </div>
 
-                    <div class="glass-card element-cards reveal" style="transition-delay: 0.1s;">
-                        <div class="card-content">
-                            <div class="icon-wrap-feature"><i data-lucide="activity"></i></div>
+                    <!-- Card 5 -->
+                    <div class="glass-card-deck">
+                        <div class="deck-icon-wrap"><i data-lucide="activity" size="48"></i></div>
+                        <div class="deck-content">
                             <h3>Live Telemetry</h3>
                             <p>Observe the global threat landscape as it unfolds via a fully interactive, immersive, hardware-accelerated dark-mode dashboard.</p>
                         </div>
                     </div>
 
-                    <div class="glass-card element-cards reveal" style="transition-delay: 0.2s;">
-                        <div class="card-content">
-                            <div class="icon-wrap-feature"><i data-lucide="workflow"></i></div>
+                    <!-- Card 6 -->
+                    <div class="glass-card-deck">
+                        <div class="deck-icon-wrap"><i data-lucide="workflow" size="48"></i></div>
+                        <div class="deck-content">
                             <h3>Multi-vector Intel</h3>
                             <p>Correlate heuristics across independent threat exchanges natively, guaranteeing high-resolution accuracy.</p>
                         </div>
