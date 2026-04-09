@@ -296,6 +296,36 @@
             align-items: center;
             justify-content: center;
             flex-wrap: wrap;
+            margin-bottom: 12px;
+        }
+
+        .badge-row {
+            display: flex;
+            gap: 10px;
+            flex-wrap: wrap;
+            justify-content: center;
+            margin-top: 6px;
+        }
+
+        .badge-card {
+            display: inline-flex;
+            align-items: center;
+            gap: 8px;
+            padding: 8px 12px;
+            border-radius: 12px;
+            background: rgba(255,255,255,0.03);
+            border: 1px solid var(--border);
+            box-shadow: 0 12px 24px rgba(0,0,0,0.35);
+            text-decoration: none;
+            color: #e5e7eb;
+            font-weight: 600;
+            font-size: 0.9rem;
+            backdrop-filter: blur(12px);
+        }
+
+        .badge-card img {
+            height: 22px;
+            filter: saturate(1.05);
         }
 
         /* ---------------- Video / Demo Panel ---------------- */
@@ -871,6 +901,20 @@
             <div class="hero-cta reveal-stagger">
                 <a href="/login" class="btn btn-primary">Start Protection</a>
                 <a href="#capabilities" class="btn btn-glass">Explore Platform</a>
+            </div>
+            <div class="badge-row reveal-stagger">
+                <a class="badge-card" href="https://app.fossa.com/projects/git%2Bgithub.com%2FAbhay-tec%2FCypherScout?ref=badge_shield&issueType=license" target="_blank" rel="noopener">
+                    <img src="https://app.fossa.com/api/projects/git%2Bgithub.com%2FAbhay-tec%2FCypherScout.svg?type=shield&issueType=license" alt="FOSSA License Status">
+                    <span>FOSSA License</span>
+                </a>
+                <a class="badge-card" href="https://app.fossa.com/projects/git%2Bgithub.com%2FAbhay-tec%2FCypherScout?ref=badge_shield&issueType=security" target="_blank" rel="noopener">
+                    <img src="https://app.fossa.com/api/projects/git%2Bgithub.com%2FAbhay-tec%2FCypherScout.svg?type=shield&issueType=security" alt="FOSSA Security Status">
+                    <span>FOSSA Security</span>
+                </a>
+                <a class="badge-card" href="https://snyk.io/test/github/Abhay-tec/CypherScout" target="_blank" rel="noopener">
+                    <img src="https://snyk.io/test/github/Abhay-tec/CypherScout/badge.svg" alt="Snyk Vulnerability Scan">
+                    <span>Snyk Scan</span>
+                </a>
             </div>
         </section>
 
